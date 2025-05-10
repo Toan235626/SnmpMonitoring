@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import com.project.snmp.service.snmpServices.*;
 
 @Service
-public class SnmpService {
+public class SnmpMainService {
 
     @Autowired
     private SnmpGet snmpGet;
