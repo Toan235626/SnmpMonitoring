@@ -1,5 +1,6 @@
 package com.project.snmp.service.snmpServices;
 
+import com.project.snmp.service.SnmpMainService;
 import com.project.snmp.utils.SnmpStringToJson;
 
 import org.json.JSONObject;
@@ -12,14 +13,13 @@ import org.snmp4j.event.ResponseEvent;
 import org.snmp4j.mp.SnmpConstants;
 import org.snmp4j.smi.*;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
+import org.springframework.stereotype.Component;
 
 
-
-public class SnmpGet {
-
+@Component
+public class SnmpGet{
     private String address;
     private String community;
-
     public SnmpGet(String address, String community) {
         this.address = address;
         this.community = community;
