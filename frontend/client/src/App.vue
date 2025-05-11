@@ -1,39 +1,76 @@
 <template>
-  <div class="app-container">
-    <!-- Header -->
-    <header class="header">
-      <h1>SNMP Dashboard</h1>
-      <div class="quick-stats">
-        <div class="stat-card">
-          <span>Requests</span>
-          <p>{{ history.length }}</p>
-        </div>
-        <div class="stat-card">
-          <span>Success Rate</span>
-          <p>{{ successRate }}%</p>
-        </div>
+  <div class="mib-browser-container">
+    <!-- Toolbar -->
+    <header class="toolbar">
+      <div class="toolbar-left">
+        <h1>SNMP MIB Browser</h1>
       </div>
-      <img src="/src/assets/Main.png" alt="logo" />
+      <div class="toolbar-right">
+        <button @click="fetchSnmpData" :disabled="loading" title="SNMP Get">
+          <i class="fas fa-play"></i> Get
+        </button>
+        <button @click="fetchSnmpWalk" :disabled="loading" title="SNMP Walk">
+          <i class="fas fa-walking"></i> Walk
+        </button>
+        <button @click="clearForm" :disabled="loading" title="Clear Form">
+          <i class="fas fa-eraser"></i> Clear
+        </button>
+        <button @click="scanDevices" :disabled="loading" title="Scan Devices">
+          <i class="fas fa-search"></i> Scan Devices
+        </button>
+        <button @click="showAddDeviceModal = true" title="Add Device">
+          <i class="fas fa-plus"></i> Add Device
+        </button>
+      </div>
     </header>
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <nav>
-        <ul>
-          <li><router-link to="/" class="active">Dashboard</router-link></li>
-          <li><router-link to="/devices">Devices</router-link></li>
-          <li><router-link to="/traps">Traps</router-link></li>
-          <li><router-link to="/analysis">Analysis</router-link></li>
-        </ul>
-      </nav>
-    </aside>
+    <!-- Main Layout -->
+    <div class="main-layout">
+      <!-- MIB Tree Sidebar -->
+      <aside class="mib-tree">
+        <h3>MIB Tree</h3>
+        <div class="tree-view">
+          <ul>
+            <li v-for="node in mibTree" :key="node.oid">
+              <span
+                :class="{ 'node-selected': form.oid === node.oid }"
+                @click="toggleNode(node)"
+              >
+                <i :class="node.expanded ? 'fas fa-chevron-down' : 'fas fa-chevron-right'"></i>
+                {{ node.name }} ({{ node.oid }})
+              </span>
+              <ul v-if="node.expanded && node.children">
+                <li
+                  v-for="child in node.children"
+                  :key="child.oid"
+                  @click.stop="selectOid(child.oid)"
+                >
+                  {{ child.name }} ({{ child.oid }})
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </aside>
 
-    <!-- Main Content -->
-    <main class="main-content">
-      <div class="dashboard">
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Tabs for Multiple Queries -->
+        <div class="tabs">
+          <div
+            v-for="(tab, index) in tabs"
+            :key="index"
+            :class="{ 'tab-active': activeTab === index }"
+            @click="activeTab = index"
+          >
+            {{ tab.name }}
+            <span @click.stop="closeTab(index)">×</span>
+          </div>
+          <button @click="addTab">+ New Tab</button>
+        </div>
+
         <!-- SNMP Form -->
-        <div class="card form-card">
-          <h2>Retrieve SNMP Data</h2>
+        <div class="form-card">
           <form @submit.prevent="fetchSnmpData" class="form">
             <div class="form-group">
               <label for="ip">Device IP:</label>
@@ -65,66 +102,98 @@
                 required
               />
             </div>
-            <div class="button-group">
-              <button type="submit" :disabled="loading">
-                <span v-if="loading" class="spinner"></span>
-                {{ loading ? "Fetching..." : "Get SNMP Data" }}
-              </button>
-              <button type="button" @click="clearForm" :disabled="loading">
-                Clear
-              </button>
-            </div>
           </form>
-          <div v-if="result" class="result animate-result">
-            <h3>Result</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>Field</th>
-                  <th>Value</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(value, key) in result" :key="key">
-                  <td>{{ key }}</td>
-                  <td>{{ value }}</td>
-                </tr>
-              </tbody>
-            </table>
-            <button class="copy-btn" @click="copyResult">Copy to Clipboard</button>
-          </div>
-          <div v-if="error" class="error animate-error">
-            <h3>Error</h3>
-            <p>{{ error }}</p>
-          </div>
         </div>
 
-        <!-- History Section -->
-        <div class="card history-card">
-          <h2>Request History</h2>
-          <div class="search-bar">
+        <!-- Devices List -->
+        <div class="devices-card">
+          <h3>Discovered Devices</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>IP Address</th>
+                <th>Community String</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(device, index) in devices" :key="index">
+                <td>{{ device.ip }}</td>
+                <td>{{ device.community }}</td>
+                <td>
+                  <button @click="useDevice(device)">Use</button>
+                  <button @click="removeDevice(index)">Remove</button>
+                </td>
+              </tr>
+              <tr v-if="!devices.length">
+                <td colspan="3">No devices found.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Result Table -->
+        <div v-if="result" class="result-card">
+          <h3>Result</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>OID</th>
+                <th>Value</th>
+                <th>IP</th>
+                <th>Community</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>{{ result.oid }}</td>
+                <td>{{ result.value }}</td>
+                <td>{{ result.ip }}</td>
+                <td>{{ result.community }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <button class="copy-btn" @click="copyResult">Copy to Clipboard</button>
+        </div>
+        <div v-if="error" class="error-card">
+          <h3>Error</h3>
+          <p>{{ error }}</p>
+        </div>
+      </main>
+    </div>
+
+    <!-- Add Device Modal -->
+    <div v-if="showAddDeviceModal" class="modal">
+      <div class="modal-content">
+        <h3>Add New Device</h3>
+        <form @submit.prevent="addDevice">
+          <div class="form-group">
+            <label for="new-ip">Device IP:</label>
             <input
               type="text"
-              v-model="searchQuery"
-              placeholder="Search by IP, OID, or Community..."
+              id="new-ip"
+              v-model="newDevice.ip"
+              placeholder="e.g., 192.168.1.20"
+              required
             />
           </div>
-          <div class="history-list">
-            <div
-              v-for="(entry, index) in filteredHistory"
-              :key="index"
-              class="history-item"
-            >
-              <p><strong>IP:</strong> {{ entry.ip }}</p>
-              <p><strong>OID:</strong> {{ entry.oid }}</p>
-              <p><strong>Community:</strong> {{ entry.community }}</p>
-              <p><strong>Result:</strong> {{ entry.result.value }}</p>
-            </div>
-            <p v-if="!filteredHistory.length">No history available.</p>
+          <div class="form-group">
+            <label for="new-community">Community String:</label>
+            <input
+              type="text"
+              id="new-community"
+              v-model="newDevice.community"
+              placeholder="e.g., public"
+              required
+            />
           </div>
-        </div>
+          <div class="modal-buttons">
+            <button type="submit">Add Device</button>
+            <button type="button" @click="showAddDeviceModal = false">Cancel</button>
+          </div>
+        </form>
       </div>
-    </main>
+    </div>
   </div>
 </template>
 
@@ -145,14 +214,39 @@ export default {
       community: "",
     });
 
-    // State for result, error, loading, and history
+    // State for result, error, loading, history, and devices
     const result = ref(null);
     const error = ref(null);
     const loading = ref(false);
-    const history = ref(
-      JSON.parse(localStorage.getItem("snmpHistory")) || []
-    );
-    const searchQuery = ref("");
+    const history = ref(JSON.parse(localStorage.getItem("snmpHistory")) || []);
+    const devices = ref(JSON.parse(localStorage.getItem("snmpDevices")) || []);
+    const showAddDeviceModal = ref(false);
+    const newDevice = ref({ ip: "", community: "" });
+
+    // Tabs management
+    const tabs = ref([{ name: "Query 1" }]);
+    const activeTab = ref(0);
+
+    // Mock MIB tree data with expanded state
+    const mibTree = ref([
+      {
+        name: "system",
+        oid: "1.3.6.1.2.1.1",
+        expanded: false,
+        children: [
+          { name: "sysDescr", oid: "1.3.6.1.2.1.1.1.0" },
+          { name: "sysUpTime", oid: "1.3.6.1.2.1.1.3.0" },
+        ],
+      },
+      {
+        name: "interfaces",
+        oid: "1.3.6.1.2.1.2",
+        expanded: false,
+        children: [
+          { name: "ifNumber", oid: "1.3.6.1.2.1.2.1.0" },
+        ],
+      },
+    ]);
 
     // Computed property for success rate
     const successRate = computed(() => {
@@ -161,36 +255,22 @@ export default {
       return Math.round((successful / history.value.length) * 100);
     });
 
-    // Computed property for filtered history
-    const filteredHistory = computed(() => {
-      if (!searchQuery.value) return history.value;
-      const query = searchQuery.value.toLowerCase();
-      return history.value.filter(
-        (entry) =>
-          entry.ip.toLowerCase().includes(query) ||
-          entry.oid.toLowerCase().includes(query) ||
-          entry.community.toLowerCase().includes(query)
-      );
-    });
-
-        // Function to fetch SNMP data (mock data)
-        const fetchSnmpData = async () => {
-            loading.value = true;
-            result.value = null;
-            error.value = null;
+    // Function to fetch SNMP data (mock data)
+    const fetchSnmpData = async () => {
+      loading.value = true;
+      result.value = null;
+      error.value = null;
 
       try {
-        // Mock data with simulated delay
         await new Promise((resolve) => setTimeout(resolve, 1000));
         const mockResponse = {
           oid: form.value.oid,
-          value: "MinhPC <3 NamPC",
+          value: "1 2 3 4 5 6 7",
           ip: form.value.ip,
           community: form.value.community,
         };
         result.value = mockResponse;
 
-        // Add to history
         history.value.push({
           ip: form.value.ip,
           oid: form.value.oid,
@@ -212,6 +292,86 @@ export default {
       } finally {
         loading.value = false;
       }
+    };
+
+    // Function to simulate SNMP Walk (mock data)
+    const fetchSnmpWalk = async () => {
+      loading.value = true;
+      result.value = null;
+      error.value = null;
+
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const mockResponse = {
+          oid: form.value.oid,
+          value: "Walk result: 1.3.6.1.2.1.1.1.0 = System Description, 1.3.6.1.2.1.1.3.0 = Uptime",
+          ip: form.value.ip,
+          community: form.value.community,
+        };
+        result.value = mockResponse;
+
+        history.value.push({
+          ip: form.value.ip,
+          oid: form.value.oid,
+          community: form.value.community,
+          result: mockResponse,
+          error: null,
+        });
+        localStorage.setItem("snmpHistory", JSON.stringify(history.value));
+      } catch (err) {
+        error.value = "An error occurred while performing SNMP Walk.";
+      } finally {
+        loading.value = false;
+      }
+    };
+
+    // Function to scan devices (mock data)
+    const scanDevices = async () => {
+      loading.value = true;
+      toast.info("Scanning for devices...");
+
+      try {
+        // Mock scan result (replace with real API call)
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        const mockDevices = [
+          { ip: "192.168.1.20", community: "public" },
+          { ip: "192.168.1.21", community: "public" },
+        ];
+        devices.value = [...devices.value, ...mockDevices.filter(d => !devices.value.some(existing => existing.ip === d.ip))];
+        localStorage.setItem("snmpDevices", JSON.stringify(devices.value));
+        toast.success("Device scan completed!");
+      } catch (err) {
+        toast.error("Failed to scan devices.");
+      } finally {
+        loading.value = false;
+      }
+    };
+
+    // Function to add device manually
+    const addDevice = () => {
+      if (devices.value.some(d => d.ip === newDevice.value.ip)) {
+        toast.error("Device already exists!");
+        return;
+      }
+      devices.value.push({ ...newDevice.value });
+      localStorage.setItem("snmpDevices", JSON.stringify(devices.value));
+      toast.success("Device added successfully!");
+      showAddDeviceModal.value = false;
+      newDevice.value = { ip: "", community: "" };
+    };
+
+    // Function to use device (fill form)
+    const useDevice = (device) => {
+      form.value.ip = device.ip;
+      form.value.community = device.community;
+      toast.info(`Selected device: ${device.ip}`);
+    };
+
+    // Function to remove device
+    const removeDevice = (index) => {
+      devices.value.splice(index, 1);
+      localStorage.setItem("snmpDevices", JSON.stringify(devices.value));
+      toast.success("Device removed!");
     };
 
     // Function to clear form
@@ -239,18 +399,60 @@ export default {
       });
     };
 
+    // Function to select OID from MIB tree
+    const selectOid = (oid) => {
+      form.value.oid = oid;
+    };
+
+    // Function to toggle node expansion
+    const toggleNode = (node) => {
+      if (node.children) {
+        node.expanded = !node.expanded;
+      }
+      selectOid(node.oid);
+    };
+
+    // Tab management functions
+    const addTab = () => {
+      tabs.value.push({ name: `Query ${tabs.value.length + 1}` });
+      activeTab.value = tabs.value.length - 1;
+      clearForm();
+    };
+
+    const closeTab = (index) => {
+      if (tabs.value.length > 1) {
+        tabs.value.splice(index, 1);
+        if (activeTab.value >= tabs.value.length) {
+          activeTab.value = tabs.value.length - 1;
+        }
+      }
+    };
+
     return {
       form,
       result,
       error,
       loading,
       history,
-      searchQuery,
+      devices,
+      showAddDeviceModal,
+      newDevice,
+      tabs,
+      activeTab,
+      mibTree,
       successRate,
-      filteredHistory,
       fetchSnmpData,
+      fetchSnmpWalk,
+      scanDevices,
+      addDevice,
+      useDevice,
+      removeDevice,
       clearForm,
       copyResult,
+      selectOid,
+      toggleNode,
+      addTab,
+      closeTab,
     };
   },
 };
@@ -259,142 +461,193 @@ export default {
 <style>
 /* Reset default styles */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-.app-container {
+.mib-browser-container {
   display: flex;
+  flex-direction: column;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f0f2f5, #e6e9ec);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f5f5f5;
+  font-family: "Arial", sans-serif;
 }
 
-.header {
-  background: linear-gradient(90deg, #2c3e50, #4a6278);
-  color: white;
-  padding: 1.5rem;
-  text-align: center;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-}
-.header img {
-    width: 500px;
-    height: auto;
-    margin-top: 50px;
-}
-
-.quick-stats {
+/* Toolbar */
+.toolbar {
   display: flex;
-  justify-content: center;
-  gap: 20px;
-  margin-top: 10px;
-}
-
-.stat-card {
-  background: rgba(255, 255, 255, 0.1);
+  justify-content: space-between;
+  align-items: center;
+  background: #e0e0e0;
   padding: 10px 20px;
-  border-radius: 8px;
-  text-align: center;
+  border-bottom: 1px solid #ccc;
 }
 
-.stat-card span {
-  display: block;
-  font-size: 14px;
-  opacity: 0.8;
-}
-
-.stat-card p {
+.toolbar-left h1 {
   font-size: 18px;
-  font-weight: bold;
-  margin: 5px 0 0;
+  color: #333;
 }
 
-.sidebar {
-  width: 220px;
-  background: #34495e;
-  color: white;
-  padding: 1.5rem;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+.toolbar-right {
+  display: flex;
+  gap: 10px;
 }
 
-.sidebar ul {
-    list-style: none;
-}
-
-.sidebar li {
-  margin: 1.2rem 0;
-}
-
-.sidebar a {
-  color: white;
-  text-decoration: none;
-  padding: 0.7rem 1rem;
-  display: block;
+.toolbar-right button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border: 1px solid #999;
   border-radius: 4px;
-  transition: background 0.3s;
+  background: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  color: #333;
 }
 
-.sidebar a.router-link-active,
-.sidebar a:hover {
-  background: #465c71;
+.toolbar-right button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
 }
 
-.main-content {
+.toolbar-right button i {
+  font-size: 14px;
+}
+
+/* Main Layout */
+.main-layout {
+  display: flex;
   flex: 1;
-  padding: 30px;
+  overflow: hidden;
+}
+
+/* MIB Tree Sidebar */
+.mib-tree {
+  width: 250px;
+  background: #fff;
+  border-right: 1px solid #ccc;
+  padding: 10px;
   overflow-y: auto;
 }
 
-.dashboard {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
+.mib-tree h3 {
+  font-size: 14px;
+  margin-bottom: 10px;
+  color: #333;
 }
 
-.card {
-  background: white;
+.tree-view ul {
+  list-style: none;
+  color: #333;
+}
+
+.tree-view li {
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #333;
+}
+
+.tree-view li:hover {
+  background: #e0e0e0;
+}
+
+.tree-view li > span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.tree-view li i {
+  font-size: 12px;
+}
+
+.node-selected {
+  font-weight: bold;
+  color: #007bff;
+}
+
+.tree-view ul ul {
+  margin-left: 20px;
+}
+
+/* Main Content */
+.main-content {
+  flex: 1;
   padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s;
+  overflow-y: auto;
 }
 
-.card:hover {
-  transform: translateY(-3px);
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 10px;
 }
 
+.tabs div {
+  padding: 8px 12px;
+  background: #ddd;
+  border: 1px solid #ccc;
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+  cursor: pointer;
+  font-size: 12px;
+  color: #333;
+}
+
+.tab-active {
+  background: #fff !important;
+  font-weight: bold;
+}
+
+.tabs div span {
+  margin-left: 5px;
+  color: #999;
+}
+
+.tabs button {
+  padding: 8px;
+  border: 1px solid #ccc;
+  background: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+/* Form Card */
 .form-card {
-  grid-column: 1;
-}
-
-.history-card {
-  grid-column: 2;
+  background: #fff;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 10px;
 }
 
 .form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
 }
 
 .form-group {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 label {
-    margin-bottom: 5px;
-    font-weight: bold;
-    color: #333;
+  font-size: 12px;
+  margin-bottom: 5px;
+  color: #333;
 }
 
 input {
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 14px;
-  transition: border-color 0.3s;
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 12px;
 }
 
 input:focus {
@@ -402,217 +655,217 @@ input:focus {
   outline: none;
 }
 
-.button-group {
-    display: flex;
-    gap: 10px;
+/* Devices Card */
+/* Devices Card */
+.devices-card {
+  background: #fff;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 10px;
 }
 
-button {
-  padding: 10px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
+.devices-card h3 {
   font-size: 14px;
-  transition: background-color 0.3s, transform 0.1s;
+  margin-bottom: 10px;
+  color: #333;
 }
 
-button:first-child {
-  background: linear-gradient(90deg, #007bff, #0056b3);
-  color: white;
-  flex: 2;
+.devices-card table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-button:last-child {
-  background: linear-gradient(90deg, #6c757d, #5a6268);
-  color: white;
-  flex: 1;
-}
-
-button:hover:not(:disabled) {
-  transform: scale(1.02);
-}
-
-button:disabled {
-  background: #cccccc;
-  cursor: not-allowed;
-}
-
-.spinner {
-    display: inline-block;
-    width: 14px;
-    height: 14px;
-    border: 2px solid #fff;
-    border-top: 2px solid transparent;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-right: 5px;
-    vertical-align: middle;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.result,
-.error {
-    margin-top: 20px;
-    padding: 15px;
-    border-radius: 8px;
-}
-
-.result {
-    background: #e7f3fe;
-    border: 1px solid #b3d4fc;
-}
-
-.error {
-    background: #f8d7da;
-    border: 1px solid #f5c6cb;
-    color: #721c24;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-}
-
-th, td {
-  padding: 10px;
+.devices-card th,
+.devices-card td {
+  padding: 8px;
+  border: 1px solid #ddd;
+  font-size: 12px;
   text-align: left;
-  border-bottom: 1px solid #ddd;
 }
 
-th {
-  background: #f8f9fa;
+.devices-card th {
+  background: #e0e0e0;
+  font-weight: bold;
+}
+
+.devices-card button {
+  padding: 6px 12px;
+  border: 1px solid #999;
+  background: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  margin-right: 5px;
+}
+
+.devices-card button:first-child {
+  background: #007bff;
+  color: #fff;
+}
+
+.devices-card button:last-child {
+  background: #dc3545;
+  color: #fff;
+}
+/* Result Card */
+.result-card,
+.error-card {
+  background: #fff;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.result-card h3,
+.error-card h3 {
+  font-size: 14px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.result-card table,
+.error-card table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.result-card th,
+.result-card td,
+.error-card th,
+.error-card td {
+  padding: 8px;
+  border: 1px solid #ddd;
+  font-size: 12px;
+  text-align: left;
+}
+
+.result-card th,
+.error-card th {
+  background: #e0e0e0;
   font-weight: bold;
 }
 
 .copy-btn {
   margin-top: 10px;
-  background: linear-gradient(90deg, #28a745, #218838);
-  color: white;
-  width: 100%;
-}
-
-.history-card h2 {
-  margin-bottom: 15px;
-}
-
-.search-bar input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  margin-bottom: 15px;
-}
-
-.history-list {
-  max-height: 300px;
-  overflow-y: auto;
-  border: 1px solid #eee;
-  border-radius: 6px;
-  padding: 10px;
-}
-
-.history-item {
-  padding: 10px;
-  border-bottom: 1px solid #eee;
-  background: #f8f9fa;
+  padding: 6px 12px;
+  border: 1px solid #999;
+  background: #fff;
   border-radius: 4px;
-  margin-bottom: 5px;
+  cursor: pointer;
+  font-size: 12px;
 }
 
-.history-item:last-child {
-  border-bottom: none;
+.error-card {
+  background: #f8d7da;
+  border-color: #f5c6cb;
 }
 
-.history-item p {
-  margin: 5px 0;
+.error-card p {
+  font-size: 12px;
+  color: #721c24;
+}
+
+/* Modal */
+/* Modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 0; /* Góc vuông */
+  max-width: 400px;
+  width: 100%;
+}
+
+.modal-content h3 {
   font-size: 14px;
+  margin-bottom: 15px;
+  color: #333;
 }
 
-/* Animation for result and error */
-.animate-result {
-  animation: fadeIn 0.5s ease-in;
+.modal-content .form-group {
+  margin-bottom: 15px;
 }
 
-.animate-error {
-  animation: fadeIn 0.5s ease-in;
+.modal-content input {
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 0; /* Góc vuông */
+  font-size: 12px;
+  width: 100%;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.modal-content input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.modal-buttons button {
+  padding: 6px 12px;
+  border: 1px solid #999;
+  border-radius: 0; /* Góc vuông */
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.modal-buttons button:first-child {
+  background: #007bff;
+  color: #fff;
+}
+
+.modal-buttons button:last-child {
+  background: #6c757d;
+  color: #fff;
 }
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-  .dashboard {
-    grid-template-columns: 1fr;
+  .main-layout {
+    flex-direction: column;
   }
 
-  .form-card,
-  .history-card {
-    grid-column: 1;
+  .mib-tree {
+    width: 100%;
+    max-height: 200px;
+  }
+
+  .form {
+    grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 768px) {
-    .app-container {
-        flex-direction: column;
-    }
-
-    .sidebar {
-        width: 100%;
-        padding: 10px;
-    }
-
-    .sidebar ul {
-        display: flex;
-        justify-content: space-around;
-    }
-
-  .main-content {
-    padding: 15px;
+  .toolbar {
+    flex-direction: column;
+    gap: 10px;
   }
 
-    .button-group {
-        flex-direction: column;
-    }
-
-  button {
-    width: 100%;
-  }
-
-  .quick-stats {
+  .toolbar-right {
     flex-wrap: wrap;
   }
 
-  .stat-card {
-    flex: 1 1 45%;
-  }
-}
-
-@media (max-width: 480px) {
-  .header h1 {
-    font-size: 1.2rem;
-  }
-
-  .stat-card {
-    padding: 8px 10px;
-  }
-
-  .stat-card p {
-    font-size: 16px;
+  .tabs {
+    flex-wrap: wrap;
   }
 }
 </style>
