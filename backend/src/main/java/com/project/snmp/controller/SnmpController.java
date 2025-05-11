@@ -2,6 +2,7 @@ package com.project.snmp.controller;
 
 import org.json.JSONObject;
 import org.snmp4j.Snmp;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,16 +13,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.project.snmp.service.SnmpMainService;
 
 @Controller
-@RequestMapping("/api/snmp/{ip}")
-
+@RequestMapping("/snmp/{ip}")
 public class SnmpController {
+    @Autowired
+    private SnmpMainService snmpMainService;
 
     @GetMapping("/get/{oid}")
-    @ResponseBody
     public JSONObject getSnmpData(@PathVariable String ip, @RequestHeader("Snmp-Community") String community, @PathVariable String oid) {
         try {
-            SnmpMainService snmpService = new SnmpMainService(ip, community);
-            JSONObject result = snmpService.getSnmpValue(oid);
+            JSONObject result = snmpMainService.getSnmpValue(ip, community, oid);
 
             if (result.has("snmpErrorStatus")) {
                 int errorStatus = result.getInt("snmpErrorStatus");

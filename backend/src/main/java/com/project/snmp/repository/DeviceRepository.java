@@ -1,13 +1,10 @@
 package com.project.snmp.repository;
 
 import com.project.snmp.model.Device;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public class DeviceRepository {
-
-    public void save(Device device) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'save'");
-    }
-
-    
+@Repository
+public interface DeviceRepository extends JpaRepository<Device, Long> {
+    // You can add custom query methods here if needed
 }
