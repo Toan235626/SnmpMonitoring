@@ -1,38 +1,58 @@
 package com.project.snmp.controller;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
+import org.json.JSONObject;
+import org.snmp4j.Snmp;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.project.snmp.service.SnmpService;
-import com.project.snmp.model.Device;
+import com.project.snmp.service.SnmpMainService;
 
-@RestController
+@Controller
+@RequestMapping("/api/snmp/{ip}")
+
 public class SnmpController {
-    @Autowired
-    private SnmpService snmpService;
-    
-    @GetMapping("/api/snmp/devices")
-    public List<Device> getAllDevices() {
-        return snmpService.getAllDevices();
+
+    @GetMapping("/get/{oid}")
+    @ResponseBody
+    public JSONObject getSnmpData(@PathVariable String ip, @RequestHeader("Snmp-Community") String community, @PathVariable String oid) {
+        try {
+            SnmpMainService snmpService = new SnmpMainService(ip, community);
+            JSONObject result = snmpService.getSnmpValue(oid);
+
+            if (result.has("snmpErrorStatus")) {
+                int errorStatus = result.getInt("snmpErrorStatus");
+                if (errorStatus == 16) {    //16 = authorizationError in SNMP
+                    JSONObject errorObj = new JSONObject();
+                    errorObj.put("error", "Unauthorized or incorrect community string.");
+                    return errorObj;
+                }
+            }
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error occurred while processing SNMP GET request: " + e.getMessage());
+        }
     }
-    @PostMapping("/api/snmp/devices")
-    public Device createDevice(@RequestBody Device device) {
-        return snmpService.createDevice(device);
+
+    @GetMapping("/set/{oid}/{value}")
+    @ResponseBody
+    public String setSnmpData(@PathVariable String ip, @PathVariable String oid, @PathVariable String value) {
+        return "SNMP set response for IP: " + ip + " and OID: " + oid;
     }
-    @PutMapping("/api/devices/{id}")
-    public Device updateDevice(@PathVariable Long id, @RequestBody Device device) {
-        return snmpService.updateDevice(id, device);
+
+    @GetMapping("/walk/{oid}")
+    @ResponseBody
+    public String walkSnmpData(@PathVariable String ip, @RequestHeader("Snmp-Community") String community, @PathVariable String oid) {
+        return "SNMP walk response for IP: " + ip + " and OID: " + oid;
     }
-    @DeleteMapping("/api/devices/{id}")
-    public void deleteDevice(@PathVariable Long id) {
-        snmpService.deleteDevice(id);
+
+    @GetMapping("/bulk/{oid}/{count}")
+    @ResponseBody
+    public String bulkSnmpData(@PathVariable String ip, @PathVariable String oid, @PathVariable int count) {
+        return "SNMP bulk response for IP: " + ip + ", OID: " + oid + ", and Count: " + count;
     }
 }

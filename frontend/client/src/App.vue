@@ -173,11 +173,11 @@ export default {
       );
     });
 
-    // Function to fetch SNMP data (mock data)
-    const fetchSnmpData = async () => {
-      loading.value = true;
-      result.value = null;
-      error.value = null;
+        // Function to fetch SNMP data (mock data)
+        const fetchSnmpData = async () => {
+            loading.value = true;
+            result.value = null;
+            error.value = null;
 
       try {
         // Mock data with simulated delay
@@ -259,9 +259,9 @@ export default {
 <style>
 /* Reset default styles */
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 .app-container {
@@ -279,9 +279,9 @@ export default {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 .header img {
-  width: 500px;
-  height: auto;
-  margin-top: 50px;
+    width: 500px;
+    height: auto;
+    margin-top: 50px;
 }
 
 .quick-stats {
@@ -319,7 +319,7 @@ export default {
 }
 
 .sidebar ul {
-  list-style: none;
+    list-style: none;
 }
 
 .sidebar li {
@@ -373,20 +373,20 @@ export default {
 }
 
 .form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
 }
 
 .form-group {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 label {
-  margin-bottom: 5px;
-  font-weight: bold;
-  color: #333;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
 }
 
 input {
@@ -403,8 +403,8 @@ input:focus {
 }
 
 .button-group {
-  display: flex;
-  gap: 10px;
+    display: flex;
+    gap: 10px;
 }
 
 button {
@@ -438,45 +438,45 @@ button:disabled {
 }
 
 .spinner {
-  display: inline-block;
-  width: 14px;
-  height: 14px;
-  border: 2px solid #fff;
-  border-top: 2px solid transparent;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-right: 5px;
-  vertical-align: middle;
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border: 2px solid #fff;
+    border-top: 2px solid transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 5px;
+    vertical-align: middle;
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .result,
 .error {
-  margin-top: 20px;
-  padding: 15px;
-  border-radius: 8px;
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 8px;
 }
 
 .result {
-  background: #e7f3fe;
-  border: 1px solid #b3d4fc;
+    background: #e7f3fe;
+    border: 1px solid #b3d4fc;
 }
 
 .error {
-  background: #f8d7da;
-  border: 1px solid #f5c6cb;
-  color: #721c24;
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
 }
 
 table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
 }
 
 th, td {
@@ -567,27 +567,27 @@ th {
 }
 
 @media (max-width: 768px) {
-  .app-container {
-    flex-direction: column;
-  }
+    .app-container {
+        flex-direction: column;
+    }
 
-  .sidebar {
-    width: 100%;
-    padding: 10px;
-  }
+    .sidebar {
+        width: 100%;
+        padding: 10px;
+    }
 
-  .sidebar ul {
-    display: flex;
-    justify-content: space-around;
-  }
+    .sidebar ul {
+        display: flex;
+        justify-content: space-around;
+    }
 
   .main-content {
     padding: 15px;
   }
 
-  .button-group {
-    flex-direction: column;
-  }
+    .button-group {
+        flex-direction: column;
+    }
 
   button {
     width: 100%;
