@@ -18,14 +18,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SnmpGet{
-    private String address;
-    private String community;
-    public SnmpGet(String address, String community) {
-        this.address = address;
-        this.community = community;
-    }
 
-    public JSONObject getAsJson(String oid) throws Exception {
+    public JSONObject getAsJson(String address, String community, String oid) throws Exception {
         TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping();
         transport.listen();
 
