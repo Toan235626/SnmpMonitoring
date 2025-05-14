@@ -1,14 +1,42 @@
 package com.project.snmp.service;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
+import com.project.snmp.model.SnmpRecord;
+import com.project.snmp.repository.SnmpRepository;
 import com.project.snmp.service.snmpServices.*;
 
 @Service
 public class SnmpMainService {
-    
-    public JSONObject getSnmpValue(String ipAddress, String community,String oid) throws Exception {
+
+    public SnmpRecord getSnmpValue(String ipAddress, String community,String oid) throws Exception {
         SnmpGet snmpGet = new SnmpGet();
-        return snmpGet.getAsJson(ipAddress, community,oid);
+        return snmpGet.getAsRecord(ipAddress, community,oid);
+    }
+
+    public SnmpRecord getSnmpNextValue(String ipAddress, String community,String oid) throws Exception {
+        SnmpGetNext snmpGetNext = new SnmpGetNext();
+        return snmpGetNext.getNextAsRecord(ipAddress, community,oid);
+    }
+    public SnmpRecord[] getSnmpBulkValue(String ipAddress, String community,String oid, int nonRepeaters, int maxRepetitions) throws Exception {
+        SnmpGetBulk snmpGetBulk = new SnmpGetBulk();
+        SnmpRecord[] getBulkResult = snmpGetBulk.getBulkAsRecords(ipAddress, community,oid, nonRepeaters, maxRepetitions);
+
+        SnmpRepository snmpRepository = new SnmpRepository();
+        for (SnmpRecord o : getBulkResult){
+            snmpRepository.saveOidValue(o);
+        }
+        return getBulkResult;
+    } 
+    public SnmpRecord[] getSnmpWalkValue(String ipAddress, String community,String oid) throws Exception {
+        SnmpWalk snmpWalk = new SnmpWalk();
+        SnmpRecord[] getWalkResult = snmpWalk.walkAsRecords(ipAddress, community,oid);
+
+        SnmpRepository snmpRepository = new SnmpRepository();
+        for (SnmpRecord o : getWalkResult){
+            snmpRepository.saveOidValue(o);
+        }
+        return getWalkResult;
     }
 }

@@ -1,6 +1,9 @@
 package com.project.snmp.service.snmpServices;
 
+import com.project.snmp.model.SnmpRecord;
 import com.project.snmp.utils.SnmpStringToJson;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.snmp4j.*;
 import org.snmp4j.event.ResponseEvent;
@@ -11,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SnmpGetBulk {
-    public JSONObject getBulkAsJson(String address, String community, String oid, int nonRepeaters, int maxRepetitions) throws Exception {
+    public SnmpRecord[] getBulkAsRecords(String address, String community, String oid, int nonRepeaters, int maxRepetitions) throws Exception {
         TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping();
         transport.listen();
 
@@ -32,11 +35,37 @@ public class SnmpGetBulk {
         ResponseEvent response = snmp.getBulk(pdu, target);
 
         if (response != null && response.getResponse() != null) {
-            // Chuyển danh sách VariableBindings thành chuỗi rồi parse sang JSON
-            SnmpStringToJson snmpStringToJson = new SnmpStringToJson(response.getResponse().getVariableBindings().toString());
-            return snmpStringToJson.toJson();
+            String vbString = response.getResponse().getVariableBindings().toString();
+            if (vbString.startsWith("[") && vbString.endsWith("]")) {
+                vbString = vbString.substring(1, vbString.length() - 1);
+            }
+            SnmpStringToJson snmpStringToJson = new SnmpStringToJson(vbString);
+            JSONArray jsonArray = snmpStringToJson.toJson();
+            
+            SnmpRecord[] snmpRecords = new SnmpRecord[jsonArray.length()];
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                SnmpRecord snmpRecord = new SnmpRecord();
+                snmpRecord.setDevice(address);
+                snmpRecord.setOid(jsonObject.getString("oid"));
+                snmpRecord.setValue(jsonObject.getString("value"));
+                snmpRecords[i] = snmpRecord;
+            }
+            return snmpRecords;
         } else {
             throw new RuntimeException("SNMP GETBULK request timed out or failed.");
         }
     }
+
+    // public static void main(String[] args) {
+    //     SnmpGetBulk snmpGetBulk = new SnmpGetBulk();
+    //     try {
+    //         JSONArray result = snmpGetBulk.getBulkAsJson("127.0.0.1", "public", "1.3.6.1.2.1.1.1.0", 0, 10);
+    //         for (Object jsonObject : result) {
+    //             System.out.println(jsonObject.toString());
+    //         }
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     }
+    // }
 }

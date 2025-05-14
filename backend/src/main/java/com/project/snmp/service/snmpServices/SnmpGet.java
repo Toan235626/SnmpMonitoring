@@ -1,5 +1,6 @@
 package com.project.snmp.service.snmpServices;
 
+import com.project.snmp.model.SnmpRecord;
 import com.project.snmp.service.SnmpMainService;
 import com.project.snmp.utils.SnmpStringToJson;
 
@@ -19,7 +20,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SnmpGet{
 
-    public JSONObject getAsJson(String address, String community, String oid) throws Exception {
+    public SnmpRecord getAsRecord(String address, String community, String oid) throws Exception {
         TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping();
         transport.listen();
 
@@ -38,10 +39,28 @@ public class SnmpGet{
         ResponseEvent response = snmp.get(pdu, target);
 
         if (response != null && response.getResponse() != null) {
-            SnmpStringToJson snmpStringToJson = new SnmpStringToJson(response.getResponse().getVariableBindings().toString());
-            return snmpStringToJson.toJson();
+            String vbString = response.getResponse().getVariableBindings().toString();
+            if (vbString.startsWith("[") && vbString.endsWith("]")) {
+                vbString = vbString.substring(1, vbString.length() - 1);
+            }
+            SnmpStringToJson snmpStringToJson = new SnmpStringToJson(vbString);
+
+            SnmpRecord snmpRecord = new SnmpRecord();
+            snmpRecord.setDevice(address);
+            snmpRecord.setOid(oid);
+            snmpRecord.setValue(snmpStringToJson.toJson().getJSONObject(0).getString("value"));
+            return snmpRecord;
         } else {
             throw new RuntimeException("SNMP GET request timed out or failed.");
         }
     }
+    // public static void main(String[] args) {
+    //     SnmpGet snmpGet = new SnmpGet();
+    //     try {
+    //         JSONObject result = snmpGet.getAsJson("127.0.0.1", "public", "1.3.6.1.2.1.1.1.0");
+    //         System.out.println(result.toString());
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     }
+    // }
 }

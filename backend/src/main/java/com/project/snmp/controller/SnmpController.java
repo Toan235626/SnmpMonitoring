@@ -3,13 +3,16 @@ package com.project.snmp.controller;
 import org.json.JSONObject;
 import org.snmp4j.Snmp;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.project.snmp.model.SnmpRecord;
 import com.project.snmp.service.SnmpMainService;
 
 @Controller
@@ -18,41 +21,36 @@ public class SnmpController {
     @Autowired
     private SnmpMainService snmpMainService;
 
-    @GetMapping("/get/{oid}")
-    public JSONObject getSnmpData(@PathVariable String ip, @RequestHeader("Snmp-Community") String community, @PathVariable String oid) {
+    @GetMapping("/get")
+    @ResponseBody
+    public ResponseEntity<SnmpRecord> getSnmpData(@PathVariable String ip, @RequestParam("community") String community, @RequestParam("oid") String oid) {
         try {
-            JSONObject result = snmpMainService.getSnmpValue(ip, community, oid);
-
-            if (result.has("snmpErrorStatus")) {
-                int errorStatus = result.getInt("snmpErrorStatus");
-                if (errorStatus == 16) {    //16 = authorizationError in SNMP
-                    JSONObject errorObj = new JSONObject();
-                    errorObj.put("error", "Unauthorized or incorrect community string.");
-                    return errorObj;
-                }
+            SnmpRecord record = snmpMainService.getSnmpValue(ip, community, oid);
+            if (record != null) {
+                return ResponseEntity.status(401).body(null);
             }
-            return result;
+            return ResponseEntity.ok(record);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new RuntimeException("Error occurred while processing SNMP GET request: " + e.getMessage());
+            return ResponseEntity.status(500).body(null);
         }
     }
 
-    @GetMapping("/set/{oid}/{value}")
+    @GetMapping("/set")
     @ResponseBody
-    public String setSnmpData(@PathVariable String ip, @PathVariable String oid, @PathVariable String value) {
+    public String setSnmpData(@PathVariable String ip, @RequestParam("oid") String oid, @RequestParam("value") String value) {
         return "SNMP set response for IP: " + ip + " and OID: " + oid;
     }
 
-    @GetMapping("/walk/{oid}")
+    @GetMapping("/walk")
     @ResponseBody
-    public String walkSnmpData(@PathVariable String ip, @RequestHeader("Snmp-Community") String community, @PathVariable String oid) {
+    public String walkSnmpData(@PathVariable String ip, @RequestParam("community") String community, @RequestParam("oid") String oid) {
         return "SNMP walk response for IP: " + ip + " and OID: " + oid;
     }
 
-    @GetMapping("/bulk/{oid}/{count}")
+    @GetMapping("/bulk")
     @ResponseBody
-    public String bulkSnmpData(@PathVariable String ip, @PathVariable String oid, @PathVariable int count) {
+    public String bulkSnmpData(@PathVariable String ip, @RequestParam("oid") String oid, @RequestParam("count") int count) {
         return "SNMP bulk response for IP: " + ip + ", OID: " + oid + ", and Count: " + count;
     }
 }
