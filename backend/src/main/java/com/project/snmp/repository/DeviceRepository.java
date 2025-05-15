@@ -6,5 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DeviceRepository extends JpaRepository<Device, Long> {
+
+    boolean existsByIpAddress(String ipAddress);
     // You can add custom query methods here if needed
 }
