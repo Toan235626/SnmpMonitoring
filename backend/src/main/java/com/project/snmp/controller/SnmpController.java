@@ -25,20 +25,39 @@ public class SnmpController {
 
     @PostMapping("/get")
     @ResponseBody
-    public ResponseEntity<SnmpRecord> getSnmpData(
+    public ResponseEntity<SnmpRecord[]> getSnmpData(
             @RequestParam("deviceIp") String deviceIp, 
             @RequestParam("community") String community, 
             @RequestParam("oid") String oid) {
         System.out.println("deviceIP: " + deviceIp);
         try {
-            SnmpRecord record = snmpMainService.getSnmpValue(deviceIp, community, oid);
-            return ResponseEntity.ok(record);
+            SnmpRecord[] records = new SnmpRecord[1];
+            records[0] = snmpMainService.getSnmpValue(deviceIp, community, oid);
+            return ResponseEntity.ok(records);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(500).body(null);
         }
     }
 
+    @PostMapping("/getnext")
+    @ResponseBody
+    public ResponseEntity<SnmpRecord[]> getSnmpNextData(
+            @RequestParam("deviceIp") String deviceIp, 
+            @RequestParam("community") String community, 
+            @RequestParam("oid") String oid) {
+        System.out.println("deviceIP: " + deviceIp);
+        try {
+            SnmpRecord[] records = new SnmpRecord[1];
+            records[0] = snmpMainService.getSnmpNextValue(deviceIp, community, oid);
+            return ResponseEntity.ok(records);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+
+    
     @GetMapping("/set")
     @ResponseBody
     public String setSnmpData(
@@ -63,7 +82,7 @@ public class SnmpController {
         }
     }
 
-    @GetMapping("/bulk")
+    @PostMapping("/bulk")
     @ResponseBody
     public ResponseEntity<SnmpRecord[]> bulkSnmpData(
             @RequestParam("deviceIp") String deviceIp, 

@@ -28,7 +28,6 @@ public class SnmpGetBulk {
         PDU pdu = new PDU();
         pdu.add(new VariableBinding(new OID(oid)));
         pdu.setType(PDU.GETBULK);
-        pdu.setNonRepeaters(1);
         pdu.setMaxRepetitions(10);
 
         Snmp snmp = new Snmp(transport);
