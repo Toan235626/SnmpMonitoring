@@ -79,11 +79,11 @@
         <div class="form-card">
           <form @submit.prevent="fetchSnmpData" class="form">
             <div class="form-group">
-              <label for="ip">Device IP:</label>
+              <label for="deviceIp">Device IP:</label>
               <input
                 type="text"
-                id="ip"
-                v-model="form.ip"
+                id="deviceIp"
+                v-model="form.deviceIp"
                 placeholder="e.g., 192.168.1.20"
                 required
               />
@@ -124,7 +124,7 @@
             </thead>
             <tbody>
               <tr v-for="(device, index) in devices" :key="index">
-                <td>{{ device.ip }}</td>
+                <td>{{ device.deviceIp }}</td>
                 <td>{{ device.community }}</td>
                 <td>
                   <button @click="useDevice(device)">Use</button>
@@ -154,7 +154,7 @@
               <tr>
                 <td>{{ result.oid }}</td>
                 <td>{{ result.value }}</td>
-                <td>{{ result.ip }}</td>
+                <td>{{ result.deviceIp }}</td>
                 <td>{{ result.community }}</td>
               </tr>
             </tbody>
@@ -183,7 +183,7 @@
               <tr v-for="(entry, index) in history" :key="index">
                 <td>{{ entry.oid }}</td>
                 <td>{{ entry.value }}</td>
-                <td>{{ entry.ip }}</td>
+                <td>{{ entry.deviceIp }}</td>
                 <td>{{ entry.community }}</td>
                 <td><button @click="removeHistory(index)">Remove</button></td>
               </tr>
@@ -201,11 +201,11 @@
         <h3>Add New Device</h3>
         <form @submit.prevent="addDevice">
           <div class="form-group">
-            <label for="new-ip">Device IP:</label>
+            <label for="new-deviceIp">Device IP:</label>
             <input
               type="text"
-              id="new-ip"
-              v-model="newDevice.ip"
+              id="new-deviceIp"
+              v-model="newDevice.deviceIp"
               placeholder="e.g., 192.168.1.20"
               required
             />
@@ -243,7 +243,7 @@ export default {
 
     // Form data
     const form = ref({
-      ip: "",
+      deviceIp: "",
       oid: "",
       community: "",
     });
@@ -254,7 +254,7 @@ export default {
     const loading = ref(false);
     const devices = ref([]);
     const showAddDeviceModal = ref(false);
-    const newDevice = ref({ ip: "", community: "" });
+    const newDevice = ref({ deviceIp: "", community: "" });
     const history = ref([]);
 
     // Tabs management
@@ -277,7 +277,7 @@ export default {
         oid: "1.3.6.1.2.1.2",
         expanded: false,
         children: [
-          { name: "ifNumber", oid: "1.3.6.1.2.1.2.1.0" },
+          { name: "ifNumber", oid: "1.3.6.1.2.1.2.1.0" }  ,
         ],
       },
     ]);
@@ -291,7 +291,7 @@ export default {
   try {
     const response = await axios.post("api/snmp/get", null, {
       params: {
-        ip: form.value.ip,
+        deviceIp: form.value.deviceIp,
         oid: form.value.oid,
         community: form.value.community,
       },
@@ -303,7 +303,7 @@ export default {
     history.value.push({
       oid: form.value.oid,
       value: null,
-      ip: form.value.ip,
+      deviceIp: form.value.deviceIp,
       community: form.value.community,
       error: error.value,
       timestamp: new Date().toLocaleString(),
@@ -321,7 +321,7 @@ export default {
 
   try {
     const response = await axios.post("/api/snmp/getbulk", {
-      ip: form.value.ip,
+      deviceIp: form.value.deviceIp,
       oid: form.value.oid,
       community: form.value.community,
     });
@@ -332,7 +332,7 @@ export default {
     history.value.push({
       oid: form.value.oid,
       value: null,
-      ip: form.value.ip,
+      deviceIp: form.value.deviceIp,
       community: form.value.community,
       error: error.value,
       timestamp: new Date().toLocaleString(),
@@ -350,7 +350,7 @@ export default {
 
   try {
     const response = await axios.post("/api/snmp/getnext", {
-      ip: form.value.ip,
+      deviceIp: form.value.deviceIp,
       oid: form.value.oid,
       community: form.value.community,
     });
@@ -361,7 +361,7 @@ export default {
     history.value.push({
       oid: form.value.oid,
       value: null,
-      ip: form.value.ip,
+      deviceIp: form.value.deviceIp,
       community: form.value.community,
       error: error.value,
       timestamp: new Date().toLocaleString(),
@@ -379,7 +379,7 @@ export default {
 
       try {
         const response = await axios.post("/api/snmp/walk", {
-          ip: form.value.ip,
+          deviceIp: form.value.deviceIp,
           oid: form.value.oid,
           community: form.value.community,
         });
@@ -390,7 +390,7 @@ export default {
         history.value.push({
           oid: form.value.oid,
           value: null,
-          ip: form.value.ip,
+          deviceIp: form.value.deviceIp,
           community: form.value.community,
           error: error.value,
           timestamp: new Date().toLocaleString(),
@@ -408,8 +408,8 @@ export default {
       try {
         await new Promise((resolve) => setTimeout(resolve, 2000));
         const mockDevices = [
-          { ip: "192.168.1.20", community: "public" },
-          { ip: "192.168.1.21", community: "public" },
+          { deviceIp: "192.168.1.20", community: "public" },
+          { deviceIp: "192.168.1.21", community: "public" },
         ];
         devices.value = [...devices.value, ...mockDevices.filter(d => !devices.value.some(existing => existing.ip === d.ip))];
         toast.success("Device scan completed!");
@@ -422,21 +422,21 @@ export default {
 
     // Function to add device manually
     const addDevice = () => {
-      if (devices.value.some(d => d.ip === newDevice.value.ip)) {
+      if (devices.value.some(d => d.deviceIp === newDevice.value.deviceIp)) {
         toast.error("Device already exists!");
         return;
       }
       devices.value.push({ ...newDevice.value });
       toast.success("Device added successfully!");
       showAddDeviceModal.value = false;
-      newDevice.value = { ip: "", community: "" };
+      newDevice.value = { deviceIp: "", community: "" };
     };
 
     // Function to use device (fill form)
     const useDevice = (device) => {
-      form.value.ip = device.ip;
+      form.value.deviceIp = device.deviceIp;
       form.value.community = device.community;
-      toast.info(`Selected device: ${device.ip}`);
+      toast.info(`Selected device: ${device.deviceIp}`);
     };
 
     // Function to remove device
@@ -447,7 +447,7 @@ export default {
 
     // Function to clear form
     const clearForm = () => {
-      form.value.ip = "";
+      form.value.deviceIp = "";
       form.value.oid = "";
       form.value.community = "";
       result.value = null;
@@ -510,10 +510,6 @@ export default {
       toast.success("History cleared!");
     };
 
-    // Toggle JSON view
-    const toggleJsonView = () => {
-      showJson.value = !showJson.value;
-    };
 
     return {
       form,
