@@ -9,25 +9,25 @@ import com.project.snmp.service.snmpServices.*;
 @Service
 public class SnmpMainService {
 
-    public SnmpRecord getSnmpValue(String ipAddress, String community,String oid) throws Exception {
+    public SnmpRecord getSnmpValue(String deviceIp, String community,String oid) throws Exception {
         SnmpGet snmpGet = new SnmpGet();
-        return snmpGet.getAsRecord(ipAddress, community,oid);
+        return snmpGet.getAsRecord(deviceIp, community,oid);
     }
 
-    public SnmpRecord getSnmpNextValue(String ipAddress, String community,String oid) throws Exception {
+    public SnmpRecord getSnmpNextValue(String deviceIp, String community,String oid) throws Exception {
         SnmpGetNext snmpGetNext = new SnmpGetNext();
-        return snmpGetNext.getNextAsRecord(ipAddress, community,oid);
+        return snmpGetNext.getNextAsRecord(deviceIp, community,oid);
     }
-    public SnmpRecord[] getSnmpBulkValue(String ipAddress, String community,String oid, int nonRepeaters, int maxRepetitions) throws Exception {
+    public SnmpRecord[] getSnmpBulkValue(String deviceIp, String community,String oid) throws Exception {
         SnmpGetBulk snmpGetBulk = new SnmpGetBulk();
-        SnmpRecord[] getBulkResult = snmpGetBulk.getBulkAsRecords(ipAddress, community,oid, nonRepeaters, maxRepetitions);
+        SnmpRecord[] getBulkResult = snmpGetBulk.getBulkAsRecords(deviceIp, community,oid);
 
         return getBulkResult;
     } 
-    public SnmpRecord[] getSnmpWalkValue(String ipAddress, String community,String oid) throws Exception {
+    public SnmpRecord[] getSnmpWalkValue(String deviceIp, String community,String oid) throws Exception {
         SnmpWalk snmpWalk = new SnmpWalk();
-        SnmpRecord[] getWalkResult = snmpWalk.walkAsRecords(ipAddress, community,oid);
-        
+        SnmpRecord[] getWalkResult = snmpWalk.walkAsRecords(deviceIp, community,oid);
+
         return getWalkResult;
     }
 }

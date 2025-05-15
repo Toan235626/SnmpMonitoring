@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SnmpGetBulk {
-    public SnmpRecord[] getBulkAsRecords(String deviceIp, String community, String oid, int nonRepeaters, int maxRepetitions) throws Exception {
+    public SnmpRecord[] getBulkAsRecords(String deviceIp, String community, String oid) throws Exception {
         TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping();
         transport.listen();
 
@@ -28,8 +28,8 @@ public class SnmpGetBulk {
         PDU pdu = new PDU();
         pdu.add(new VariableBinding(new OID(oid)));
         pdu.setType(PDU.GETBULK);
-        pdu.setNonRepeaters(nonRepeaters);
-        pdu.setMaxRepetitions(maxRepetitions);
+        pdu.setNonRepeaters(1);
+        pdu.setMaxRepetitions(10);
 
         Snmp snmp = new Snmp(transport);
         ResponseEvent response = snmp.getBulk(pdu, target);

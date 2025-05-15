@@ -25,7 +25,10 @@ public class SnmpController {
 
     @PostMapping("/get")
     @ResponseBody
-    public ResponseEntity<SnmpRecord> getSnmpData(@RequestParam("deviceIp") String deviceIp, @RequestParam("community") String community, @RequestParam("oid") String oid) {
+    public ResponseEntity<SnmpRecord> getSnmpData(
+            @RequestParam("deviceIp") String deviceIp, 
+            @RequestParam("community") String community, 
+            @RequestParam("oid") String oid) {
         System.out.println("deviceIP: " + deviceIp);
         try {
             SnmpRecord record = snmpMainService.getSnmpValue(deviceIp, community, oid);
@@ -38,11 +41,14 @@ public class SnmpController {
 
     @GetMapping("/set")
     @ResponseBody
-    public String setSnmpData(@RequestParam String deviceIp, @RequestParam("oid") String oid, @RequestParam("value") String value) {
+    public String setSnmpData(
+            @RequestParam String deviceIp, 
+            @RequestParam("oid") String oid, 
+            @RequestParam("value") String value) {
         return "SNMP set response for deviceIP: " + deviceIp + " and OID: " + oid;
     }
 
-    @GetMapping("/walk")
+    @PostMapping("/walk")
     @ResponseBody
     public ResponseEntity<SnmpRecord[]> walkSnmpData(
             @RequestParam("deviceIp") String deviceIp,
@@ -59,7 +65,16 @@ public class SnmpController {
 
     @GetMapping("/bulk")
     @ResponseBody
-    public String bulkSnmpData(@RequestParam("deviceIp") String deviceIp, @RequestParam("oid") String oid, @RequestParam("count") int count) {
-        return "SNMP bulk response for deviceIp: " + deviceIp + ", OID: " + oid + ", and Count: " + count;
+    public ResponseEntity<SnmpRecord[]> bulkSnmpData(
+            @RequestParam("deviceIp") String deviceIp, 
+            @RequestParam("oid") String oid, 
+            @RequestParam("community") String community) {
+        try {
+            SnmpRecord[] records = snmpMainService.getSnmpBulkValue(deviceIp, community, oid);
+            return ResponseEntity.ok(records);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(null);
+        }
     }
 }
