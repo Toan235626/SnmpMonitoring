@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,19 +17,17 @@ import com.project.snmp.model.SnmpRecord;
 import com.project.snmp.service.SnmpMainService;
 
 @Controller
-@RequestMapping("/snmp/{ip}")
+@RequestMapping("/snmp")
 public class SnmpController {
     @Autowired
     private SnmpMainService snmpMainService;
 
-    @GetMapping("/get")
+    @PostMapping("/get")
     @ResponseBody
-    public ResponseEntity<SnmpRecord> getSnmpData(@PathVariable String ip, @RequestParam("community") String community, @RequestParam("oid") String oid) {
+    public ResponseEntity<SnmpRecord> getSnmpData(@RequestParam("ip") String ip, @RequestParam("community") String community, @RequestParam("oid") String oid) {
+        System.out.println("IP: " + ip);
         try {
             SnmpRecord record = snmpMainService.getSnmpValue(ip, community, oid);
-            if (record != null) {
-                return ResponseEntity.status(401).body(null);
-            }
             return ResponseEntity.ok(record);
         } catch (Exception e) {
             e.printStackTrace();

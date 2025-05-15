@@ -9,6 +9,12 @@
         <button @click="fetchSnmpData" :disabled="loading" title="SNMP Get">
           <i class="fas fa-play"></i> Get
         </button>
+        <button @click="fetchSnmpGetBulk" :disabled="loading" title="SNMP GetBulk">
+          <i class="fas fa-list"></i> GetBulk
+        </button>
+        <button @click="fetchSnmpGetNext" :disabled="loading" title="SNMP GetNext">
+          <i class="fas fa-step-forward"></i> GetNext
+        </button>
         <button @click="fetchSnmpWalk" :disabled="loading" title="SNMP Walk">
           <i class="fas fa-walking"></i> Walk
         </button>
@@ -159,6 +165,33 @@
           <h3>Error</h3>
           <p>{{ error }}</p>
         </div>
+
+        <!-- SNMP History -->
+        <div class="history-card">
+          <h3>SNMP History</h3>
+          <table v-if="history.length">
+            <thead>
+              <tr>
+                <th>OID</th>
+                <th>Value</th>
+                <th>IP</th>
+                <th>Community</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(entry, index) in history" :key="index">
+                <td>{{ entry.oid }}</td>
+                <td>{{ entry.value }}</td>
+                <td>{{ entry.ip }}</td>
+                <td>{{ entry.community }}</td>
+                <td><button @click="removeHistory(index)">Remove</button></td>
+              </tr>
+            </tbody>
+          </table>
+          <p v-if="!history.length">No history available.</p>
+          <button @click="clearHistory" v-if="history.length">Clear All History</button>
+        </div>
       </main>
     </div>
 
@@ -198,9 +231,10 @@
 </template>
 
 <script>
-import { ref, computed } from "vue";
+import { ref } from "vue";
 import { useToast } from "vue-toastification";
 import Clipboard from "clipboard";
+import axios from "axios";
 
 export default {
   name: "App",
@@ -214,14 +248,14 @@ export default {
       community: "",
     });
 
-    // State for result, error, loading, history, and devices
+    // State for result, error, loading, devices, and history
     const result = ref(null);
     const error = ref(null);
     const loading = ref(false);
-    const history = ref(JSON.parse(localStorage.getItem("snmpHistory")) || []);
-    const devices = ref(JSON.parse(localStorage.getItem("snmpDevices")) || []);
+    const devices = ref([]);
     const showAddDeviceModal = ref(false);
     const newDevice = ref({ ip: "", community: "" });
+    const history = ref([]);
 
     // Tabs management
     const tabs = ref([{ name: "Query 1" }]);
@@ -248,78 +282,119 @@ export default {
       },
     ]);
 
-    // Computed property for success rate
-    const successRate = computed(() => {
-      if (!history.value.length) return 100;
-      const successful = history.value.filter((entry) => !entry.error).length;
-      return Math.round((successful / history.value.length) * 100);
-    });
-
-    // Function to fetch SNMP data (mock data)
+    // Function to fetch SNMP data 
     const fetchSnmpData = async () => {
-      loading.value = true;
-      result.value = null;
-      error.value = null;
+  loading.value = true;
+  result.value = null;
+  error.value = null;
 
-      try {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        const mockResponse = {
-          oid: form.value.oid,
-          value: "1 2 3 4 5 6 7",
-          ip: form.value.ip,
-          community: form.value.community,
-        };
-        result.value = mockResponse;
+  try {
+    const response = await axios.post("api/snmp/get", null, {
+      params: {
+        ip: form.value.ip,
+        oid: form.value.oid,
+        community: form.value.community,
+      },
+    });
+    result.value = response.data;
+    history.value.push({ ...response.data, timestamp: new Date().toLocaleString() });
+  } catch (err) {
+    error.value = err.response?.data?.error || "An error occurred while fetching SNMP data.";
+    history.value.push({
+      oid: form.value.oid,
+      value: null,
+      ip: form.value.ip,
+      community: form.value.community,
+      error: error.value,
+      timestamp: new Date().toLocaleString(),
+    });
+  } finally {
+    loading.value = false;
+  }
+};
 
-        history.value.push({
-          ip: form.value.ip,
-          oid: form.value.oid,
-          community: form.value.community,
-          result: mockResponse,
-          error: null,
-        });
-        localStorage.setItem("snmpHistory", JSON.stringify(history.value));
-      } catch (err) {
-        error.value = "An error occurred while fetching SNMP data.";
-        history.value.push({
-          ip: form.value.ip,
-          oid: form.value.oid,
-          community: form.value.community,
-          result: null,
-          error: error.value,
-        });
-        localStorage.setItem("snmpHistory", JSON.stringify(history.value));
-      } finally {
-        loading.value = false;
-      }
-    };
+    // Function to fetch SNMP GetBulk
+    const fetchSnmpGetBulk = async () => {
+  loading.value = true;
+  result.value = null;
+  error.value = null;
 
-    // Function to simulate SNMP Walk (mock data)
+  try {
+    const response = await axios.post("/api/snmp/getbulk", {
+      ip: form.value.ip,
+      oid: form.value.oid,
+      community: form.value.community,
+    });
+    result.value = response.data;
+    history.value.push({ ...response.data, timestamp: new Date().toLocaleString() });
+  } catch (err) {
+    error.value = err.response?.data?.error || "An error occurred while fetching SNMP GetBulk.";
+    history.value.push({
+      oid: form.value.oid,
+      value: null,
+      ip: form.value.ip,
+      community: form.value.community,
+      error: error.value,
+      timestamp: new Date().toLocaleString(),
+    });
+  } finally {
+    loading.value = false;
+  }
+};
+
+    // Function to fetch SNMP GetNext
+    const fetchSnmpGetNext = async () => {
+  loading.value = true;
+  result.value = null;
+  error.value = null;
+
+  try {
+    const response = await axios.post("/api/snmp/getnext", {
+      ip: form.value.ip,
+      oid: form.value.oid,
+      community: form.value.community,
+    });
+    result.value = response.data;
+    history.value.push({ ...response.data, timestamp: new Date().toLocaleString() });
+  } catch (err) {
+    error.value = err.response?.data?.error || "An error occurred while fetching SNMP GetNext.";
+    history.value.push({
+      oid: form.value.oid,
+      value: null,
+      ip: form.value.ip,
+      community: form.value.community,
+      error: error.value,
+      timestamp: new Date().toLocaleString(),
+    });
+  } finally {
+    loading.value = false;
+  }
+};
+
+    // Function to simulate SNMP Walk
     const fetchSnmpWalk = async () => {
       loading.value = true;
       result.value = null;
       error.value = null;
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        const mockResponse = {
-          oid: form.value.oid,
-          value: "Walk result: 1.3.6.1.2.1.1.1.0 = System Description, 1.3.6.1.2.1.1.3.0 = Uptime",
-          ip: form.value.ip,
-          community: form.value.community,
-        };
-        result.value = mockResponse;
-
-        history.value.push({
+        const response = await axios.post("/api/snmp/walk", {
           ip: form.value.ip,
           oid: form.value.oid,
           community: form.value.community,
-          result: mockResponse,
-          error: null,
         });
-        localStorage.setItem("snmpHistory", JSON.stringify(history.value));
+        result.value = mockResponse;
+        history.value.push({ ...mockResponse, timestamp: new Date().toLocaleString() });
       } catch (err) {
         error.value = "An error occurred while performing SNMP Walk.";
+        history.value.push({
+          oid: form.value.oid,
+          value: null,
+          ip: form.value.ip,
+          community: form.value.community,
+          error: error.value,
+          timestamp: new Date().toLocaleString(),
+        });
       } finally {
         loading.value = false;
       }
@@ -331,14 +406,12 @@ export default {
       toast.info("Scanning for devices...");
 
       try {
-        // Mock scan result (replace with real API call)
         await new Promise((resolve) => setTimeout(resolve, 2000));
         const mockDevices = [
           { ip: "192.168.1.20", community: "public" },
           { ip: "192.168.1.21", community: "public" },
         ];
         devices.value = [...devices.value, ...mockDevices.filter(d => !devices.value.some(existing => existing.ip === d.ip))];
-        localStorage.setItem("snmpDevices", JSON.stringify(devices.value));
         toast.success("Device scan completed!");
       } catch (err) {
         toast.error("Failed to scan devices.");
@@ -354,7 +427,6 @@ export default {
         return;
       }
       devices.value.push({ ...newDevice.value });
-      localStorage.setItem("snmpDevices", JSON.stringify(devices.value));
       toast.success("Device added successfully!");
       showAddDeviceModal.value = false;
       newDevice.value = { ip: "", community: "" };
@@ -370,7 +442,6 @@ export default {
     // Function to remove device
     const removeDevice = (index) => {
       devices.value.splice(index, 1);
-      localStorage.setItem("snmpDevices", JSON.stringify(devices.value));
       toast.success("Device removed!");
     };
 
@@ -428,20 +499,37 @@ export default {
       }
     };
 
+    // History management
+    const removeHistory = (index) => {
+      history.value.splice(index, 1);
+      toast.success("History entry removed!");
+    };
+
+    const clearHistory = () => {
+      history.value = [];
+      toast.success("History cleared!");
+    };
+
+    // Toggle JSON view
+    const toggleJsonView = () => {
+      showJson.value = !showJson.value;
+    };
+
     return {
       form,
       result,
       error,
       loading,
-      history,
       devices,
       showAddDeviceModal,
       newDevice,
       tabs,
       activeTab,
       mibTree,
-      successRate,
+      history,
       fetchSnmpData,
+      fetchSnmpGetBulk,
+      fetchSnmpGetNext,
       fetchSnmpWalk,
       scanDevices,
       addDevice,
@@ -453,6 +541,8 @@ export default {
       toggleNode,
       addTab,
       closeTab,
+      removeHistory,
+      clearHistory,
     };
   },
 };
@@ -656,7 +746,6 @@ input:focus {
 }
 
 /* Devices Card */
-/* Devices Card */
 .devices-card {
   background: #fff;
   padding: 15px;
@@ -708,9 +797,11 @@ input:focus {
   background: #dc3545;
   color: #fff;
 }
+
 /* Result Card */
 .result-card,
-.error-card {
+.error-card,
+.history-card {
   background: #fff;
   padding: 15px;
   border: 1px solid #ccc;
@@ -719,14 +810,16 @@ input:focus {
 }
 
 .result-card h3,
-.error-card h3 {
+.error-card h3,
+.history-card h3 {
   font-size: 14px;
   margin-bottom: 10px;
   color: #333;
 }
 
 .result-card table,
-.error-card table {
+.error-card table,
+.history-card table {
   width: 100%;
   border-collapse: collapse;
 }
@@ -734,7 +827,9 @@ input:focus {
 .result-card th,
 .result-card td,
 .error-card th,
-.error-card td {
+.error-card td,
+.history-card th,
+.history-card td {
   padding: 8px;
   border: 1px solid #ddd;
   font-size: 12px;
@@ -742,7 +837,8 @@ input:focus {
 }
 
 .result-card th,
-.error-card th {
+.error-card th,
+.history-card th {
   background: #e0e0e0;
   font-weight: bold;
 }
@@ -767,7 +863,21 @@ input:focus {
   color: #721c24;
 }
 
-/* Modal */
+.history-card button {
+  padding: 6px 12px;
+  border: 1px solid #999;
+  background: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  margin-top: 10px;
+}
+
+.history-card button:hover {
+  background: #dc3545;
+  color: #fff;
+}
+
 /* Modal */
 .modal {
   position: fixed;
