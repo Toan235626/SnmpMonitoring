@@ -3,7 +3,6 @@ C:\Users\Admin\SnmpMonitoring\backend\src\main\java\com\project\snmp\utils\HexSt
 C:\Users\Admin\SnmpMonitoring\backend\src\main\java\com\project\snmp\model\SnmpRecord.java
 C:\Users\Admin\SnmpMonitoring\backend\src\main\java\com\project\snmp\controller\SnmpController.java
 C:\Users\Admin\SnmpMonitoring\backend\src\main\java\com\project\snmp\repository\DeviceRepository.java
-C:\Users\Admin\SnmpMonitoring\backend\src\main\java\com\project\snmp\repository\SnmpRepository.java
 C:\Users\Admin\SnmpMonitoring\backend\src\main\java\com\project\snmp\controller\DeviceScanController.java
 C:\Users\Admin\SnmpMonitoring\backend\src\main\java\com\project\snmp\model\Device.java
 C:\Users\Admin\SnmpMonitoring\backend\src\main\java\com\project\snmp\service\snmpServices\SnmpGetBulk.java

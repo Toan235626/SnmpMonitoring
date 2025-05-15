@@ -9,11 +9,11 @@
         <button @click="fetchSnmpData" :disabled="loading" title="SNMP Get">
           <i class="fas fa-play"></i> Get
         </button>
-        <button @click="fetchSnmpGetBulk" :disabled="loading" title="SNMP GetBulk">
-          <i class="fas fa-list"></i> GetBulk
-        </button>
         <button @click="fetchSnmpGetNext" :disabled="loading" title="SNMP GetNext">
           <i class="fas fa-step-forward"></i> GetNext
+        </button>
+        <button @click="fetchSnmpGetBulk" :disabled="loading" title="SNMP GetBulk">
+          <i class="fas fa-list"></i> GetBulk
         </button>
         <button @click="fetchSnmpWalk" :disabled="loading" title="SNMP Walk">
           <i class="fas fa-walking"></i> Walk
@@ -139,7 +139,7 @@
         </div>
 
         <!-- Result Table -->
-        <div v-if="result" class="result-card">
+        <div v-if="result && result.length > 0" class="result-card">
           <h3>Result</h3>
           <table>
             <thead>
@@ -151,11 +151,11 @@
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>{{ result.oid }}</td>
-                <td>{{ result.value }}</td>
-                <td>{{ result.deviceIp }}</td>
-                <td>{{ result.community }}</td>
+              <tr v-for="(item, index) in result" :key="index">
+                <td>{{ item.oid }}</td>
+                <td>{{ item.value }}</td>
+                <td>{{ item.deviceIp }}</td>
+                <td>{{ item.community }}</td>
               </tr>
             </tbody>
           </table>
@@ -169,6 +169,7 @@
         <!-- SNMP History -->
         <div class="history-card">
           <h3>SNMP History</h3>
+          <button @click="clearHistory" v-if="history.length">Clear All History</button>
           <table v-if="history.length">
             <thead>
               <tr>
@@ -190,7 +191,6 @@
             </tbody>
           </table>
           <p v-if="!history.length">No history available.</p>
-          <button @click="clearHistory" v-if="history.length">Clear All History</button>
         </div>
       </main>
     </div>
@@ -238,9 +238,31 @@ import axios from "axios";
 
 export default {
   name: "App",
+  data() {
+    return {
+      result: [], // Chứa kết quả từ cả lệnh get và walk
+      error: null,
+    };
+  },
+  methods: {
+    handleGetResponse(getResponse) {
+      // Thêm kết quả từ lệnh get vào mảng result
+      this.result.push(getResponse);
+    },
+    handleWalkResponse(walkResponse) {
+      // Thêm kết quả từ lệnh walk (một mảng) vào mảng result
+      this.result = this.result.concat(walkResponse);
+    },
+    copyResult() {
+      // Sao chép kết quả vào clipboard
+      const text = JSON.stringify(this.result, null, 2);
+      navigator.clipboard.writeText(text).then(() => {
+        alert("Copied to clipboard!");
+      });
+    },
+  },
   setup() {
     const toast = useToast();
-
     // Form data
     const form = ref({
       deviceIp: "",
@@ -284,122 +306,145 @@ export default {
 
     // Function to fetch SNMP data 
     const fetchSnmpData = async () => {
-  loading.value = true;
-  result.value = null;
-  error.value = null;
+    loading.value = true;
+    result.value = [];
+    error.value = null;
 
-  try {
-    const response = await axios.post("api/snmp/get", null, {
-      params: {
+    try {
+      const response = await axios.post("api/snmp/get", null, {
+        params: {
+          deviceIp: form.value.deviceIp,
+          oid: form.value.oid,
+          community: form.value.community,
+        },
+      });
+      result.value = response.data.map((item) => ({
+        oid: item.oid,
+        value: item.value,
         deviceIp: form.value.deviceIp,
-        oid: form.value.oid,
         community: form.value.community,
-      },
-    });
-    result.value = response.data;
-    history.value.push({ ...response.data, timestamp: new Date().toLocaleString() });
-  } catch (err) {
-    error.value = err.response?.data?.error || "An error occurred while fetching SNMP data.";
-    history.value.push({
-      oid: form.value.oid,
-      value: null,
-      deviceIp: form.value.deviceIp,
-      community: form.value.community,
-      error: error.value,
-      timestamp: new Date().toLocaleString(),
-    });
-  } finally {
-    loading.value = false;
-  }
-};
+      }));
+      history.value.push(
+        ...response.data.map((item) => ({
+        oid: item.oid,
+        value: item.value,
+        deviceIp: form.value.deviceIp,
+        community: form.value.community,
+        timestamp: new Date().toLocaleString(),
+        }))
+      );
+      } catch (err) {
+        console.error(err);
+        error.value = err.response?.data?.error //|| "An error occurred while fetching SNMP data.";
+      } finally {
+      loading.value = false;
+      }
+      };
 
     // Function to fetch SNMP GetBulk
     const fetchSnmpGetBulk = async () => {
-  loading.value = true;
-  result.value = null;
-  error.value = null;
+      loading.value = true;
+      result.value = [];
+      error.value = null;
 
-  try {
-    const response = await axios.post("/api/snmp/getbulk", {
-      deviceIp: form.value.deviceIp,
-      oid: form.value.oid,
-      community: form.value.community,
-    });
-    result.value = response.data;
-    history.value.push({ ...response.data, timestamp: new Date().toLocaleString() });
-  } catch (err) {
-    error.value = err.response?.data?.error || "An error occurred while fetching SNMP GetBulk.";
-    history.value.push({
-      oid: form.value.oid,
-      value: null,
-      deviceIp: form.value.deviceIp,
-      community: form.value.community,
-      error: error.value,
-      timestamp: new Date().toLocaleString(),
-    });
-  } finally {
-    loading.value = false;
-  }
-};
+      try {
+      const response = await axios.post("/api/snmp/bulk", null, {
+        params: {
+        deviceIp: form.value.deviceIp,
+        oid: form.value.oid,
+        community: form.value.community,
+        },
+      });
+
+      result.value = response.data.map((item) => ({
+        oid: item.oid,
+        value: item.value,
+        deviceIp: form.value.deviceIp,
+        community: form.value.community,
+      }));
+
+      history.value.push(
+        ...response.data.map((item) => ({
+        oid: item.oid,
+        value: item.value,
+        deviceIp: form.value.deviceIp,
+        community: form.value.community,
+        timestamp: new Date().toLocaleString(),
+        }))
+      );
+      } catch (err) {
+      error.value = err.response?.data?.error || "An error occurred while performing SNMP GetBulk.";
+      } finally {
+      loading.value = false;
+      }
+    };
 
     // Function to fetch SNMP GetNext
     const fetchSnmpGetNext = async () => {
-  loading.value = true;
-  result.value = null;
-  error.value = null;
+    loading.value = true;
+    result.value = [];
+    error.value = null;
 
-  try {
-    const response = await axios.post("/api/snmp/getnext", {
-      deviceIp: form.value.deviceIp,
-      oid: form.value.oid,
-      community: form.value.community,
-    });
-    result.value = response.data;
-    history.value.push({ ...response.data, timestamp: new Date().toLocaleString() });
-  } catch (err) {
-    error.value = err.response?.data?.error || "An error occurred while fetching SNMP GetNext.";
-    history.value.push({
-      oid: form.value.oid,
-      value: null,
-      deviceIp: form.value.deviceIp,
-      community: form.value.community,
-      error: error.value,
-      timestamp: new Date().toLocaleString(),
-    });
-  } finally {
-    loading.value = false;
-  }
-};
+    try {
+      const response = await axios.post("api/snmp/getnext", null, {
+        params: {
+          deviceIp: form.value.deviceIp,
+          oid: form.value.oid,
+          community: form.value.community,
+        },
+      });
+      result.value = response.data.map((item) => ({
+        oid: item.oid,
+        value: item.value,
+        deviceIp: form.value.deviceIp,
+        community: form.value.community,
+      }));
+      history.value.push(
+        ...response.data.map((item) => ({
+        oid: item.oid,
+        value: item.value,
+        deviceIp: form.value.deviceIp,
+        community: form.value.community,
+        timestamp: new Date().toLocaleString(),
+        }))
+      );
+      } catch (err) {
+        console.error(err);
+        error.value = err.response?.data?.error //|| "An error occurred while fetching SNMP data.";
+      } finally {
+      loading.value = false;
+      }
+      };
 
     // Function to simulate SNMP Walk
     const fetchSnmpWalk = async () => {
       loading.value = true;
-      result.value = null;
+      result.value = [];
       error.value = null;
 
       try {
-        const response = await axios.post("/api/snmp/walk", {
-          deviceIp: form.value.deviceIp,
-          oid: form.value.oid,
-          community: form.value.community,
-        });
-        result.value = mockResponse;
-        history.value.push({ ...mockResponse, timestamp: new Date().toLocaleString() });
+      const response = await axios.post("/api/snmp/walk", null, {
+        params: {
+        deviceIp: form.value.deviceIp,
+        oid: form.value.oid,
+        community: form.value.community,
+        },
+      });
+
+      // Map the response data to match the result table structure
+      result.value = response.data.map((item) => ({
+        oid: item.oid,
+        value: item.value,
+        deviceIp: form.value.deviceIp,
+        community: form.value.community,
+      }));
       } catch (err) {
-        error.value = "An error occurred while performing SNMP Walk.";
-        history.value.push({
-          oid: form.value.oid,
-          value: null,
-          deviceIp: form.value.deviceIp,
-          community: form.value.community,
-          error: error.value,
-          timestamp: new Date().toLocaleString(),
-        });
+      error.value =
+        err.response?.data?.error || "An error occurred while performing SNMP Walk.";
       } finally {
-        loading.value = false;
+      loading.value = false;
       }
     };
-
     // Function to scan devices (mock data)
     const scanDevices = async () => {
       loading.value = true;

@@ -39,7 +39,7 @@ public class SnmpGetNext {
             JSONObject jsonObject = snmpStringToJson.toJson().getJSONObject(0);
             SnmpRecord snmpRecord = new SnmpRecord();
             snmpRecord.setDeviceIp(deviceIp);
-            snmpRecord.setOid(oid);
+            snmpRecord.setOid(jsonObject.getString("oid"));
             snmpRecord.setValue(jsonObject.getString("value"));
             snmpRecord.setCommunity(community);
             return snmpRecord;
