@@ -1,5 +1,6 @@
 package com.project.snmp.controller;
 
+import org.hibernate.engine.internal.Collections;
 import org.json.JSONObject;
 import org.snmp4j.Snmp;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +25,10 @@ public class SnmpController {
 
     @PostMapping("/get")
     @ResponseBody
-    public ResponseEntity<SnmpRecord> getSnmpData(@RequestParam("ip") String ip, @RequestParam("community") String community, @RequestParam("oid") String oid) {
-        System.out.println("IP: " + ip);
+    public ResponseEntity<SnmpRecord> getSnmpData(@RequestParam("deviceIp") String deviceIp, @RequestParam("community") String community, @RequestParam("oid") String oid) {
+        System.out.println("deviceIP: " + deviceIp);
         try {
-            SnmpRecord record = snmpMainService.getSnmpValue(ip, community, oid);
+            SnmpRecord record = snmpMainService.getSnmpValue(deviceIp, community, oid);
             return ResponseEntity.ok(record);
         } catch (Exception e) {
             e.printStackTrace();
@@ -37,19 +38,28 @@ public class SnmpController {
 
     @GetMapping("/set")
     @ResponseBody
-    public String setSnmpData(@PathVariable String ip, @RequestParam("oid") String oid, @RequestParam("value") String value) {
-        return "SNMP set response for IP: " + ip + " and OID: " + oid;
+    public String setSnmpData(@RequestParam String deviceIp, @RequestParam("oid") String oid, @RequestParam("value") String value) {
+        return "SNMP set response for deviceIP: " + deviceIp + " and OID: " + oid;
     }
 
     @GetMapping("/walk")
     @ResponseBody
-    public String walkSnmpData(@PathVariable String ip, @RequestParam("community") String community, @RequestParam("oid") String oid) {
-        return "SNMP walk response for IP: " + ip + " and OID: " + oid;
+    public ResponseEntity<SnmpRecord[]> walkSnmpData(
+            @RequestParam("deviceIp") String deviceIp,
+            @RequestParam("community") String community,
+            @RequestParam("oid") String oid) {
+        try {
+            SnmpRecord[] records = snmpMainService.getSnmpWalkValue(deviceIp, community, oid);
+            return ResponseEntity.ok(records);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body(null);
+        }
     }
 
     @GetMapping("/bulk")
     @ResponseBody
-    public String bulkSnmpData(@PathVariable String ip, @RequestParam("oid") String oid, @RequestParam("count") int count) {
-        return "SNMP bulk response for IP: " + ip + ", OID: " + oid + ", and Count: " + count;
+    public String bulkSnmpData(@RequestParam("deviceIp") String deviceIp, @RequestParam("oid") String oid, @RequestParam("count") int count) {
+        return "SNMP bulk response for deviceIp: " + deviceIp + ", OID: " + oid + ", and Count: " + count;
     }
 }

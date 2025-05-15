@@ -23,19 +23,19 @@ public class Device {
         this.ipAddress = ipAddress;
     }
     // --- Getters & Setters ---
-    public Long getId() {
+    public Long getIp() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setIp(Long id) {
         this.id = id;
     }
 
-    public String getDeviceId() {
+    public String getDeviceIp() {
         return deviceId;
     }
 
-    public void setDeviceId(String deviceId) {
+    public void setDeviceIp(String deviceId) {
         this.deviceId = deviceId;
     }
 
@@ -47,13 +47,6 @@ public class Device {
         this.name = name;
     }
 
-    public String getIpAddress() {
-        return ipAddress;
-    }
-
-    public void setIpAddress(String ipAddress) {
-        this.ipAddress = ipAddress;
-    }
 
     public String getCommunity() {
         return community;

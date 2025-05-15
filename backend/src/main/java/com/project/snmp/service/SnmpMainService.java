@@ -4,7 +4,6 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import com.project.snmp.model.SnmpRecord;
-import com.project.snmp.repository.SnmpRepository;
 import com.project.snmp.service.snmpServices.*;
 
 @Service
@@ -23,20 +22,12 @@ public class SnmpMainService {
         SnmpGetBulk snmpGetBulk = new SnmpGetBulk();
         SnmpRecord[] getBulkResult = snmpGetBulk.getBulkAsRecords(ipAddress, community,oid, nonRepeaters, maxRepetitions);
 
-        SnmpRepository snmpRepository = new SnmpRepository();
-        for (SnmpRecord o : getBulkResult){
-            snmpRepository.saveOidValue(o);
-        }
         return getBulkResult;
     } 
     public SnmpRecord[] getSnmpWalkValue(String ipAddress, String community,String oid) throws Exception {
         SnmpWalk snmpWalk = new SnmpWalk();
         SnmpRecord[] getWalkResult = snmpWalk.walkAsRecords(ipAddress, community,oid);
-
-        SnmpRepository snmpRepository = new SnmpRepository();
-        for (SnmpRecord o : getWalkResult){
-            snmpRepository.saveOidValue(o);
-        }
+        
         return getWalkResult;
     }
 }

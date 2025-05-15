@@ -20,13 +20,13 @@ import java.util.List;
 
 @Component
 public class SnmpWalk {
-    public SnmpRecord[] walkAsRecords(String address, String community, String rootOid) throws IOException {
+    public SnmpRecord[] walkAsRecords(String deviceIp, String community, String rootOid) throws IOException {
         TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping();
         transport.listen();
 
         CommunityTarget target = new CommunityTarget();
         target.setCommunity(new OctetString(community));
-        target.setAddress(new UdpAddress(address + "/161"));
+        target.setAddress(new UdpAddress(deviceIp + "/161"));
         target.setRetries(2);
         target.setTimeout(1500);
         target.setVersion(SnmpConstants.version2c);
@@ -53,8 +53,10 @@ public class SnmpWalk {
 
             for (VariableBinding vb : varBindings) {
                 SnmpRecord snmpRecord = new SnmpRecord();
-                snmpRecord.setDevice(address);
+                snmpRecord.setDeviceIp(deviceIp);
                 snmpRecord.setOid(vb.getOid().toString());
+                snmpRecord.setCommunity(community);
+
                 if (vb.getVariable() == null) {
                     snmpRecord.setValue("null");
                 } else if (vb.getVariable().toString().isEmpty()) {

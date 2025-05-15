@@ -12,13 +12,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SnmpGetNext {
-    public SnmpRecord getNextAsRecord(String address, String community, String oid) throws Exception {
+    public SnmpRecord getNextAsRecord(String deviceIp, String community, String oid) throws Exception {
         TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping();
         transport.listen();
 
         CommunityTarget target = new CommunityTarget();
         target.setCommunity(new OctetString(community));
-        target.setAddress(new UdpAddress(address + "/161"));
+        target.setAddress(new UdpAddress(deviceIp + "/161"));
         target.setRetries(2);
         target.setTimeout(1500);
         target.setVersion(SnmpConstants.version2c);
@@ -38,9 +38,10 @@ public class SnmpGetNext {
             SnmpStringToJson snmpStringToJson = new SnmpStringToJson(vbString);
             JSONObject jsonObject = snmpStringToJson.toJson().getJSONObject(0);
             SnmpRecord snmpRecord = new SnmpRecord();
-            snmpRecord.setDevice(address);
+            snmpRecord.setDeviceIp(deviceIp);
             snmpRecord.setOid(oid);
             snmpRecord.setValue(jsonObject.getString("value"));
+            snmpRecord.setCommunity(community);
             return snmpRecord;
         } else {
             throw new RuntimeException("SNMP GETNEXT request timed out or failed.");

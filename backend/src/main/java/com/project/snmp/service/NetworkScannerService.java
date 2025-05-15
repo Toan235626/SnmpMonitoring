@@ -22,19 +22,19 @@ public class NetworkScannerService {
     public List<Device> scanSubnet(String baseIp, String community) {
         ExecutorService executor = Executors.newFixedThreadPool(20); // 20 threads, adjust as needed
         for (int i = 1; i <= 254; i++) {
-            final String ipAddress = baseIp + "." + i;
+            final String deviceIp = baseIp + "." + i;
             executor.submit(() -> {
-                System.out.println("Scanning IP: " + ipAddress);
+                System.out.println("Scanning IP: " + deviceIp);
                 try {
-                    SnmpRecord result = snmpMainService.getSnmpValue(ipAddress, community, "1.3.6.1.2.1.1.1.0");
+                    SnmpRecord result = snmpMainService.getSnmpValue(deviceIp, community, "1.3.6.1.2.1.1.1.0");
                     if (result != null) {
                         String name = result.getValue();
                         Device device = new Device();
-                        device.setIpAddress(ipAddress);
+                        device.setDeviceIp(deviceIp);
                         device.setName(name);
                         device.setCommunity(community);
-                        System.out.println("Device found: " + device.getName() + " at " + device.getIpAddress());
-                        if (!deviceRepository.existsByIpAddress(ipAddress)) {
+                        System.out.println("Device found: " + device.getName() + " at " + device.getDeviceIp());
+                        if (!deviceRepository.existsByIpAddress(deviceIp)) {
                             deviceRepository.save(device);
                         }
                     }

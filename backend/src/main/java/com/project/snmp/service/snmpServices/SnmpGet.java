@@ -46,8 +46,9 @@ public class SnmpGet{
             SnmpStringToJson snmpStringToJson = new SnmpStringToJson(vbString);
 
             SnmpRecord snmpRecord = new SnmpRecord();
-            snmpRecord.setDevice(address);
+            snmpRecord.setDeviceIp(address);
             snmpRecord.setOid(oid);
+            snmpRecord.setCommunity(community);
             snmpRecord.setValue(snmpStringToJson.toJson().getJSONObject(0).getString("value"));
             return snmpRecord;
         } else {
