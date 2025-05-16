@@ -1,0 +1,319 @@
+[
+  {
+    "name": "system",
+    "oid": "1.3.6.1.2.1.1",
+    "expanded": false,
+    "description": "",
+    "access": "",
+    "syntax": "",
+    "type": "objectidentity",
+    "category": "",
+    "children": [
+      {
+        "name": "sysORTable",
+        "oid": "1.3.6.1.2.1.1.9",
+        "expanded": false,
+        "description": "The (conceptual) table listing the capabilities of the local SNMP application acting as a command responder with respect to various MIB modules. SNMP entities having dynamically-configurable support of MIB modules will have a dynamically-varying number of conceptual rows.",
+        "access": "no-access",
+        "syntax": "",
+        "type": "objecttype",
+        "category": "table",
+        "children": [
+          {
+            "name": "sysOREntry",
+            "oid": "1.3.6.1.2.1.1.9.1",
+            "expanded": false,
+            "description": "An entry (conceptual row) in the sysORTable.",
+            "access": "no-access",
+            "syntax": "",
+            "type": "objecttype",
+            "category": "row",
+            "children": [
+              {
+                "name": "sysORIndex",
+                "oid": "1.3.6.1.2.1.1.9.1.1",
+                "expanded": false,
+                "description": "The auxiliary variable used for identifying instances of the columnar objects in the sysORTable.",
+                "access": "no-access",
+                "syntax": "integer",
+                "type": "objecttype",
+                "category": "column",
+                "children": []
+              },
+              {
+                "name": "sysORID",
+                "oid": "1.3.6.1.2.1.1.9.1.2",
+                "expanded": false,
+                "description": "An authoritative identification of a capabilities statement with respect to various MIB modules supported by the local SNMP application acting as a command responder.",
+                "access": "read-only",
+                "syntax": "object identifier",
+                "type": "objecttype",
+                "category": "column",
+                "children": []
+              },
+              {
+                "name": "sysORDescr",
+                "oid": "1.3.6.1.2.1.1.9.1.3",
+                "expanded": false,
+                "description": "A textual description of the capabilities identified by the corresponding instance of sysORID.",
+                "access": "read-only",
+                "syntax": "displaystring",
+                "type": "objecttype",
+                "category": "column",
+                "children": []
+              },
+              {
+                "name": "sysORUpTime",
+                "oid": "1.3.6.1.2.1.1.9.1.4",
+                "expanded": false,
+                "description": "The value of sysUpTime at the time this conceptual row was last instantiated.",
+                "access": "read-only",
+                "syntax": "timestamp",
+                "type": "objecttype",
+                "category": "column",
+                "children": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "snmpMIB",
+    "oid": "1.3.6.1.6.3.1",
+    "expanded": false,
+    "description": "The MIB module for SNMP entities. Copyright (C) The Internet Society (2002). This version of this MIB module is part of RFC 3418; see the RFC itself for full legal notices. ",
+    "access": "",
+    "syntax": "",
+    "type": "moduleidentity",
+    "category": "",
+    "children": [
+      {
+        "name": "snmpMIBObjects",
+        "oid": "1.3.6.1.6.3.1.1",
+        "expanded": false,
+        "description": "",
+        "access": "",
+        "syntax": "",
+        "type": "objectidentity",
+        "category": "",
+        "children": [
+          {
+            "name": "snmpTrap",
+            "oid": "1.3.6.1.6.3.1.1.4",
+            "expanded": false,
+            "description": "",
+            "access": "",
+            "syntax": "",
+            "type": "objectidentity",
+            "category": "",
+            "children": []
+          },
+          {
+            "name": "snmpTraps",
+            "oid": "1.3.6.1.6.3.1.1.5",
+            "expanded": false,
+            "description": "",
+            "access": "",
+            "syntax": "",
+            "type": "objectidentity",
+            "category": "",
+            "children": [
+              {
+                "name": "coldStart",
+                "oid": "1.3.6.1.6.3.1.1.5.1",
+                "expanded": false,
+                "description": "A coldStart trap signifies that the SNMP entity, supporting a notification originator application, is reinitializing itself and that its configuration may have been altered.",
+                "access": "",
+                "syntax": "",
+                "type": "notificationtype",
+                "category": "",
+                "children": []
+              },
+              {
+                "name": "warmStart",
+                "oid": "1.3.6.1.6.3.1.1.5.2",
+                "expanded": false,
+                "description": "A warmStart trap signifies that the SNMP entity, supporting a notification originator application, is reinitializing itself such that its configuration is unaltered.",
+                "access": "",
+                "syntax": "",
+                "type": "notificationtype",
+                "category": "",
+                "children": []
+              },
+              {
+                "name": "authenticationFailure",
+                "oid": "1.3.6.1.6.3.1.1.5.5",
+                "expanded": false,
+                "description": "An authenticationFailure trap signifies that the SNMP entity has received a protocol message that is not properly authenticated. While all implementations of SNMP entities MAY be capable of generating this trap, the snmpEnableAuthenTraps object indicates whether this trap will be generated.",
+                "access": "",
+                "syntax": "",
+                "type": "notificationtype",
+                "category": "",
+                "children": []
+              }
+            ]
+          },
+          {
+            "name": "snmpSet",
+            "oid": "1.3.6.1.6.3.1.1.6",
+            "expanded": false,
+            "description": "",
+            "access": "",
+            "syntax": "",
+            "type": "objectidentity",
+            "category": "",
+            "children": []
+          }
+        ]
+      },
+      {
+        "name": "snmpMIBConformance",
+        "oid": "1.3.6.1.6.3.1.2",
+        "expanded": false,
+        "description": "",
+        "access": "",
+        "syntax": "",
+        "type": "objectidentity",
+        "category": "",
+        "children": [
+          {
+            "name": "snmpMIBCompliances",
+            "oid": "1.3.6.1.6.3.1.2.1",
+            "expanded": false,
+            "description": "",
+            "access": "",
+            "syntax": "",
+            "type": "objectidentity",
+            "category": "",
+            "children": [
+              {
+                "name": "snmpBasicCompliance",
+                "oid": "1.3.6.1.6.3.1.2.1.2",
+                "expanded": false,
+                "description": "The compliance statement for SNMPv2 entities which implement the SNMPv2 MIB. This compliance statement is replaced by snmpBasicComplianceRev2.",
+                "access": "",
+                "syntax": "",
+                "type": "modulecompliance",
+                "category": "",
+                "children": []
+              },
+              {
+                "name": "snmpBasicComplianceRev2",
+                "oid": "1.3.6.1.6.3.1.2.1.3",
+                "expanded": false,
+                "description": "The compliance statement for SNMP entities which implement this MIB module.",
+                "access": "",
+                "syntax": "",
+                "type": "modulecompliance",
+                "category": "",
+                "children": []
+              }
+            ]
+          },
+          {
+            "name": "snmpMIBGroups",
+            "oid": "1.3.6.1.6.3.1.2.2",
+            "expanded": false,
+            "description": "",
+            "access": "",
+            "syntax": "",
+            "type": "objectidentity",
+            "category": "",
+            "children": [
+              {
+                "name": "snmpSetGroup",
+                "oid": "1.3.6.1.6.3.1.2.2.5",
+                "expanded": false,
+                "description": "A collection of objects which allow several cooperating command generator applications to coordinate their use of the set operation.",
+                "access": "",
+                "syntax": "",
+                "type": "objectgroup",
+                "category": "",
+                "children": []
+              },
+              {
+                "name": "systemGroup",
+                "oid": "1.3.6.1.6.3.1.2.2.6",
+                "expanded": false,
+                "description": "The system group defines objects which are common to all managed systems.",
+                "access": "",
+                "syntax": "",
+                "type": "objectgroup",
+                "category": "",
+                "children": []
+              },
+              {
+                "name": "snmpBasicNotificationsGroup",
+                "oid": "1.3.6.1.6.3.1.2.2.7",
+                "expanded": false,
+                "description": "The basic notifications implemented by an SNMP entity supporting command responder applications.",
+                "access": "",
+                "syntax": "",
+                "type": "notificationgroup",
+                "category": "",
+                "children": []
+              },
+              {
+                "name": "snmpGroup",
+                "oid": "1.3.6.1.6.3.1.2.2.8",
+                "expanded": false,
+                "description": "A collection of objects providing basic instrumentation and control of an SNMP entity.",
+                "access": "",
+                "syntax": "",
+                "type": "objectgroup",
+                "category": "",
+                "children": []
+              },
+              {
+                "name": "snmpCommunityGroup1",
+                "oid": "1.3.6.1.6.3.1.2.2.9",
+                "expanded": false,
+                "description": "A collection of objects providing basic instrumentation of a SNMP entity which supports community-based authentication.",
+                "access": "",
+                "syntax": "",
+                "type": "objectgroup",
+                "category": "",
+                "children": []
+              },
+              {
+                "name": "snmpObsoleteGroup",
+                "oid": "1.3.6.1.6.3.1.2.2.10",
+                "expanded": false,
+                "description": "A collection of objects from RFC 1213 made obsolete by this MIB module.",
+                "access": "",
+                "syntax": "",
+                "type": "objectgroup",
+                "category": "",
+                "children": []
+              },
+              {
+                "name": "snmpWarmStartNotificationGroup",
+                "oid": "1.3.6.1.6.3.1.2.2.11",
+                "expanded": false,
+                "description": "An additional notification for an SNMP entity supporting command responder applications, if it is able to reinitialize itself such that its configuration is unaltered.",
+                "access": "",
+                "syntax": "",
+                "type": "notificationgroup",
+                "category": "",
+                "children": []
+              },
+              {
+                "name": "snmpNotificationGroup",
+                "oid": "1.3.6.1.6.3.1.2.2.12",
+                "expanded": false,
+                "description": "These objects are required for entities which support notification originator applications.",
+                "access": "",
+                "syntax": "",
+                "type": "objectgroup",
+                "category": "",
+                "children": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

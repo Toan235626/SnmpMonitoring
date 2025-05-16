@@ -37,24 +37,13 @@
         <h3>MIB Tree</h3>
         <div class="tree-view">
           <ul>
-            <li v-for="node in mibTree" :key="node.oid">
-              <span
-                :class="{ 'node-selected': form.oid === node.oid }"
-                @click="toggleNode(node)"
-              >
-                <i :class="node.expanded ? 'fas fa-chevron-down' : 'fas fa-chevron-right'"></i>
-                {{ node.name }} ({{ node.oid }})
-              </span>
-              <ul v-if="node.expanded && node.children">
-                <li
-                  v-for="child in node.children"
-                  :key="child.oid"
-                  @click.stop="selectOid(child.oid)"
-                >
-                  {{ child.name }} ({{ child.oid }})
-                </li>
-              </ul>
-            </li>
+            <MibNode
+              v-for="node in mibTree"
+              :key="node.oid"
+              :node="node"
+              :selected-oid="form.oid"
+              @select-oid="selectOid"
+            />
           </ul>
         </div>
       </aside>
@@ -231,10 +220,12 @@
 </template>
 
 <script>
-import { ref } from "vue";
 import { useToast } from "vue-toastification";
 import Clipboard from "clipboard";
 import axios from "axios";
+import { ref, onMounted } from 'vue';
+import MibNode from './components/MibNode.vue'; // Import MibNode component
+import mibData from "./assets/MIBTree.json"; // Import MIB data from JSON file
 
 export default {
   name: "App",
@@ -261,6 +252,9 @@ export default {
       });
     },
   },
+  components: {
+      MibNode,
+    },
   setup() {
     const toast = useToast();
     // Form data
@@ -282,27 +276,38 @@ export default {
     // Tabs management
     const tabs = ref([{ name: "Query 1" }]);
     const activeTab = ref(0);
+    // MIB Tree data
+    const processMibData = (data) => {
+      return data.map(node => ({
+        name: node.name,
+        oid: node.oid,
+        expanded: node.expanded || false, 
+        children: node.children ? processMibData(node.children) : []
+      }));
+    };
+    // Process MIB data to create a tree structure
+    const oidForm = ref({
+      oid: "",
+    });
 
-    // Mock MIB tree data with expanded state
-    const mibTree = ref([
-      {
-        name: "system",
-        oid: "1.3.6.1.2.1.1",
-        expanded: false,
-        children: [
-          { name: "sysDescr", oid: "1.3.6.1.2.1.1.1.0" },
-          { name: "sysUpTime", oid: "1.3.6.1.2.1.1.3.0" },
-        ],
-      },
-      {
-        name: "interfaces",
-        oid: "1.3.6.1.2.1.2",
-        expanded: false,
-        children: [
-          { name: "ifNumber", oid: "1.3.6.1.2.1.2.1.0" }  ,
-        ],
-      },
-    ]);
+    const mibTree = ref([]);
+
+    // Khởi tạo mibTree khi component được mount
+    onMounted(() => {
+      mibTree.value = processMibData(mibData);
+    });
+    // Function to select OID from MIB tree
+    const selectOid = (oid) => {
+      form.value.oid = oid;
+    };
+
+    // Function to toggle node expansion
+    const toggleNode = (node) => {
+      if (node.children) {
+        node.expanded = !node.expanded;
+      }
+      selectOid(node.oid);
+    };
 
     // Function to fetch SNMP data 
     const fetchSnmpData = async () => {
@@ -335,7 +340,7 @@ export default {
       );
       } catch (err) {
         console.error(err);
-        error.value = err.response?.data?.error //|| "An error occurred while fetching SNMP data.";
+        error.value = err.response?.data?.error || "An error occurred while fetching SNMP data.";
       } finally {
       loading.value = false;
       }
@@ -410,7 +415,7 @@ export default {
       );
       } catch (err) {
         console.error(err);
-        error.value = err.response?.data?.error //|| "An error occurred while fetching SNMP data.";
+        error.value = err.response?.data?.error || "An error occurred while fetching SNMP data.";
       } finally {
       loading.value = false;
       }
@@ -451,7 +456,7 @@ export default {
       toast.info("Scanning for devices...");
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 2000));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         const mockDevices = [
           { deviceIp: "192.168.1.20", community: "public" },
           { deviceIp: "192.168.1.21", community: "public" },
@@ -515,19 +520,6 @@ export default {
       });
     };
 
-    // Function to select OID from MIB tree
-    const selectOid = (oid) => {
-      form.value.oid = oid;
-    };
-
-    // Function to toggle node expansion
-    const toggleNode = (node) => {
-      if (node.children) {
-        node.expanded = !node.expanded;
-      }
-      selectOid(node.oid);
-    };
-
     // Tab management functions
     const addTab = () => {
       tabs.value.push({ name: `Query ${tabs.value.length + 1}` });
@@ -585,7 +577,7 @@ export default {
       removeHistory,
       clearHistory,
     };
-  },
+  }
 };
 </script>
 
@@ -656,7 +648,7 @@ export default {
 
 /* MIB Tree Sidebar */
 .mib-tree {
-  width: 250px;
+  width: 320px;
   background: #fff;
   border-right: 1px solid #ccc;
   padding: 10px;
