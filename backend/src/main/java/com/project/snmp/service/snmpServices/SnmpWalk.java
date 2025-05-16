@@ -77,9 +77,9 @@ public class SnmpWalk {
     // public static void main(String[] args) {
     //     SnmpWalk snmpWalk = new SnmpWalk();
     //     try {
-    //         JSONArray result = snmpWalk.walkAsJsonArray("127.0.0.1", "public", "1.3.6.1.2.1.1");
-    //         for (int i = 0; i < result.length(); i++) {
-    //             System.out.println(result.getJSONObject(i).toString());
+    //         SnmpRecord[] records = snmpWalk.walkAsRecords("127.0.0.1", "public", "1.3.6.1.2");
+    //         for (SnmpRecord snmpRecord : records) {
+    //             System.out.println(snmpRecord.getValue());
     //         }
     //     } catch (IOException e) {
     //         e.printStackTrace();
