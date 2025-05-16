@@ -20,13 +20,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class SnmpGet{
 
-    public SnmpRecord getAsRecord(String address, String community, String oid) throws Exception {
+    public SnmpRecord getAsRecord(String deviceIp, String community, String oid) throws Exception {
         TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping();
         transport.listen();
 
         CommunityTarget target = new CommunityTarget();
         target.setCommunity(new OctetString(community));
-        target.setAddress(new UdpAddress(address + "/161"));
+        target.setAddress(new UdpAddress(deviceIp + "/161"));
         target.setRetries(2);
         target.setTimeout(1500);
         target.setVersion(SnmpConstants.version2c);
@@ -46,7 +46,7 @@ public class SnmpGet{
             SnmpStringToJson snmpStringToJson = new SnmpStringToJson(vbString);
 
             SnmpRecord snmpRecord = new SnmpRecord();
-            snmpRecord.setDeviceIp(address);
+            snmpRecord.setDeviceIp(deviceIp);
             snmpRecord.setOid(oid);
             snmpRecord.setCommunity(community);
             snmpRecord.setValue(snmpStringToJson.toJson().getJSONObject(0).getString("value"));
