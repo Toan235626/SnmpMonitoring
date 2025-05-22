@@ -13,19 +13,19 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.project.snmp.model.SnmpRecord;
 import com.project.snmp.service.SnmpMainService;
 
-@Controller
+@RestController
 @RequestMapping("/snmp")
 public class SnmpController {
     @Autowired
     private SnmpMainService snmpMainService;
 
     @PostMapping("/get")
-    @ResponseBody
-    public ResponseEntity<SnmpRecord[]> getSnmpData(
+    public SnmpRecord[] getSnmpData(
             @RequestParam("deviceIp") String deviceIp, 
             @RequestParam("community") String community, 
             @RequestParam("oid") String oid,
@@ -34,16 +34,15 @@ public class SnmpController {
         try {
             SnmpRecord[] records = new SnmpRecord[1];
             records[0] = snmpMainService.getSnmpValue(deviceIp, community, oid, port);
-            return ResponseEntity.ok(records);
+            return records;
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body(null);
+            throw new RuntimeException("Error occurred while performing SNMP get operation", e);
         }
     }
 
     @PostMapping("/getnext")
-    @ResponseBody
-    public ResponseEntity<SnmpRecord[]> getSnmpNextData(
+    public SnmpRecord[] getSnmpNextData(
             @RequestParam("deviceIp") String deviceIp, 
             @RequestParam("community") String community, 
             @RequestParam("oid") String oid,
@@ -52,43 +51,41 @@ public class SnmpController {
         try {
             SnmpRecord[] records = new SnmpRecord[1];
             records[0] = snmpMainService.getSnmpNextValue(deviceIp, community, oid, port);
-            return ResponseEntity.ok(records);
+            return records;
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body(null);
+            throw new RuntimeException("Error occurred while performing SNMP getnext operation", e);
         }
     }
 
     
     @PostMapping("/walk")
-    @ResponseBody
-    public ResponseEntity<SnmpRecord[]> walkSnmpData(
+    public SnmpRecord[] walkSnmpData(
             @RequestParam("deviceIp") String deviceIp,
             @RequestParam("community") String community,
             @RequestParam("oid") String oid,
             @RequestParam(value = "port", required = false, defaultValue = "161") int port) {
         try {
             SnmpRecord[] records = snmpMainService.getSnmpWalkValue(deviceIp, community, oid, port);
-            return ResponseEntity.ok(records);
+            return records;
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body(new SnmpRecord[0]);
+            throw new RuntimeException("Error occurred while performing SNMP walk operation", e);
         }
     }
 
     @PostMapping("/bulk")
-    @ResponseBody
-    public ResponseEntity<SnmpRecord[]> bulkSnmpData(
+    public SnmpRecord[] bulkSnmpData(
             @RequestParam("deviceIp") String deviceIp, 
             @RequestParam("oid") String oid, 
             @RequestParam("community") String community,
             @RequestParam(value = "port", required = false, defaultValue = "161") int port) {
         try {
             SnmpRecord[] records = snmpMainService.getSnmpBulkValue(deviceIp, community, oid, port);
-            return ResponseEntity.ok(records);
+            return records;
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body(null);
+            throw new RuntimeException("Error occurred while performing SNMP bulk operation", e);
         }
     }
 }

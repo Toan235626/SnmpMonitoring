@@ -16,6 +16,7 @@ import com.project.snmp.model.SnmpRecord;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -58,7 +59,7 @@ public class SnmpWalk {
 
             if (fallback) {
                 System.err.println("TreeUtils failed. Fallback to manual walk for OID: " + rootOid);
-                resultList.addAll(List.of(walkManually(snmp, target, rootOid, deviceIp, community)));
+                resultList.addAll(Arrays.asList(walkManually(snmp, target, rootOid, deviceIp, community)));
             }
 
         } finally {
