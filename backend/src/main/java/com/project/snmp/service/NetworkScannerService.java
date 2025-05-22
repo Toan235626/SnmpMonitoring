@@ -15,12 +15,12 @@ import java.util.concurrent.Executors;
 @Service
 public class NetworkScannerService {
     @Autowired
-    private DeviceRepository deviceRepository;
-    @Autowired
     private SnmpMainService snmpMainService;
 
     public List<Device> scanSubnet(String baseIp, String community) {
-        ExecutorService executor = Executors.newFixedThreadPool(20); // 20 threads, adjust as needed
+        ExecutorService executor = Executors.newFixedThreadPool(100); // 20 threads, adjust as needed
+        List<Device> foundDevices = java.util.Collections.synchronizedList(new java.util.ArrayList<>());
+        
         for (int i = 1; i <= 254; i++) {
             final String deviceIp = baseIp + "." + i;
             executor.submit(() -> {
@@ -33,10 +33,8 @@ public class NetworkScannerService {
                         device.setDeviceIp(deviceIp);
                         device.setName(name);
                         device.setCommunity(community);
+                        foundDevices.add(device);
                         System.out.println("Device found: " + device.getName() + " at " + device.getDeviceIp());
-                        if (!deviceRepository.existsByIpAddress(deviceIp)) {
-                            deviceRepository.save(device);
-                        }
                     }
                 } catch (Exception e) {}});
         }
@@ -49,7 +47,7 @@ public class NetworkScannerService {
             executor.shutdownNow();
             Thread.currentThread().interrupt();
         }
-        return deviceRepository.findAll();
+        return foundDevices;
     }
 
 }
