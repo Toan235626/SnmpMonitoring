@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 
 import com.project.snmp.model.Device;
 import com.project.snmp.model.SnmpRecord;
-import com.project.snmp.repository.DeviceRepository;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -17,7 +16,7 @@ public class NetworkScannerService {
     @Autowired
     private SnmpMainService snmpMainService;
 
-    public List<Device> scanSubnet(String baseIp, String community) {
+    public List<Device> scanSubnet(String baseIp, String community, int port) {
         ExecutorService executor = Executors.newFixedThreadPool(100); // 20 threads, adjust as needed
         List<Device> foundDevices = java.util.Collections.synchronizedList(new java.util.ArrayList<>());
         
@@ -26,7 +25,7 @@ public class NetworkScannerService {
             executor.submit(() -> {
                 System.out.println("Scanning IP: " + deviceIp);
                 try {
-                    SnmpRecord result = snmpMainService.getSnmpValue(deviceIp, community, "1.3.6.1.2.1.1.1.0");
+                    SnmpRecord result = snmpMainService.getSnmpValue(deviceIp, community, "1.3.6.1.2.1.1.1.0", port);
                     if (result != null) {
                         String name = result.getValue();
                         Device device = new Device();

@@ -37,9 +37,11 @@ public class DeviceScanController {
     }
 
     @PostMapping("/scan-subnet")
-    public List<Device> scanSelectedSubnet(@RequestParam String baseIp) {
-        String community = "public";
-        return networkScannerService.scanSubnet(baseIp, community);
+    public List<Device> scanSelectedSubnet(
+                @RequestParam("baseIp") String baseIp,
+                @RequestParam("community") String community,
+                @RequestParam(value = "port", required = false, defaultValue = "161") int port) {
+        return networkScannerService.scanSubnet(baseIp, community, port);
     }
 
 
@@ -60,6 +62,7 @@ public class DeviceScanController {
                             String baseIp = parts[0] + "." + parts[1] + "." + parts[2];
                             if (!subnets.contains(baseIp)) {
                                 subnets.add(baseIp);
+                                System.out.println("Found subnet: " + baseIp);
                             }
                         }
                     }

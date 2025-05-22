@@ -28,11 +28,12 @@ public class SnmpController {
     public ResponseEntity<SnmpRecord[]> getSnmpData(
             @RequestParam("deviceIp") String deviceIp, 
             @RequestParam("community") String community, 
-            @RequestParam("oid") String oid) {
+            @RequestParam("oid") String oid,
+            @RequestParam(value = "port", required = false, defaultValue = "161") int port) {
         System.out.println("deviceIP: " + deviceIp);
         try {
             SnmpRecord[] records = new SnmpRecord[1];
-            records[0] = snmpMainService.getSnmpValue(deviceIp, community, oid);
+            records[0] = snmpMainService.getSnmpValue(deviceIp, community, oid, port);
             return ResponseEntity.ok(records);
         } catch (Exception e) {
             e.printStackTrace();
@@ -45,11 +46,12 @@ public class SnmpController {
     public ResponseEntity<SnmpRecord[]> getSnmpNextData(
             @RequestParam("deviceIp") String deviceIp, 
             @RequestParam("community") String community, 
-            @RequestParam("oid") String oid) {
+            @RequestParam("oid") String oid,
+            @RequestParam(value = "port", required = false, defaultValue = "161") int port) {
         System.out.println("deviceIP: " + deviceIp);
         try {
             SnmpRecord[] records = new SnmpRecord[1];
-            records[0] = snmpMainService.getSnmpNextValue(deviceIp, community, oid);
+            records[0] = snmpMainService.getSnmpNextValue(deviceIp, community, oid, port);
             return ResponseEntity.ok(records);
         } catch (Exception e) {
             e.printStackTrace();
@@ -58,23 +60,15 @@ public class SnmpController {
     }
 
     
-    @GetMapping("/set")
-    @ResponseBody
-    public String setSnmpData(
-            @RequestParam String deviceIp, 
-            @RequestParam("oid") String oid, 
-            @RequestParam("value") String value) {
-        return "SNMP set response for deviceIP: " + deviceIp + " and OID: " + oid;
-    }
-
     @PostMapping("/walk")
     @ResponseBody
     public ResponseEntity<SnmpRecord[]> walkSnmpData(
             @RequestParam("deviceIp") String deviceIp,
             @RequestParam("community") String community,
-            @RequestParam("oid") String oid) {
+            @RequestParam("oid") String oid,
+            @RequestParam(value = "port", required = false, defaultValue = "161") int port) {
         try {
-            SnmpRecord[] records = snmpMainService.getSnmpWalkValue(deviceIp, community, oid);
+            SnmpRecord[] records = snmpMainService.getSnmpWalkValue(deviceIp, community, oid, port);
             return ResponseEntity.ok(records);
         } catch (Exception e) {
             e.printStackTrace();
@@ -87,9 +81,10 @@ public class SnmpController {
     public ResponseEntity<SnmpRecord[]> bulkSnmpData(
             @RequestParam("deviceIp") String deviceIp, 
             @RequestParam("oid") String oid, 
-            @RequestParam("community") String community) {
+            @RequestParam("community") String community,
+            @RequestParam(value = "port", required = false, defaultValue = "161") int port) {
         try {
-            SnmpRecord[] records = snmpMainService.getSnmpBulkValue(deviceIp, community, oid);
+            SnmpRecord[] records = snmpMainService.getSnmpBulkValue(deviceIp, community, oid, port);
             return ResponseEntity.ok(records);
         } catch (Exception e) {
             e.printStackTrace();
