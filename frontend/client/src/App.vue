@@ -22,7 +22,10 @@
           <i class="fas fa-eraser"></i> Clear
         </button>
         <button @click="scanDevices" :disabled="loading" title="Scan Devices">
-          <i class="fas fa-search"></i> Scan Devices
+          <i class="fas fa-search2"></i> Scan Devices
+        </button>
+        <button @click="scanNetworks" :disabled="loading" title="Scan Networks">
+          <i class="fas fa-search1"></i> Scan Networks
         </button>
         <button @click="showAddDeviceModal = true" title="Add Device">
           <i class="fas fa-plus"></i> Add Device
@@ -102,7 +105,7 @@
 
         <!-- Devices List -->
         <div class="devices-card">
-          <h3>Discovered Devices</h3>
+          <h3>Discovered Networks</h3>
           <table>
             <thead>
               <tr>
@@ -121,7 +124,7 @@
                 </td>
               </tr>
               <tr v-if="!devices.length">
-                <td colspan="3">No devices found.</td>
+                <td colspan="3">No Networks found.</td>
               </tr>
             </tbody>
           </table>
@@ -184,13 +187,13 @@
       </main>
     </div>
 
-    <!-- Add Device Modal -->
+    <!-- Add Networks Modal -->
     <div v-if="showAddDeviceModal" class="modal">
       <div class="modal-content">
-        <h3>Add New Device</h3>
+        <h3>Add New Networks</h3>
         <form @submit.prevent="addDevice">
           <div class="form-group">
-            <label for="new-deviceIp">Device IP:</label>
+            <label for="new-deviceIp">IP Address:</label>
             <input
               type="text"
               id="new-deviceIp"
@@ -210,12 +213,12 @@
             />
           </div>
           <div class="modal-buttons">
-            <button type="submit">Add Device</button>
+            <button type="submit">Add Networks</button>
             <button type="button" @click="showAddDeviceModal = false">Cancel</button>
           </div>
         </form>
       </div>
-    </div>
+    </div>    
   </div>
 </template>
 
@@ -231,7 +234,7 @@ export default {
   name: "App",
   data() {
     return {
-      result: [], // Chứa kết quả từ cả lệnh get và walk
+      result: [],
       error: null,
     };
   },
@@ -271,6 +274,7 @@ export default {
     const devices = ref([]);
     const showAddDeviceModal = ref(false);
     const newDevice = ref({ deviceIp: "", community: "" });
+    const newNetworks = ref({ deviceIp: "", community: "" });
     const history = ref([]);
 
     // Tabs management
@@ -385,41 +389,69 @@ export default {
     };
 
     // Function to fetch SNMP GetNext
-    const fetchSnmpGetNext = async () => {
-    loading.value = true;
-    result.value = [];
-    error.value = null;
+const fetchSnmpGetNext = async () => {
+  loading.value = true;
+  error.value = null;
 
-    try {
-      const response = await axios.post("api/snmp/getnext", null, {
-        params: {
-          deviceIp: form.value.deviceIp,
-          oid: form.value.oid,
-          community: form.value.community,
-        },
-      });
-      result.value = response.data.map((item) => ({
-        oid: item.oid,
-        value: item.value,
-        deviceIp: form.value.deviceIp,
+  try {
+    // Determine the OID and deviceIp to use
+    let oidToFetch;
+    let deviceIpToFetch;
+
+    if (result.value.length > 0) {
+      // Use the last entry from result.value
+      const lastResult = result.value[result.value.length - 1];
+      oidToFetch = lastResult.oid;
+      deviceIpToFetch = lastResult.deviceIp;
+    } else {
+      // Use form values if result is empty
+      oidToFetch = form.value.oid;
+      deviceIpToFetch = form.value.deviceIp;
+    }
+
+    // Perform the GetNext request
+    const response = await axios.post("api/snmp/getnext", null, {
+      params: {
+        deviceIp: deviceIpToFetch,
+        oid: oidToFetch,
         community: form.value.community,
-      }));
-      history.value.push(
-        ...response.data.map((item) => ({
+      },
+    });
+
+    // Check if response.data is empty or invalid
+    if (!response.data || response.data.length === 0) {
+      error.value = "No more SNMP data available.";
+      return;
+    }
+
+    // Map response data (expecting a single item)
+    const newResult = response.data.map((item) => ({
+      oid: item.oid,
+      value: item.value,
+      deviceIp: deviceIpToFetch,
+      community: form.value.community,
+    }));
+
+    // Add to result (only one item expected)
+    result.value.push(...newResult);
+
+    // Add to history with timestamp
+    history.value.push(
+      ...newResult.map((item) => ({
         oid: item.oid,
         value: item.value,
-        deviceIp: form.value.deviceIp,
+        deviceIp: deviceIpToFetch,
         community: form.value.community,
         timestamp: new Date().toLocaleString(),
-        }))
-      );
-      } catch (err) {
-        console.error(err);
-        error.value = err.response?.data?.error || "An error occurred while fetching SNMP data.";
-      } finally {
-      loading.value = false;
-      }
-      };
+      }))
+    );
+  } catch (err) {
+    console.error(err);
+    error.value = err.response?.data?.error || "An error occurred while fetching SNMP data.";
+  } finally {
+    loading.value = false;
+  }
+};
 
     // Function to simulate SNMP Walk
     const fetchSnmpWalk = async () => {
@@ -450,18 +482,16 @@ export default {
       loading.value = false;
       }
     };
-    // Function to scan devices (mock data)
+    // Function to scan devices 
     const scanDevices = async () => {
       loading.value = true;
       toast.info("Scanning for devices...");
 
       try {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        const mockDevices = [
-          { deviceIp: "192.168.1.20", community: "public" },
-          { deviceIp: "192.168.1.21", community: "public" },
-        ];
-        devices.value = [...devices.value, ...mockDevices.filter(d => !devices.value.some(existing => existing.ip === d.ip))];
+        const response = await axios.post('/api/device-scan/scan-subnet'); 
+        const newDevices = response.data
+
+        devices.value = [...devices.value, ...newDevices.filter(d => !devices.value.some(existing => existing.ip === d.ip))];
         toast.success("Device scan completed!");
       } catch (err) {
         toast.error("Failed to scan devices.");
@@ -470,14 +500,34 @@ export default {
       }
     };
 
+      // Function to scan networks 
+      const scanNetworks = async () => {
+      loading.value = true;
+      toast.info("Scanning for networks...");
+
+      try {
+        const response = await axios.post('/api/device-scan/networks'); 
+        const newNetworks = response.data.map(ip => ({
+          deviceIp: ip,
+          community: "public",
+        }));
+
+        devices.value = [...devices.value, ...newNetworks.filter(d => !devices.value.some(existing => existing.ip === d.ip))];
+        toast.success("Networks scan completed!");
+      } catch (err) {
+        toast.error("Failed to scan networks.");
+      } finally {
+        loading.value = false;
+      }
+    };
     // Function to add device manually
     const addDevice = () => {
       if (devices.value.some(d => d.deviceIp === newDevice.value.deviceIp)) {
-        toast.error("Device already exists!");
+        toast.error("Networks already exists!");
         return;
       }
       devices.value.push({ ...newDevice.value });
-      toast.success("Device added successfully!");
+      toast.success("Networks added successfully!");
       showAddDeviceModal.value = false;
       newDevice.value = { deviceIp: "", community: "" };
     };
@@ -486,13 +536,13 @@ export default {
     const useDevice = (device) => {
       form.value.deviceIp = device.deviceIp;
       form.value.community = device.community;
-      toast.info(`Selected device: ${device.deviceIp}`);
+      toast.info(`Selected networks: ${device.deviceIp}`);
     };
 
     // Function to remove device
     const removeDevice = (index) => {
       devices.value.splice(index, 1);
-      toast.success("Device removed!");
+      toast.success("Networks removed!");
     };
 
     // Function to clear form
@@ -556,6 +606,7 @@ export default {
       devices,
       showAddDeviceModal,
       newDevice,
+      newNetworks,
       tabs,
       activeTab,
       mibTree,
@@ -565,6 +616,7 @@ export default {
       fetchSnmpGetNext,
       fetchSnmpWalk,
       scanDevices,
+      scanNetworks,
       addDevice,
       useDevice,
       removeDevice,
