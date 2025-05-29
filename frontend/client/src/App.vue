@@ -21,18 +21,34 @@
         <button @click="clearForm" :disabled="loading" title="Clear Form">
           <i class="fas fa-eraser"></i> Clear
         </button>
-        <button @click="scanDevices" :disabled="loading" title="Scan Devices">
-          <i class="fas fa-search2"></i> Scan Devices
-        </button>
-        <button @click="scanNetworks" :disabled="loading" title="Scan Networks">
-          <i class="fas fa-search1"></i> Scan Networks
-        </button>
-        <button @click="showAddDeviceModal = true" title="Add Device">
-          <i class="fas fa-plus"></i> Add Device
-        </button>
-      </div>
-    </header>
+        <button @click="showNetworkModal = true">Scan</button>
+        <ScanNetworkModal
+          :visible="showNetworkModal"
+          @close="showNetworkModal = false"
+          @networks-scanned="handleScannedNetworks"
+        />
 
+        <ScanDeviceModal
+          :visible="showDeviceModal"
+          :ip="selectedIP"
+          @close="showDeviceModal = false"
+          @scan-device="handleDeviceScan"
+        />
+      </div>     
+    </header>
+        <!-- Tabs for Multiple Queries -->
+        <div class="tabs">
+          <div
+            v-for="(tab, index) in tabs"
+            :key="index"
+            :class="{ 'tab-active': activeTab === index }"
+            @click="activeTab = index"
+          >
+            {{ tab.name }}
+            <span @click.stop="closeTab(index)">×</span>
+          </div>
+          <button @click="addTab">+ New Tab</button>
+        </div>
     <!-- Main Layout -->
     <div class="main-layout">
       <!-- MIB Tree Sidebar -->
@@ -53,19 +69,6 @@
 
       <!-- Main Content -->
       <main class="main-content">
-        <!-- Tabs for Multiple Queries -->
-        <div class="tabs">
-          <div
-            v-for="(tab, index) in tabs"
-            :key="index"
-            :class="{ 'tab-active': activeTab === index }"
-            @click="activeTab = index"
-          >
-            {{ tab.name }}
-            <span @click.stop="closeTab(index)">×</span>
-          </div>
-          <button @click="addTab">+ New Tab</button>
-        </div>
 
         <!-- SNMP Form -->
         <div class="form-card">
@@ -102,34 +105,35 @@
             </div>
           </form>
         </div>
-
-        <!-- Devices List -->
-        <div class="devices-card">
-          <h3>Discovered Networks</h3>
+        <div class="devices-card" ref="resultSection" v-if="networkIPs.length">
+          <h3>Discovered Network</h3>
+          <table>
+              <thead>
+                <tr><th>IP</th><th> Actions </th></tr>
+              </thead>
+            <tbody>
+                <tr v-for="ip in networkIPs" :key="ip">
+                  <td>{{ ip }}</td>
+                  <td><button @click="openDeviceScan(ip)">Use</button></td>
+                </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="devices-card" v-if="discoveredDevices.length">
+          <h3>Discovered Devices</h3>
           <table>
             <thead>
-              <tr>
-                <th>IP Address</th>
-                <th>Community String</th>
-                <th>Actions</th>
-              </tr>
+              <tr><th>Device IP</th><th>Name</th><th>Community</th></tr>
             </thead>
             <tbody>
-              <tr v-for="(device, index) in devices" :key="index">
+              <tr v-for="device in discoveredDevices" :key="device.deviceIp">
                 <td>{{ device.deviceIp }}</td>
+                <td>{{ device.name}}</td>
                 <td>{{ device.community }}</td>
-                <td>
-                  <button @click="useDevice(device)">Use</button>
-                  <button @click="removeDevice(index)">Remove</button>
-                </td>
-              </tr>
-              <tr v-if="!devices.length">
-                <td colspan="3">No Networks found.</td>
               </tr>
             </tbody>
           </table>
         </div>
-
         <!-- Result Table -->
         <div v-if="result && result.length > 0" class="result-card">
           <h3>Result</h3>
@@ -185,39 +189,6 @@
           <p v-if="!history.length">No history available.</p>
         </div>
       </main>
-    </div>
-
-    <!-- Add Networks Modal -->
-    <div v-if="showAddDeviceModal" class="modal">
-      <div class="modal-content">
-        <h3>Add New Networks</h3>
-        <form @submit.prevent="addDevice">
-          <div class="form-group">
-            <label for="new-deviceIp">IP Address:</label>
-            <input
-              type="text"
-              id="new-deviceIp"
-              v-model="newDevice.deviceIp"
-              placeholder="e.g., 192.168.1.20"
-              required
-            />
-          </div>
-          <div class="form-group">
-            <label for="new-community">Community String:</label>
-            <input
-              type="text"
-              id="new-community"
-              v-model="newDevice.community"
-              placeholder="e.g., public"
-              required
-            />
-          </div>
-          <div class="modal-buttons">
-            <button type="submit">Add Networks</button>
-            <button type="button" @click="showAddDeviceModal = false">Cancel</button>
-          </div>
-        </form>
-      </div>
     </div>    
   </div>
 </template>
@@ -228,36 +199,51 @@ import Clipboard from "clipboard";
 import axios from "axios";
 import { ref, onMounted } from 'vue';
 import MibNode from './components/MibNode.vue'; // Import MibNode component
+import ScanNetworkModal from './components/ScanNetworkModal.vue'; // Import ScanNetworkModal component
+import ScanDeviceModal from './components/ScanDeviceModal.vue'; // Import ScanDeviceModal component
 import mibData from "./assets/MIBTree.json"; // Import MIB data from JSON file
 
 export default {
   name: "App",
+  components: {
+      MibNode,
+      ScanNetworkModal,
+      ScanDeviceModal,
+    },
   data() {
     return {
       result: [],
       error: null,
+      devices: [],
+      showNetworkModal: false,
+      showDeviceModal: false,
+      selectedIP: '',
+      discoveredDevices: [],  
+      networkIPs: [],
     };
   },
   methods: {
     handleGetResponse(getResponse) {
-      // Thêm kết quả từ lệnh get vào mảng result
       this.result.push(getResponse);
     },
     handleWalkResponse(walkResponse) {
-      // Thêm kết quả từ lệnh walk (một mảng) vào mảng result
       this.result = this.result.concat(walkResponse);
     },
     copyResult() {
-      // Sao chép kết quả vào clipboard
       const text = JSON.stringify(this.result, null, 2);
       navigator.clipboard.writeText(text).then(() => {
         alert("Copied to clipboard!");
       });
     },
-  },
-  components: {
-      MibNode,
+    openDeviceScan(ip) {
+      this.selectedIP = ip
+      this.showDeviceModal = true
     },
+    handleDeviceScan({ ip, port, community }) {
+      this.discoveredDevices.push({ ip, port, community })
+      this.showDeviceModal = false
+    }
+  },
   setup() {
     const toast = useToast();
     // Form data
@@ -272,10 +258,35 @@ export default {
     const error = ref(null);
     const loading = ref(false);
     const devices = ref([]);
-    const showAddDeviceModal = ref(false);
+    const history = ref([]);
+    const networkIPs = ref([]);
+    const discoveredDevices = ref([]); 
+    // const showAddDeviceModal = ref(false);
     const newDevice = ref({ deviceIp: "", community: "" });
     const newNetworks = ref({ deviceIp: "", community: "" });
-    const history = ref([]);
+    const handleNetworksScanned = (newDevices) => {
+      const uniqueDevices = newDevices.filter(
+        d => !devices.value.some(existing => existing.deviceIp === d.deviceIp)
+      );
+      devices.value.push(...uniqueDevices);
+
+      networkIPs.value = devices.value.map(d => d.deviceIp);
+
+      toast.success("Networks scan completed!");
+    };
+    const handleScannedNetworks = (scannedDevices) => {
+    networkIPs.value = scannedDevices.map(d => d.deviceIp);
+    devices.value = scannedDevices;
+    console.log("Scanned Devices:", scannedDevices);
+    };
+
+    const handleDeviceScan = (results) => {
+      results.forEach(device => {
+        if (!discoveredDevices.value.some(d => d.deviceIp === device.deviceIp)) {
+            discoveredDevices.value.push(device);
+        } 
+      });
+    };
 
     // Tabs management
     const tabs = ref([{ name: "Query 1" }]);
@@ -482,55 +493,6 @@ const fetchSnmpGetNext = async () => {
       loading.value = false;
       }
     };
-    // Function to scan devices 
-    const scanDevices = async () => {
-      loading.value = true;
-      toast.info("Scanning for devices...");
-
-      try {
-        const response = await axios.post('/api/device-scan/scan-subnet'); 
-        const newDevices = response.data
-
-        devices.value = [...devices.value, ...newDevices.filter(d => !devices.value.some(existing => existing.ip === d.ip))];
-        toast.success("Device scan completed!");
-      } catch (err) {
-        toast.error("Failed to scan devices.");
-      } finally {
-        loading.value = false;
-      }
-    };
-
-      // Function to scan networks 
-      const scanNetworks = async () => {
-      loading.value = true;
-      toast.info("Scanning for networks...");
-
-      try {
-        const response = await axios.post('/api/device-scan/networks'); 
-        const newNetworks = response.data.map(ip => ({
-          deviceIp: ip,
-          community: "public",
-        }));
-
-        devices.value = [...devices.value, ...newNetworks.filter(d => !devices.value.some(existing => existing.ip === d.ip))];
-        toast.success("Networks scan completed!");
-      } catch (err) {
-        toast.error("Failed to scan networks.");
-      } finally {
-        loading.value = false;
-      }
-    };
-    // Function to add device manually
-    const addDevice = () => {
-      if (devices.value.some(d => d.deviceIp === newDevice.value.deviceIp)) {
-        toast.error("Networks already exists!");
-        return;
-      }
-      devices.value.push({ ...newDevice.value });
-      toast.success("Networks added successfully!");
-      showAddDeviceModal.value = false;
-      newDevice.value = { deviceIp: "", community: "" };
-    };
 
     // Function to use device (fill form)
     const useDevice = (device) => {
@@ -552,6 +514,8 @@ const fetchSnmpGetNext = async () => {
       form.value.community = "";
       result.value = null;
       error.value = null;
+      discoveredDevices.value = [];
+      networkIPs.value = [];
       toast.success("Form cleared!");
     };
 
@@ -571,19 +535,11 @@ const fetchSnmpGetNext = async () => {
     };
 
     // Tab management functions
+    var a = 2
     const addTab = () => {
-      tabs.value.push({ name: `Query ${tabs.value.length + 1}` });
-      activeTab.value = tabs.value.length - 1;
+      tabs.value.push({ name: `Query ${a}` });
+      a = a + 1;
       clearForm();
-    };
-
-    const closeTab = (index) => {
-      if (tabs.value.length > 1) {
-        tabs.value.splice(index, 1);
-        if (activeTab.value >= tabs.value.length) {
-          activeTab.value = tabs.value.length - 1;
-        }
-      }
     };
 
     // History management
@@ -604,7 +560,6 @@ const fetchSnmpGetNext = async () => {
       error,
       loading,
       devices,
-      showAddDeviceModal,
       newDevice,
       newNetworks,
       tabs,
@@ -615,9 +570,6 @@ const fetchSnmpGetNext = async () => {
       fetchSnmpGetBulk,
       fetchSnmpGetNext,
       fetchSnmpWalk,
-      scanDevices,
-      scanNetworks,
-      addDevice,
       useDevice,
       removeDevice,
       clearForm,
@@ -625,9 +577,13 @@ const fetchSnmpGetNext = async () => {
       selectOid,
       toggleNode,
       addTab,
-      closeTab,
       removeHistory,
       clearHistory,
+      handleNetworksScanned,
+      handleScannedNetworks,
+      networkIPs,
+      handleDeviceScan,
+      discoveredDevices,
     };
   }
 };
@@ -700,7 +656,7 @@ const fetchSnmpGetNext = async () => {
 
 /* MIB Tree Sidebar */
 .mib-tree {
-  width: 320px;
+  width: 360px;
   background: #fff;
   border-right: 1px solid #ccc;
   padding: 10px;
@@ -759,7 +715,7 @@ const fetchSnmpGetNext = async () => {
 .tabs {
   display: flex;
   gap: 5px;
-  margin-bottom: 10px;
+  margin-bottom: 0px;
 }
 
 .tabs div {
