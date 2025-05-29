@@ -10,7 +10,6 @@ public class Device {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String deviceId;
     private String name;
     private String ipAddress;
     private String community;
@@ -22,21 +21,13 @@ public class Device {
         this.name = name;
         this.ipAddress = ipAddress;
     }
-    // --- Getters & Setters ---
-    public Long getIp() {
-        return id;
-    }
-
-    public void setIp(Long id) {
-        this.id = id;
-    }
 
     public String getDeviceIp() {
-        return deviceId;
+        return ipAddress;
     }
 
-    public void setDeviceIp(String deviceId) {
-        this.deviceId = deviceId;
+    public void setDeviceIp(String ipAddress) {
+        this.ipAddress = ipAddress;
     }
 
     public String getName() {
