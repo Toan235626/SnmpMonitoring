@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SnmpGetNext {
-    public SnmpRecord getNextAsRecord(String deviceIp, String community, String oid, int port) throws Exception {
+    public SnmpRecord getNextAsRecord(String deviceIp, String community, String oid, int port, String version) throws Exception {
         TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping();
         transport.listen();
 
@@ -21,7 +21,16 @@ public class SnmpGetNext {
         target.setAddress(new UdpAddress(deviceIp + "/" + port));
         target.setRetries(2);
         target.setTimeout(1500);
-        target.setVersion(SnmpConstants.version2c);
+
+        if (version.equals("1")) {
+            target.setVersion(SnmpConstants.version1);
+        } else if (version.equals("2c")) {
+            target.setVersion(SnmpConstants.version2c);
+        } else if (version.equals("3")) {
+            target.setVersion(SnmpConstants.version3);
+        } else {
+            throw new IllegalArgumentException("Unsupported SNMP version: " + version);
+        }
 
         PDU pdu = new PDU();
         pdu.add(new VariableBinding(new OID(oid)));
