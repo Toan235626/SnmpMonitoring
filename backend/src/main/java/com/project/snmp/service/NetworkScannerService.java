@@ -16,8 +16,8 @@ public class NetworkScannerService {
     @Autowired
     private SnmpMainService snmpMainService;
 
-    public List<Device> scanSubnet(String baseIp, String community, int port) {
-        ExecutorService executor = Executors.newFixedThreadPool(100); // 20 threads, adjust as needed
+    public List<Device> scanSubnet(String baseIp, String community, int port, String version) {
+        ExecutorService executor = Executors.newFixedThreadPool(400); // 20 threads, adjust as needed
         List<Device> foundDevices = java.util.Collections.synchronizedList(new java.util.ArrayList<>());
         
         for (int i = 1; i <= 254; i++) {
@@ -25,7 +25,7 @@ public class NetworkScannerService {
             executor.submit(() -> {
                 System.out.println("Scanning IP: " + deviceIp);
                 try {
-                    SnmpRecord result = snmpMainService.getSnmpValue(deviceIp, community, "1.3.6.1.2.1.1.1.0", port);
+                    SnmpRecord result = snmpMainService.getSnmpValue(deviceIp, community, "1.3.6.1.2.1.1.1.0", port, version);
                     if (result != null) {
                         String name = result.getValue();
                         Device device = new Device();

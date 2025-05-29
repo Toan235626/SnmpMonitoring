@@ -40,8 +40,9 @@ public class DeviceScanController {
     public List<Device> scanSelectedSubnet(
                 @RequestParam("baseIp") String baseIp,
                 @RequestParam("community") String community,
-                @RequestParam(value = "port", required = false, defaultValue = "161") int port) {
-        return networkScannerService.scanSubnet(baseIp, community, port);
+                @RequestParam(value = "port", required = false, defaultValue = "161") int port,
+                @RequestParam("version") String version) {
+        return networkScannerService.scanSubnet(baseIp, community, port, version);
     }
 
 

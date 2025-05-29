@@ -22,7 +22,7 @@ import java.util.List;
 @Component
 public class SnmpWalk {
 
-    public SnmpRecord[] walkAsRecords(String deviceIp, String community, String rootOid, int port) throws IOException {
+    public SnmpRecord[] walkAsRecords(String deviceIp, String community, String rootOid, int port, String version) throws IOException {
         TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping();
         transport.listen();
 
