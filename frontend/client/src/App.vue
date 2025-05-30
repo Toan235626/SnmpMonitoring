@@ -9,10 +9,18 @@
         <button @click="fetchSnmpData" :disabled="loading" title="SNMP Get">
           <i class="fas fa-play"></i> Get
         </button>
-        <button @click="fetchSnmpGetNext" :disabled="loading" title="SNMP GetNext">
+        <button
+          @click="fetchSnmpGetNext"
+          :disabled="loading"
+          title="SNMP GetNext"
+        >
           <i class="fas fa-step-forward"></i> GetNext
         </button>
-        <button @click="fetchSnmpGetBulk" :disabled="loading" title="SNMP GetBulk">
+        <button
+          @click="fetchSnmpGetBulk"
+          :disabled="loading"
+          title="SNMP GetBulk"
+        >
           <i class="fas fa-list"></i> GetBulk
         </button>
         <button @click="fetchSnmpWalk" :disabled="loading" title="SNMP Walk">
@@ -34,21 +42,21 @@
           @close="showDeviceModal = false"
           @scan-device="handleDeviceScan"
         />
-      </div>     
+      </div>
     </header>
-        <!-- Tabs for Multiple Queries -->
-        <div class="tabs">
-          <div
-            v-for="(tab, index) in tabs"
-            :key="index"
-            :class="{ 'tab-active': activeTab === index }"
-            @click="activeTab = index"
-          >
-            {{ tab.name }}
-            <span @click.stop="closeTab(index)">×</span>
-          </div>
-          <button @click="addTab">+ New Tab</button>
-        </div>
+    <!-- Tabs for Multiple Queries -->
+    <div class="tabs">
+      <div
+        v-for="(tab, index) in tabs"
+        :key="index"
+        :class="{ 'tab-active': activeTab === index }"
+        @click="activeTab = index"
+      >
+        {{ tab.name }}
+        <span @click.stop="closeTab(index)">×</span>
+      </div>
+      <button @click="addTab">+ New Tab</button>
+    </div>
     <!-- Main Layout -->
     <div class="main-layout">
       <!-- MIB Tree Sidebar -->
@@ -69,7 +77,6 @@
 
       <!-- Main Content -->
       <main class="main-content">
-
         <!-- SNMP Form -->
         <div class="form-card">
           <form @submit.prevent="fetchSnmpData" class="form">
@@ -108,14 +115,17 @@
         <div class="devices-card" ref="resultSection" v-if="networkIPs.length">
           <h3>Discovered Network</h3>
           <table>
-              <thead>
-                <tr><th>IP</th><th> Actions </th></tr>
-              </thead>
+            <thead>
+              <tr>
+                <th>IP</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
             <tbody>
-                <tr v-for="ip in networkIPs" :key="ip">
-                  <td>{{ ip }}</td>
-                  <td><button @click="openDeviceScan(ip)">Use</button></td>
-                </tr>
+              <tr v-for="ip in networkIPs" :key="ip">
+                <td>{{ ip }}</td>
+                <td><button @click="openDeviceScan(ip)">Use</button></td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -123,12 +133,16 @@
           <h3>Discovered Devices</h3>
           <table>
             <thead>
-              <tr><th>Device IP</th><th>Name</th><th>Community</th></tr>
+              <tr>
+                <th>Device IP</th>
+                <th>Name</th>
+                <th>Community</th>
+              </tr>
             </thead>
             <tbody>
               <tr v-for="device in discoveredDevices" :key="device.deviceIp">
                 <td>{{ device.deviceIp }}</td>
-                <td>{{ device.name}}</td>
+                <td>{{ device.name }}</td>
                 <td>{{ device.community }}</td>
               </tr>
             </tbody>
@@ -155,7 +169,9 @@
               </tr>
             </tbody>
           </table>
-          <button class="copy-btn" @click="copyResult">Copy to Clipboard</button>
+          <button class="copy-btn" @click="copyResult">
+            Copy to Clipboard
+          </button>
         </div>
         <div v-if="error" class="error-card">
           <h3>Error</h3>
@@ -165,7 +181,9 @@
         <!-- SNMP History -->
         <div class="history-card">
           <h3>SNMP History</h3>
-          <button @click="clearHistory" v-if="history.length">Clear All History</button>
+          <button @click="clearHistory" v-if="history.length">
+            Clear All History
+          </button>
           <table v-if="history.length">
             <thead>
               <tr>
@@ -189,7 +207,7 @@
           <p v-if="!history.length">No history available.</p>
         </div>
       </main>
-    </div>    
+    </div>
   </div>
 </template>
 
@@ -197,19 +215,19 @@
 import { useToast } from "vue-toastification";
 import Clipboard from "clipboard";
 import axios from "axios";
-import { ref, onMounted } from 'vue';
-import MibNode from './components/MibNode.vue'; // Import MibNode component
-import ScanNetworkModal from './components/ScanNetworkModal.vue'; // Import ScanNetworkModal component
-import ScanDeviceModal from './components/ScanDeviceModal.vue'; // Import ScanDeviceModal component
+import { ref, onMounted } from "vue";
+import MibNode from "./components/MibNode.vue"; // Import MibNode component
+import ScanNetworkModal from "./components/ScanNetworkModal.vue"; // Import ScanNetworkModal component
+import ScanDeviceModal from "./components/ScanDeviceModal.vue"; // Import ScanDeviceModal component
 import mibData from "./assets/MIBTree.json"; // Import MIB data from JSON file
 
 export default {
   name: "App",
   components: {
-      MibNode,
-      ScanNetworkModal,
-      ScanDeviceModal,
-    },
+    MibNode,
+    ScanNetworkModal,
+    ScanDeviceModal,
+  },
   data() {
     return {
       result: [],
@@ -217,8 +235,8 @@ export default {
       devices: [],
       showNetworkModal: false,
       showDeviceModal: false,
-      selectedIP: '',
-      discoveredDevices: [],  
+      selectedIP: "",
+      discoveredDevices: [],
       networkIPs: [],
     };
   },
@@ -236,13 +254,13 @@ export default {
       });
     },
     openDeviceScan(ip) {
-      this.selectedIP = ip
-      this.showDeviceModal = true
+      this.selectedIP = ip;
+      this.showDeviceModal = true;
     },
     handleDeviceScan({ ip, port, community }) {
-      this.discoveredDevices.push({ ip, port, community })
-      this.showDeviceModal = false
-    }
+      this.discoveredDevices.push({ ip, port, community });
+      this.showDeviceModal = false;
+    },
   },
   setup() {
     const toast = useToast();
@@ -260,31 +278,34 @@ export default {
     const devices = ref([]);
     const history = ref([]);
     const networkIPs = ref([]);
-    const discoveredDevices = ref([]); 
+    const discoveredDevices = ref([]);
     // const showAddDeviceModal = ref(false);
     const newDevice = ref({ deviceIp: "", community: "" });
     const newNetworks = ref({ deviceIp: "", community: "" });
     const handleNetworksScanned = (newDevices) => {
       const uniqueDevices = newDevices.filter(
-        d => !devices.value.some(existing => existing.deviceIp === d.deviceIp)
+        (d) =>
+          !devices.value.some((existing) => existing.deviceIp === d.deviceIp)
       );
       devices.value.push(...uniqueDevices);
 
-      networkIPs.value = devices.value.map(d => d.deviceIp);
+      networkIPs.value = devices.value.map((d) => d.deviceIp);
 
       toast.success("Networks scan completed!");
     };
     const handleScannedNetworks = (scannedDevices) => {
-    networkIPs.value = scannedDevices.map(d => d.deviceIp);
-    devices.value = scannedDevices;
-    console.log("Scanned Devices:", scannedDevices);
+      networkIPs.value = scannedDevices.map((d) => d.deviceIp);
+      devices.value = scannedDevices;
+      console.log("Scanned Devices:", scannedDevices);
     };
 
     const handleDeviceScan = (results) => {
-      results.forEach(device => {
-        if (!discoveredDevices.value.some(d => d.deviceIp === device.deviceIp)) {
-            discoveredDevices.value.push(device);
-        } 
+      results.forEach((device) => {
+        if (
+          !discoveredDevices.value.some((d) => d.deviceIp === device.deviceIp)
+        ) {
+          discoveredDevices.value.push(device);
+        }
       });
     };
 
@@ -293,11 +314,11 @@ export default {
     const activeTab = ref(0);
     // MIB Tree data
     const processMibData = (data) => {
-      return data.map(node => ({
+      return data.map((node) => ({
         name: node.name,
         oid: node.oid,
-        expanded: node.expanded || false, 
-        children: node.children ? processMibData(node.children) : []
+        expanded: node.expanded || false,
+        children: node.children ? processMibData(node.children) : [],
       }));
     };
     // Process MIB data to create a tree structure
@@ -324,42 +345,44 @@ export default {
       selectOid(node.oid);
     };
 
-    // Function to fetch SNMP data 
+    // Function to fetch SNMP data
     const fetchSnmpData = async () => {
-    loading.value = true;
-    result.value = [];
-    error.value = null;
+      loading.value = true;
+      result.value = [];
+      error.value = null;
 
-    try {
-      const response = await axios.post("api/snmp/get", null, {
-        params: {
+      try {
+        const response = await axios.post("api/snmp/get", null, {
+          params: {
+            deviceIp: form.value.deviceIp,
+            oid: form.value.oid,
+            community: form.value.community,
+          },
+        });
+        result.value = response.data.map((item) => ({
+          oid: item.oid,
+          value: item.value,
           deviceIp: form.value.deviceIp,
-          oid: form.value.oid,
           community: form.value.community,
-        },
-      });
-      result.value = response.data.map((item) => ({
-        oid: item.oid,
-        value: item.value,
-        deviceIp: form.value.deviceIp,
-        community: form.value.community,
-      }));
-      history.value.push(
-        ...response.data.map((item) => ({
-        oid: item.oid,
-        value: item.value,
-        deviceIp: form.value.deviceIp,
-        community: form.value.community,
-        timestamp: new Date().toLocaleString(),
-        }))
-      );
+        }));
+        history.value.push(
+          ...response.data.map((item) => ({
+            oid: item.oid,
+            value: item.value,
+            deviceIp: form.value.deviceIp,
+            community: form.value.community,
+            timestamp: new Date().toLocaleString(),
+          }))
+        );
       } catch (err) {
         console.error(err);
-        error.value = err.response?.data?.error || "An error occurred while fetching SNMP data.";
+        error.value =
+          err.response?.data?.error ||
+          "An error occurred while fetching SNMP data.";
       } finally {
-      loading.value = false;
+        loading.value = false;
       }
-      };
+    };
 
     // Function to fetch SNMP GetBulk
     const fetchSnmpGetBulk = async () => {
@@ -368,101 +391,105 @@ export default {
       error.value = null;
 
       try {
-      const response = await axios.post("/api/snmp/bulk", null, {
-        params: {
-        deviceIp: form.value.deviceIp,
-        oid: form.value.oid,
-        community: form.value.community,
-        },
-      });
+        const response = await axios.post("/api/snmp/bulk", null, {
+          params: {
+            deviceIp: form.value.deviceIp,
+            oid: form.value.oid,
+            community: form.value.community,
+          },
+        });
 
-      result.value = response.data.map((item) => ({
-        oid: item.oid,
-        value: item.value,
-        deviceIp: form.value.deviceIp,
-        community: form.value.community,
-      }));
+        result.value = response.data.map((item) => ({
+          oid: item.oid,
+          value: item.value,
+          deviceIp: form.value.deviceIp,
+          community: form.value.community,
+        }));
 
-      history.value.push(
-        ...response.data.map((item) => ({
-        oid: item.oid,
-        value: item.value,
-        deviceIp: form.value.deviceIp,
-        community: form.value.community,
-        timestamp: new Date().toLocaleString(),
-        }))
-      );
+        history.value.push(
+          ...response.data.map((item) => ({
+            oid: item.oid,
+            value: item.value,
+            deviceIp: form.value.deviceIp,
+            community: form.value.community,
+            timestamp: new Date().toLocaleString(),
+          }))
+        );
       } catch (err) {
-      error.value = err.response?.data?.error || "An error occurred while performing SNMP GetBulk.";
+        error.value =
+          err.response?.data?.error ||
+          "An error occurred while performing SNMP GetBulk.";
       } finally {
-      loading.value = false;
+        loading.value = false;
       }
     };
 
     // Function to fetch SNMP GetNext
-const fetchSnmpGetNext = async () => {
-  loading.value = true;
-  error.value = null;
+    const fetchSnmpGetNext = async () => {
+      loading.value = true;
+      error.value = null;
 
-  try {
-    // Determine the OID and deviceIp to use
-    let oidToFetch;
-    let deviceIpToFetch;
+      try {
+        // Determine the OID and deviceIp to use
+        let oidToFetch;
+        let deviceIpToFetch;
 
-    if (result.value.length > 0) {
-      // Use the last entry from result.value
-      const lastResult = result.value[result.value.length - 1];
-      oidToFetch = lastResult.oid;
-      deviceIpToFetch = lastResult.deviceIp;
-    } else {
-      // Use form values if result is empty
-      oidToFetch = form.value.oid;
-      deviceIpToFetch = form.value.deviceIp;
-    }
+        if (result.value.length > 0) {
+          // Use the last entry from result.value
+          const lastResult = result.value[result.value.length - 1];
+          oidToFetch = lastResult.oid;
+          deviceIpToFetch = lastResult.deviceIp;
+        } else {
+          // Use form values if result is empty
+          oidToFetch = form.value.oid;
+          deviceIpToFetch = form.value.deviceIp;
+        }
 
-    // Perform the GetNext request
-    const response = await axios.post("api/snmp/getnext", null, {
-      params: {
-        deviceIp: deviceIpToFetch,
-        oid: oidToFetch,
-        community: form.value.community,
-      },
-    });
+        // Perform the GetNext request
+        const response = await axios.post("api/snmp/getnext", null, {
+          params: {
+            deviceIp: deviceIpToFetch,
+            oid: oidToFetch,
+            community: form.value.community,
+          },
+        });
 
-    // Check if response.data is empty or invalid
-    if (!response.data || response.data.length === 0) {
-      error.value = "No more SNMP data available.";
-      return;
-    }
+        // Check if response.data is empty or invalid
+        if (!response.data || response.data.length === 0) {
+          error.value = "No more SNMP data available.";
+          return;
+        }
 
-    // Map response data (expecting a single item)
-    const newResult = response.data.map((item) => ({
-      oid: item.oid,
-      value: item.value,
-      deviceIp: deviceIpToFetch,
-      community: form.value.community,
-    }));
+        // Map response data (expecting a single item)
+        const newResult = response.data.map((item) => ({
+          oid: item.oid,
+          value: item.value,
+          deviceIp: deviceIpToFetch,
+          community: form.value.community,
+        }));
 
-    // Add to result (only one item expected)
-    result.value.push(...newResult);
+        // Add to result (only one item expected)
+        result.value.push(...newResult);
 
-    // Add to history with timestamp
-    history.value.push(
-      ...newResult.map((item) => ({
-        oid: item.oid,
-        value: item.value,
-        deviceIp: deviceIpToFetch,
-        community: form.value.community,
-        timestamp: new Date().toLocaleString(),
-      }))
-    );
-  } catch (err) {
-    console.error(err);
-    error.value = err.response?.data?.error || "An error occurred while fetching SNMP data.";
-  } finally {
-    loading.value = false;
-  }
-};
+        // Add to history with timestamp
+        history.value.push(
+          ...newResult.map((item) => ({
+            oid: item.oid,
+            value: item.value,
+            deviceIp: deviceIpToFetch,
+            community: form.value.community,
+            timestamp: new Date().toLocaleString(),
+          }))
+        );
+      } catch (err) {
+        console.error(err);
+        error.value =
+          err.response?.data?.error ||
+          "An error occurred while fetching SNMP data.";
+      } finally {
+        loading.value = false;
+      }
+    };
 
     // Function to simulate SNMP Walk
     const fetchSnmpWalk = async () => {
@@ -471,26 +498,27 @@ const fetchSnmpGetNext = async () => {
       error.value = null;
 
       try {
-      const response = await axios.post("/api/snmp/walk", null, {
-        params: {
-        deviceIp: form.value.deviceIp,
-        oid: form.value.oid,
-        community: form.value.community,
-        },
-      });
+        const response = await axios.post("/api/snmp/walk", null, {
+          params: {
+            deviceIp: form.value.deviceIp,
+            oid: form.value.oid,
+            community: form.value.community,
+          },
+        });
 
-      // Map the response data to match the result table structure
-      result.value = response.data.map((item) => ({
-        oid: item.oid,
-        value: item.value,
-        deviceIp: form.value.deviceIp,
-        community: form.value.community,
-      }));
+        // Map the response data to match the result table structure
+        result.value = response.data.map((item) => ({
+          oid: item.oid,
+          value: item.value,
+          deviceIp: form.value.deviceIp,
+          community: form.value.community,
+        }));
       } catch (err) {
-      error.value =
-        err.response?.data?.error || "An error occurred while performing SNMP Walk.";
+        error.value =
+          err.response?.data?.error ||
+          "An error occurred while performing SNMP Walk.";
       } finally {
-      loading.value = false;
+        loading.value = false;
       }
     };
 
@@ -535,7 +563,7 @@ const fetchSnmpGetNext = async () => {
     };
 
     // Tab management functions
-    var a = 2
+    var a = 2;
     const addTab = () => {
       tabs.value.push({ name: `Query ${a}` });
       a = a + 1;
@@ -552,7 +580,6 @@ const fetchSnmpGetNext = async () => {
       history.value = [];
       toast.success("History cleared!");
     };
-
 
     return {
       form,
@@ -585,7 +612,7 @@ const fetchSnmpGetNext = async () => {
       handleDeviceScan,
       discoveredDevices,
     };
-  }
+  },
 };
 </script>
 

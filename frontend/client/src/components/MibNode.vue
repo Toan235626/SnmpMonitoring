@@ -4,7 +4,9 @@
       :class="{ 'node-selected': selectedOid === node.oid }"
       @click="handleNodeClick"
     >
-      <i :class="node.expanded ? 'fas fa-chevron-down' : 'fas fa-chevron-right'"></i>
+      <i
+        :class="node.expanded ? 'fas fa-chevron-down' : 'fas fa-chevron-right'"
+      ></i>
       {{ node.name }} ({{ node.oid }})
     </span>
     <ul v-if="node.expanded && node.children && node.children.length">
@@ -21,7 +23,7 @@
 
 <script>
 export default {
-  name: 'MibNode',
+  name: "MibNode",
   props: {
     node: {
       type: Object,
@@ -32,10 +34,10 @@ export default {
       required: true,
     },
   },
-  emits: ['select-oid'],
+  emits: ["select-oid"],
   methods: {
     handleNodeClick() {
-      this.$emit('select-oid', this.node.oid);
+      this.$emit("select-oid", this.node.oid);
       if (this.node.children && this.node.children.length > 0) {
         this.node.expanded = !this.node.expanded;
       }
