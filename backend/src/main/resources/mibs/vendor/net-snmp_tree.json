@@ -1,0 +1,145 @@
+{
+    "name": "netSnmp",
+    "oid": "1.3.6.1.4.1.8072",
+    "description": "Top-level infrastructure of the Net-SNMP project enterprise MIB tree",
+    "access": "",
+    "syntax": "",
+    "type": "moduleidentity",
+    "category": "",
+    "children": [
+        {
+            "name": "netSnmpObjects",
+            "oid": "1.3.6.1.4.1.8072.1",
+            "description": "",
+            "access": "",
+            "syntax": "",
+            "type": "objectidentity",
+            "category": "",
+            "children": []
+        },
+        {
+            "name": "netSnmpEnumerations",
+            "oid": "1.3.6.1.4.1.8072.3",
+            "description": "",
+            "access": "",
+            "syntax": "",
+            "type": "objectidentity",
+            "category": "",
+            "children": [
+                {
+                    "name": "netSnmpModuleIDs",
+                    "oid": "1.3.6.1.4.1.8072.3.1",
+                    "description": "",
+                    "access": "",
+                    "syntax": "",
+                    "type": "objectidentity",
+                    "category": "",
+                    "children": []
+                },
+                {
+                    "name": "netSnmpAgentOIDs",
+                    "oid": "1.3.6.1.4.1.8072.3.2",
+                    "description": "",
+                    "access": "",
+                    "syntax": "",
+                    "type": "objectidentity",
+                    "category": "",
+                    "children": []
+                },
+                {
+                    "name": "netSnmpDomains",
+                    "oid": "1.3.6.1.4.1.8072.3.3",
+                    "description": "",
+                    "access": "",
+                    "syntax": "",
+                    "type": "objectidentity",
+                    "category": "",
+                    "children": []
+                }
+            ]
+        },
+        {
+            "name": "netSnmpNotificationPrefix",
+            "oid": "1.3.6.1.4.1.8072.4",
+            "description": "",
+            "access": "",
+            "syntax": "",
+            "type": "objectidentity",
+            "category": "",
+            "children": [
+                {
+                    "name": "netSnmpNotifications",
+                    "oid": "1.3.6.1.4.1.8072.4.0",
+                    "description": "",
+                    "access": "",
+                    "syntax": "",
+                    "type": "objectidentity",
+                    "category": "",
+                    "children": []
+                },
+                {
+                    "name": "netSnmpNotificationObjects",
+                    "oid": "1.3.6.1.4.1.8072.4.1",
+                    "description": "",
+                    "access": "",
+                    "syntax": "",
+                    "type": "objectidentity",
+                    "category": "",
+                    "children": []
+                }
+            ]
+        },
+        {
+            "name": "netSnmpConformance",
+            "oid": "1.3.6.1.4.1.8072.5",
+            "description": "",
+            "access": "",
+            "syntax": "",
+            "type": "objectidentity",
+            "category": "",
+            "children": [
+                {
+                    "name": "netSnmpCompliances",
+                    "oid": "1.3.6.1.4.1.8072.5.1",
+                    "description": "",
+                    "access": "",
+                    "syntax": "",
+                    "type": "objectidentity",
+                    "category": "",
+                    "children": []
+                },
+                {
+                    "name": "netSnmpGroups",
+                    "oid": "1.3.6.1.4.1.8072.5.2",
+                    "description": "",
+                    "access": "",
+                    "syntax": "",
+                    "type": "objectidentity",
+                    "category": "",
+                    "children": []
+                }
+            ]
+        },
+        {
+            "name": "netSnmpExperimental",
+            "oid": "1.3.6.1.4.1.8072.9999",
+            "description": "",
+            "access": "",
+            "syntax": "",
+            "type": "objectidentity",
+            "category": "",
+            "children": [
+                {
+                    "name": "netSnmpPlaypen",
+                    "oid": "1.3.6.1.4.1.8072.9999.9999",
+                    "description": "",
+                    "access": "",
+                    "syntax": "",
+                    "type": "objectidentity",
+                    "category": "",
+                    "children": []
+                }
+            ]
+        }
+    ]
+}
