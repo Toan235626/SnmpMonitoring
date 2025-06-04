@@ -32,7 +32,7 @@ export const networkStore = defineStore('network', {
         this.isLoading = true;
         this.error = null;
         try {
-          const response = await axios.post('/api/scan-subnet', null, {
+          const response = await axios.post('/api/device-scan/scan-subnet', null, {
             params: {
               baseIp,
               community,
@@ -43,7 +43,7 @@ export const networkStore = defineStore('network', {
           console.log('Scan Devices Response:', response.data);
           this.devices = response.data.map((device, index) => ({
             id: `d${networkId}-${index + 1}`,
-            name: device.name || `Device ${index + 1}`,
+            name: (device.name || `Device ${index + 1}`).substring(0, 30),
             ipAddress: device.ipAddress || `${baseIp}.${index + 1}`,
           }));
         } catch (err) {
