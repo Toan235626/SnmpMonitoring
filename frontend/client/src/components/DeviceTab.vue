@@ -14,16 +14,12 @@
           variant="outlined"
           class="search-input"
         />
-        <v-btn color="primary" @click="search">Search</v-btn>
+        <v-btn color = "primary" @click="performAction('get')">Get</v-btn>
+        <v-btn color = "primary" @click="performAction('getNext')">GetNext</v-btn>
+        <v-btn color = "primary" @click="performAction('getBulk')">GetBulk</v-btn>
+        <v-btn color = "primary" @click="performAction('walk')">Walk</v-btn>
       </div>
   
-      <!-- Nút tác vụ -->
-      <div class="actions">
-        <v-btn @click="performAction('get')">Get</v-btn>
-        <v-btn @click="performAction('getNext')">GetNext</v-btn>
-        <v-btn @click="performAction('getBulk')">GetBulk</v-btn>
-        <v-btn @click="performAction('walk')">Walk</v-btn>
-      </div>
   
       <!-- Trạng thái loading -->
       <v-progress-circular
@@ -73,7 +69,7 @@
   
   <script>
   import { ref, computed } from 'vue';
-  import { deviceStore } from '@/stores/device'; // Import store cụ thể
+  import { deviceStore } from '@/stores/device';
   
   export default {
     props: {
@@ -83,24 +79,35 @@
       },
     },
     setup(props) {
-      const store = deviceStore(); // Sử dụng store cụ thể: deviceStore
+      const store = deviceStore();
+      const oid = ref('1.3.6.1.2.1.1.1.0'); // Mặc định OID
+      const community = ref('public'); // Mặc định community
   
-      // Lọc lịch sử tìm kiếm theo deviceId
       const deviceHistory = computed(() =>
         store.searchHistory.filter((history) => history.deviceId === props.deviceId)
       );
   
       return {
-        oid: ref(''),
-        community: ref(''),
+        oid,
+        community,
         results: computed(() => store.results[props.deviceId] || []),
         deviceHistory,
         isLoading: computed(() => store.isLoading),
-        search: async () => {
-          await store.search(props.deviceId, oid.value, community.value);
-        },
         performAction: async (action) => {
-          await store.performAction(action, props.deviceId);
+          switch (action) {
+            case 'get':
+              await store.fetchSnmpData(props.deviceId);
+              break;
+            case 'getNext':
+              await store.fetchSnmpGetNext(props.deviceId);
+              break;
+            case 'getBulk':
+              await store.fetchSnmpGetBulk(props.deviceId);
+              break;
+            case 'walk':
+              await store.fetchSnmpWalk(props.deviceId);
+              break;
+          }
         },
       };
     },
