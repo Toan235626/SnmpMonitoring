@@ -19,44 +19,114 @@ public class SnmpMainService {
     @Autowired
     private SnmpWalk snmpWalk;
 
+    public SnmpRecord getSnmpValue(String deviceIp,String community, String oid,int port,
+                                   String version, String... v3params) throws Exception {
+        SnmpRecord record;
 
-    public SnmpRecord getSnmpValue(String deviceIp, String community,String oid, int port, String version) throws Exception {
-        SnmpRecord record = snmpGet.getAsRecord(deviceIp, community, oid, port, version);
+        if ("3".equals(version)) {
+            String username = v3params[0];
+            String authPass = v3params[1];
+            String privPass = v3params[2];
+            String authProtocol = v3params[3];
+            String privProtocol = v3params[4];
+            int securityLevel = Integer.parseInt(v3params[5]);
+            record = snmpGet.getAsRecordv3(deviceIp, username, authPass, privPass,
+                    authProtocol, privProtocol, securityLevel, oid, port);
+        } else {
+            record = snmpGet.getAsRecordv12(deviceIp, community, oid, port, version);
+        }
 
-        // Nếu value là lỗi SNMP → thử lại với .0
         String value = record.getValue();
         System.out.println("SNMP GET: " + record.getOid() + " - " + value);
         if (value == null || value.isEmpty() || value.equals("noSuchObject") || value.equals("Null")) {
             System.out.println("SNMP GET: " + record.getOid() + " - " + value + " → Fallback to .0");
-            record = snmpGet.getAsRecord(deviceIp, community, oid + ".0", port, version);
-            value = record.getValue();
+            if ("3".equals(version)) {
+                String username = v3params[0];
+                String authPass = v3params[1];
+                String privPass = v3params[2];
+                String authProtocol = v3params[3];
+                String privProtocol = v3params[4];
+                int securityLevel = Integer.parseInt(v3params[5]);
+                record = snmpGet.getAsRecordv3(deviceIp, username, authPass, privPass,
+                        authProtocol, privProtocol, securityLevel, oid + ".0", port);
+            } else {
+                record = snmpGet.getAsRecordv12(deviceIp, community, oid + ".0", port, version);
+            }
         }
-
         return record;
     }
 
-    public SnmpRecord getSnmpNextValue(String deviceIp, String community,String oid, int port, String version) throws Exception {
-        SnmpRecord getNextResult = snmpGetNext.getNextAsRecord(deviceIp, community,oid, port, version);
+    public SnmpRecord getSnmpNextValue(String deviceIp, String community, String oid, int port,
+                                       String version, String... v3params) throws Exception {
+        SnmpRecord getNextResult;
 
-        // Nếu value là lỗi SNMP → thử lại với .0
+        if ("3".equals(version)) {
+            String username = v3params[0];
+            String authPass = v3params[1];
+            String privPass = v3params[2];
+            String authProtocol = v3params[3];
+            String privProtocol = v3params[4];
+            int securityLevel = Integer.parseInt(v3params[5]);
+            getNextResult = snmpGetNext.getNextv3(deviceIp, username, authPass, privPass,
+                    authProtocol, privProtocol, securityLevel, oid, port);
+        } else {
+            getNextResult = snmpGetNext.getNextv12(deviceIp, community, oid, port, version);
+        }
+
         String value = getNextResult.getValue();
         System.out.println("SNMP GETNEXT: " + getNextResult.getOid() + " - " + value);
         if (value == null || value.isEmpty() || value.equals("noSuchObject") || value.equals("Null")) {
             System.out.println("SNMP GETNEXT: " + getNextResult.getOid() + " - " + value + " → Fallback to .0");
-            getNextResult = snmpGetNext.getNextAsRecord(deviceIp, community, oid + ".0", port, version);
-            value = getNextResult.getValue();
+            if ("3".equals(version)) {
+                String username = v3params[0];
+                String authPass = v3params[1];
+                String privPass = v3params[2];
+                String authProtocol = v3params[3];
+                String privProtocol = v3params[4];
+                int securityLevel = Integer.parseInt(v3params[5]);
+                getNextResult = snmpGetNext.getNextv3(deviceIp, username, authPass, privPass,
+                        authProtocol, privProtocol, securityLevel, oid + ".0", port);
+            } else {
+                getNextResult = snmpGetNext.getNextv12(deviceIp, community, oid + ".0", port, version);
+            }
         }
-
         return getNextResult;
     }
-    public SnmpRecord[] getSnmpBulkValue(String deviceIp, String community,String oid, int port, String version) throws Exception {
-        SnmpRecord[] getBulkResult = snmpGetBulk.getBulkAsRecords(deviceIp, community,oid, port, version);
 
-        return getBulkResult;
-    } 
-    public SnmpRecord[] getSnmpWalkValue(String deviceIp, String community,String oid, int port, String version) throws Exception {
-        SnmpRecord[] getWalkResult = snmpWalk.walkAsRecords(deviceIp, community,oid, port, version);
+    public SnmpRecord[] getSnmpBulkValue(String deviceIp, String community, String oid, int port,
+                                        String version, String... v3params) throws Exception {
+        if ("3".equals(version)) {
+            String username = v3params[0];
+            String authPass = v3params[1];
+            String privPass = v3params[2];
+            String authProtocol = v3params[3];
+            String privProtocol = v3params[4];
+            int securityLevel = Integer.parseInt(v3params[5]);
+            return snmpGetBulk.getBulkv3(deviceIp, username, authPass, privPass,
+                    authProtocol, privProtocol, securityLevel, oid, port);
+        } else {
+            return snmpGetBulk.getBulkv2(deviceIp, community, oid, port);
+        }
+    }
 
-        return getWalkResult;
+    public SnmpRecord[] getSnmpWalkValue(String deviceIp, String community, String rootOid, int port,
+                                         String version, String... v3params) throws Exception {
+        switch (version) {
+            case "1":
+                return snmpWalk.walkV1Records(deviceIp, community, rootOid, port);
+            case "2c":
+                return snmpWalk.walkV2Records(deviceIp, community, rootOid, port);
+            case "3":
+                String username = v3params[0];
+                String authPass = v3params[1];
+                String privPass = v3params[2];
+                String authProtocol = v3params[3];
+                String privProtocol = v3params[4];
+                int securityLevel = Integer.parseInt(v3params[5]);
+                return snmpWalk.walkV3Records(deviceIp, username, authPass, privPass,
+                        authProtocol, privProtocol, securityLevel, rootOid, port);
+            default:
+                throw new IllegalArgumentException("Unsupported SNMP version: " + version);
+        }
     }
 }

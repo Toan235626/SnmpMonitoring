@@ -4,7 +4,16 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.snmp4j.*;
 import org.snmp4j.event.ResponseEvent;
+import org.snmp4j.mp.MPv3;
 import org.snmp4j.mp.SnmpConstants;
+import org.snmp4j.security.AuthMD5;
+import org.snmp4j.security.AuthSHA;
+import org.snmp4j.security.PrivAES128;
+import org.snmp4j.security.PrivDES;
+import org.snmp4j.security.SecurityModels;
+import org.snmp4j.security.SecurityProtocols;
+import org.snmp4j.security.USM;
+import org.snmp4j.security.UsmUser;
 import org.snmp4j.smi.*;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 import org.snmp4j.util.DefaultPDUFactory;
@@ -22,7 +31,74 @@ import java.util.List;
 @Component
 public class SnmpWalk {
 
-    public SnmpRecord[] walkAsRecords(String deviceIp, String community, String rootOid, int port, String version) throws IOException {
+    public SnmpRecord[] walkV1Records(String deviceIp, String community, String rootOid, int port) throws IOException {
+        TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping();
+        transport.listen();
+
+        Snmp snmp = new Snmp(transport);
+
+        CommunityTarget target = new CommunityTarget();
+        target.setCommunity(new OctetString(community));
+        target.setAddress(new UdpAddress(deviceIp + "/" + port));
+        target.setRetries(2);
+        target.setTimeout(3000);
+        target.setVersion(SnmpConstants.version1);
+
+        List<SnmpRecord> results = new ArrayList<>();
+
+        try {
+            OID root = new OID(rootOid);
+            OID currentOid = root;
+            OID lastOid = null;
+            int step = 0, maxSteps = 50000;
+
+            while (step++ < maxSteps) {
+                PDU pdu = new PDU();
+                pdu.add(new VariableBinding(currentOid));
+                pdu.setType(PDU.GETNEXT);
+
+                ResponseEvent responseEvent = snmp.send(pdu, target);
+
+                if (responseEvent == null || responseEvent.getResponse() == null) {
+                    System.err.println("Timeout at step " + step);
+                    break;
+                }
+
+                VariableBinding vb = responseEvent.getResponse().get(0);
+                if (vb == null || vb.getOid() == null) break;
+
+                if (lastOid != null && vb.getOid().equals(lastOid)) break;
+                lastOid = vb.getOid();
+
+                if (!vb.getOid().startsWith(root)) break;
+
+                String varStr = vb.getVariable() == null ? "" : vb.getVariable().toString().toLowerCase();
+                if (varStr.contains("error") || varStr.contains("nosuch")) {
+                    currentOid = vb.getOid().successor();
+                    continue;
+                }
+
+                SnmpRecord record = new SnmpRecord();
+                record.setDeviceIp(deviceIp);
+                record.setCommunity(community);
+                record.setOid(vb.getOid().toString());
+                record.setValue(varStr.isEmpty() ? "null" : vb.getVariable().toString());
+                results.add(record);
+
+                currentOid = vb.getOid();
+            }
+
+            System.out.println("SNMPv1 walked " + step + " steps for " + rootOid);
+        } finally {
+            snmp.close();
+            transport.close();
+        }
+
+        return results.toArray(new SnmpRecord[0]);
+    }
+
+
+    public SnmpRecord[] walkV2Records(String deviceIp, String community, String rootOid, int port) throws IOException {
         TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping();
         transport.listen();
 
@@ -69,6 +145,79 @@ public class SnmpWalk {
 
         return resultList.toArray(new SnmpRecord[0]);
     }
+
+    public SnmpRecord[] walkV3Records(String deviceIp, String username, String authPass, String privPass,
+                               String authProtocol, String privProtocol, int securityLevel,
+                               String rootOid, int port) throws IOException {
+        TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping();
+        transport.listen();
+
+        Snmp snmp = new Snmp(transport);
+
+        // USM + User
+        USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
+        SecurityModels.getInstance().addSecurityModel(usm);
+
+        OID authProt = "MD5".equalsIgnoreCase(authProtocol) ? AuthMD5.ID : AuthSHA.ID;
+        OID privProt = "DES".equalsIgnoreCase(privProtocol) ? PrivDES.ID : PrivAES128.ID;
+
+        snmp.getUSM().addUser(new OctetString(username),
+            new UsmUser(new OctetString(username),
+                authProt, new OctetString(authPass),
+                privProt, new OctetString(privPass))
+        );
+
+        UserTarget target = new UserTarget();
+        target.setAddress(new UdpAddress(deviceIp + "/" + port));
+        target.setRetries(2);
+        target.setTimeout(3000);
+        target.setVersion(SnmpConstants.version3);
+        target.setSecurityLevel(securityLevel);
+        target.setSecurityName(new OctetString(username));
+
+        List<SnmpRecord> resultList = new ArrayList<>();
+
+        try {
+            TreeUtils treeUtils = new TreeUtils(snmp, new DefaultPDUFactory(PDU.GETBULK));
+            List<TreeEvent> events = treeUtils.getSubtree(target, new OID(rootOid));
+
+            boolean fallback = (events == null || events.isEmpty());
+
+            if (!fallback) {
+                for (TreeEvent event : events) {
+                    if (event == null || event.isError()) {
+                        fallback = true;
+                        break;
+                    }
+                    VariableBinding[] varBindings = event.getVariableBindings();
+                    if (varBindings == null || varBindings.length == 0) continue;
+
+                    for (VariableBinding vb : varBindings) {
+                        SnmpRecord record = new SnmpRecord();
+                        record.setDeviceIp(deviceIp);
+                        record.setCommunity(username);
+                        record.setOid(vb.getOid().toString());
+                        record.setValue((vb.getVariable() == null || vb.getVariable().toString().isEmpty())
+                                ? "null" : vb.getVariable().toString());
+                        resultList.add(record);
+                    }
+                }
+            }
+
+            if (fallback) {
+                System.err.println("SNMPv3 TreeUtils fallback for OID: " + rootOid);
+                // bạn có thể gọi manualWalkV3 tương tự nếu muốn
+            }
+
+        } finally {
+            snmp.close();
+            transport.close();
+        }
+
+        return resultList.toArray(new SnmpRecord[0]);
+    }
+
+
 
     private SnmpRecord[] walkManually(Snmp snmp, CommunityTarget target, String rootOid, String deviceIp, String community) throws IOException {
         List<SnmpRecord> results = new ArrayList<>();

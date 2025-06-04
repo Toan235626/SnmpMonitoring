@@ -39,9 +39,18 @@ public class DeviceScanController {
     @PostMapping("/scan-subnet")
     public List<Device> scanSelectedSubnet(
                 @RequestParam("baseIp") String baseIp,
-                @RequestParam("community") String community,
+                @RequestParam(value ="community", required = false, defaultValue = "public") String community,
                 @RequestParam(value = "port", required = false, defaultValue = "161") int port,
-                @RequestParam("version") String version) {
+                @RequestParam("version") String version,
+                @RequestParam(value = "authUsername", required = false) String authUsername,
+                @RequestParam(value = "authPass", required = false) String authPass,
+                @RequestParam(value = "privPass", required = false) String privPass,
+                @RequestParam(value = "authProtocol", required = false) String authProtocol,
+                @RequestParam(value = "privProtocol", required = false) String privProtocol,
+                @RequestParam(value = "securityLevel", required = false, defaultValue = "0") String securityLevel){
+        if (version.equals("3") && (authUsername == null || authPass == null || privPass == null || authProtocol == null || privProtocol == null)) {
+            throw new IllegalArgumentException("SNMPv3 requires all authentication parameters to be provided.");
+        }
         return networkScannerService.scanSubnet(baseIp, community, port, version);
     }
 
