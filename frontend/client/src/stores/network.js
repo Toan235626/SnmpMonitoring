@@ -49,18 +49,18 @@ export const networkStore = defineStore('network', {
         }));
 
         // Gọi endpoint /mib-tree cho từng thiết bị
-        const deviceStoreInstance = deviceStore();
-        for (const dev of this.devices) {
-          const mibTreeResponse = await axios.post('/api/mib-tree', null, {
-            params: {
-              deviceIp: dev.deviceIp,
-              community: community || 'public',
-              port: port || 161,
-              version: version || '2c',
-            },
-          });
-          deviceStoreInstance.setMibTreeData(dev.id, mibTreeResponse.data);
-        }
+        // const deviceStoreInstance = deviceStore();
+        // for (const dev of this.devices) {
+        //   const mibTreeResponse = await axios.post('/api/mib-tree', null, {
+        //     params: {
+        //       deviceIp: dev.deviceIp,
+        //       community: community || 'public',
+        //       port: port || 161,
+        //       version: version || '2c',
+        //     },
+        //   });
+        //   deviceStoreInstance.setMibTreeData(dev.id, mibTreeResponse.data);
+        // }
       } catch (err) {
         this.error = err.message || 'Failed to scan devices';
         console.error('Scan Devices Error:', err);

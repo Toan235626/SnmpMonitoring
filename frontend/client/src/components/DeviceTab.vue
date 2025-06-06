@@ -129,8 +129,8 @@
 </template>
 
 <script>
-import { ref, computed } from "vue";
-import { deviceStore } from "@/stores/device";
+import { ref, computed } from 'vue';
+import { deviceStore } from '@/stores/device';
 
 export default {
   props: {
@@ -138,27 +138,31 @@ export default {
       type: String,
       required: true,
     },
+    selectedOid: {
+      type: String,
+      default: '',
+    },
   },
   setup(props) {
     const store = deviceStore();
-    const oid = ref("");
-    const community = ref("public"); // Mặc định
-    const port = ref(161); // Mặc định
-    const version = ref("2c"); // Mặc định
-    const authUsername = ref("");
-    const authPass = ref("");
-    const privPass = ref("");
-    const authProtocol = ref("");
-    const privProtocol = ref("");
+    const oid = ref(props.selectedOid || '');
+    const community = ref('public');
+    const port = ref(161);
+    const version = ref('2c');
+    const authUsername = ref('');
+    const authPass = ref('');
+    const privPass = ref('');
+    const authProtocol = ref('');
+    const privProtocol = ref('');
     const securityLevel = ref(0);
 
     const onVersionChange = (newVersion) => {
-      if (newVersion !== "3") {
-        authUsername.value = "";
-        authPass.value = "";
-        privPass.value = "";
-        authProtocol.value = "";
-        privProtocol.value = "";
+      if (newVersion !== '3') {
+        authUsername.value = '';
+        authPass.value = '';
+        privPass.value = '';
+        authProtocol.value = '';
+        privProtocol.value = '';
         securityLevel.value = 0;
       }
     };

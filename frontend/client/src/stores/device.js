@@ -15,40 +15,42 @@ export const deviceStore = defineStore('device', {
   actions: {
     setDevices() {
       const network = networkStore();
+      console.log('networkStore devices:', network.devices);
       this.devices = network.devices;
+      console.log('setDevices - this.devices:', this.devices);
       if (this.devices.length && !this.activeTab) {
         this.activeTab = this.devices[0].id;
+        console.log('setDevices - activeTab:', this.activeTab);
       }
-      // Sau khi scan devices, gọi buildMibTree cho từng thiết bị
       this.devices.forEach(device => {
+        console.log('Calling buildMibTree for device:', device.id, device.deviceIp);
         this.buildMibTree(device.id, device.deviceIp);
       });
-    },
-    setMibTreeData(deviceId, data) {
-      this.mibTreeData[deviceId] = data;
     },
     async buildMibTree(deviceId, deviceIp) {
       this.isLoading = true;
       this.error = null;
       try {
         const device = this.devices.find(d => d.id === deviceId);
+        console.log('buildMibTree - device found:', device);
         if (!device) throw new Error('Device not found');
 
         const params = {
-          deviceIp: deviceIp || device.deviceIp, // Sử dụng deviceIp từ tham số hoặc từ device
-          community: 'public', 
-          port: 161,          
-          version: '2c',      
+          deviceIp: deviceIp || device.deviceIp,
+          community: 'public',
+          port: 161,
+          version: '2c',
         };
 
         console.log('Fetching MIB Tree for:', deviceIp, 'with params:', params);
-
-        const response = await axios.post('/api/mib-tree',null ,{params} );
+        const response = await axios.post('/api/mib-tree', null, { params });
+        console.log('buildMibTree - response.data:', response.data);
         this.mibTreeData[deviceId] = response.data;
+        console.log('buildMibTree - mibTreeData updated:', this.mibTreeData);
       } catch (err) {
         this.error = err.response?.data?.error || `An error occurred while fetching MIB tree: ${err.message}`;
         console.error('MIB Tree error:', err.response ? err.response.data : err.message);
-        this.mibTreeData[deviceId] = []; // Đặt mảng rỗng nếu lỗi
+        this.mibTreeData[deviceId] = [];
       } finally {
         this.isLoading = false;
       }

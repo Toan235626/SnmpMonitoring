@@ -1,38 +1,53 @@
 <template>
   <div class="mib-tree">
-    <v-treeview
-      :items="treeItems"
-      item-key="oid"
-      item-text="name"
-      item-children="children"
-      activatable
-      dense
-    >
-      <template v-slot:label="{ item }">
-        <div>
-          <span>{{ item.name }}</span>
-          <span v-if="item.value" class="value"> ({{ item.value }})</span>
-        </div>
-      </template>
-    </v-treeview>
+    <p v-if="!treeItems.length">No nodes to display</p>
+    <ul v-else>
+      <MibNode
+        v-for="item in treeItems"
+        :key="item.oid"
+        :node="item"
+        :selected-oid="selectedOid"
+        @select-oid="handleSelectOid"
+      />
+    </ul>
   </div>
 </template>
 
 <script>
+import { ref, computed } from 'vue';
+import MibNode from '@/components/MibNode.vue';
+
 export default {
+  name: 'MibTree',
+  components: { MibNode },
   props: {
     data: {
       type: [Object, Array],
       required: true,
     },
   },
-  computed: {
-    treeItems() {
-      if (Array.isArray(this.data)) {
-        return this.data;
-      }
-      return Object.keys(this.data).length ? [this.data] : [];
-    },
+  emits: ['select-oid'],
+  setup(props, { emit }) {
+    const selectedOid = ref('');
+
+    const treeItems = computed(() => {
+      const items = Array.isArray(props.data) ? props.data : Object.keys(props.data).length ? [props.data] : [];
+      console.log('MibTree - props.data:', props.data);
+      console.log('MibTree - treeItems:', items);
+      return items;
+    });
+
+    const handleSelectOid = (oid) => {
+      selectedOid.value = oid;
+      emit('select-oid', oid);
+      console.log('MibTree - emitted OID:', oid);
+    };
+
+    return {
+      treeItems,
+      selectedOid,
+      handleSelectOid,
+    };
   },
 };
 </script>
@@ -40,9 +55,12 @@ export default {
 <style scoped>
 .mib-tree {
   padding: 10px;
+  font-family: 'Courier New', Courier, monospace;
+  background: #ff0; /* Debug: màu vàng để dễ thấy */
 }
-.value {
-  color: #666;
-  font-size: 0.9em;
+ul {
+  list-style: none;
+  padding: 0;
+  border: 1px solid #000; /* Debug: viền để kiểm tra */
 }
 </style>
