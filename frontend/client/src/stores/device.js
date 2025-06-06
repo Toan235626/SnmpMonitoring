@@ -19,154 +19,211 @@ export const deviceStore = defineStore('device', {
       if (this.devices.length && !this.activeTab) {
         this.activeTab = this.devices[0].id;
       }
+      // Sau khi scan devices, gọi buildMibTree cho từng thiết bị
+      this.devices.forEach(device => {
+        this.buildMibTree(device.id, device.deviceIp);
+      });
     },
     setMibTreeData(deviceId, data) {
       this.mibTreeData[deviceId] = data;
     },
-    async fetchSnmpData(deviceId) {
+    async buildMibTree(deviceId, deviceIp) {
       this.isLoading = true;
       this.error = null;
       try {
         const device = this.devices.find(d => d.id === deviceId);
         if (!device) throw new Error('Device not found');
-        const response = await axios.post('/api/snmp/get', null, {
-          params: {
-            deviceIp: device.ipAddress,
-            oid: '1.3.6.1.2.1.1.1.0', // Mặc định OID, có thể thay đổi qua form
-            community: 'public', // Mặc định, có thể thay đổi qua form
-          },
-        });
-        this.results[deviceId] = response.data.map((item) => ({
-          oid: item.oid,
-          value: item.value,
-          deviceIp: device.ipAddress,
-          community: 'public',
-        }));
-        this.searchHistory.push(
-          ...response.data.map((item) => ({
-            oid: item.oid,
-            value: item.value,
-            deviceIp: device.ipAddress,
-            community: 'public',
-            timestamp: new Date().toLocaleString(),
-          }))
-        );
+
+        const params = {
+          deviceIp: deviceIp || device.deviceIp, // Sử dụng deviceIp từ tham số hoặc từ device
+          community: 'public', 
+          port: 161,          
+          version: '2c',      
+        };
+
+        console.log('Fetching MIB Tree for:', deviceIp, 'with params:', params);
+
+        const response = await axios.post('/api/mib-tree',null ,{params} );
+        this.mibTreeData[deviceId] = response.data;
       } catch (err) {
-        this.error = err.response?.data?.error || 'An error occurred while fetching SNMP data.';
-        console.error(err);
+        this.error = err.response?.data?.error || `An error occurred while fetching MIB tree: ${err.message}`;
+        console.error('MIB Tree error:', err.response ? err.response.data : err.message);
+        this.mibTreeData[deviceId] = []; // Đặt mảng rỗng nếu lỗi
       } finally {
         this.isLoading = false;
       }
     },
-    async fetchSnmpGetNext(deviceId) {
+    async performAction(action, deviceId, params) {
       this.isLoading = true;
       this.error = null;
       try {
         const device = this.devices.find(d => d.id === deviceId);
         if (!device) throw new Error('Device not found');
-        let oidToFetch;
-        let deviceIpToFetch = device.ipAddress;
 
-        const currentResults = this.results[deviceId] || [];
-        if (currentResults.length > 0) {
-          oidToFetch = currentResults[currentResults.length - 1].oid;
-        } else {
-          oidToFetch = '1.3.6.1.2.1.1.1.0'; // Mặc định OID
+        if (!params.oid && action !== 'mibTree' && action !== 'getMibTree') {
+          throw new Error('OID is required for this action');
+        }
+        if (!params.community || !params.port || !params.version) {
+          throw new Error('Missing required parameters: Community, Port, or Version');
         }
 
-        const response = await axios.post('/api/snmp/getnext', null, {
-          params: {
-            deviceIp: deviceIpToFetch,
-            oid: oidToFetch,
-            community: 'public',
-          },
-        });
-
-        if (!response.data || response.data.length === 0) {
-          this.error = 'No more SNMP data available.';
-          return;
+        if (params.version === '3' && (!params.authUsername || !params.authPass || !params.privPass || !params.authProtocol || !params.privProtocol)) {
+          throw new Error('SNMPv3 requires all authentication parameters');
         }
 
-        const newResult = response.data.map((item) => ({
-          oid: item.oid,
-          value: item.value,
-          deviceIp: deviceIpToFetch,
-          community: 'public',
-        }));
-        this.results[deviceId] = [...(this.results[deviceId] || []), ...newResult];
-        this.searchHistory.push(
-          ...newResult.map((item) => ({
-            oid: item.oid,
-            value: item.value,
-            deviceIp: deviceIpToFetch,
-            community: 'public',
-            timestamp: new Date().toLocaleString(),
-          }))
-        );
-      } catch (err) {
-        this.error = err.response?.data?.error || 'An error occurred while fetching SNMP data.';
-        console.error(err);
-      } finally {
-        this.isLoading = false;
-      }
-    },
-    async fetchSnmpGetBulk(deviceId) {
-      this.isLoading = true;
-      this.error = null;
-      try {
-        const device = this.devices.find(d => d.id === deviceId);
-        if (!device) throw new Error('Device not found');
-        const response = await axios.post('/api/snmp/bulk', null, {
-          params: {
-            deviceIp: device.ipAddress,
-            oid: '1.3.6.1.2.1.1.1.0', // Mặc định OID
-            community: 'public',
-          },
+        let endpoint;
+        let processResponse;
+        let requestParams = {
+          deviceIp: device.deviceIp,
+          oid: params.oid,
+          community: params.community,
+          port: params.port,
+          version: params.version,
+        };
+
+        if (params.version === '3') {
+          requestParams.authUsername = params.authUsername;
+          requestParams.authPass = params.authPass;
+          requestParams.privPass = params.privPass;
+          requestParams.authProtocol = params.authProtocol;
+          requestParams.privProtocol = params.privProtocol;
+          requestParams.securityLevel = params.securityLevel;
+        }
+
+        switch (action) {
+          case 'get':
+            endpoint = '/api/snmp/get';
+            processResponse = (response) => {
+              if (!response.data || response.data.length === 0) {
+                this.error = 'No SNMP data returned.';
+                return;
+              }
+              this.results[deviceId] = response.data.map((item) => ({
+                oid: item.oid,
+                value: item.value,
+                deviceIp: device.deviceIp,
+                community: params.community,
+              }));
+              this.searchHistory.push(
+                ...response.data.map((item) => ({
+                  id: Date.now(),
+                  deviceId,
+                  oid: item.oid,
+                  value: item.value,
+                  deviceIp: device.deviceIp,
+                  community: params.community,
+                  time: new Date().toLocaleString(),
+                  result: item.value,
+                }))
+              );
+            };
+            break;
+          case 'getNext':
+            endpoint = '/api/snmp/getnext';
+            const currentResults = this.results[deviceId] || [];
+            requestParams.oid = currentResults.length > 0 ? currentResults[currentResults.length - 1].oid : params.oid;
+            processResponse = (response) => {
+              if (!response.data || response.data.length === 0) {
+                this.error = 'No more SNMP data available.';
+                return;
+              }
+              const newResult = response.data.map((item) => ({
+                oid: item.oid,
+                value: item.value,
+                deviceIp: device.deviceIp,
+                community: params.community,
+              }));
+              this.results[deviceId] = [...(this.results[deviceId] || []), ...newResult];
+              this.searchHistory.push(
+                ...newResult.map((item) => ({
+                  id: Date.now(),
+                  deviceId,
+                  oid: item.oid,
+                  value: item.value,
+                  deviceIp: device.deviceIp,
+                  community: params.community,
+                  time: new Date().toLocaleString(),
+                  result: item.value,
+                }))
+              );
+            };
+            break;
+          case 'getBulk':
+            endpoint = '/api/snmp/bulk';
+            processResponse = (response) => {
+              if (!response.data || response.data.length === 0) {
+                this.error = 'No SNMP data returned.';
+                return;
+              }
+              this.results[deviceId] = response.data.map((item) => ({
+                oid: item.oid,
+                value: item.value,
+                deviceIp: device.deviceIp,
+                community: params.community,
+              }));
+              this.searchHistory.push(
+                ...response.data.map((item) => ({
+                  id: Date.now(),
+                  deviceId,
+                  oid: item.oid,
+                  value: item.value,
+                  deviceIp: device.deviceIp,
+                  community: params.community,
+                  time: new Date().toLocaleString(),
+                  result: item.value,
+                }))
+              );
+            };
+            break;
+          case 'walk':
+            endpoint = '/api/snmp/walk';
+            processResponse = (response) => {
+              if (!response.data || response.data.length === 0) {
+                this.error = 'No SNMP data returned.';
+                return;
+              }
+              this.results[deviceId] = response.data.map((item) => ({
+                oid: item.oid,
+                value: item.value,
+                deviceIp: device.deviceIp,
+                community: params.community,
+              }));
+            };
+            break;
+          case 'getMibTree': // Thêm hành động để gọi MIB tree
+            endpoint = '/api/mib-tree';
+            requestParams = {
+              deviceIp: device.deviceIp,
+              community: params.community,
+              port: params.port,
+              version: params.version,
+            };
+            if (params.version === '3') {
+              requestParams.authUsername = params.authUsername;
+              requestParams.authPass = params.authPass;
+              requestParams.privPass = params.privPass;
+              requestParams.authProtocol = params.authProtocol;
+              requestParams.privProtocol = params.privProtocol;
+              requestParams.securityLevel = params.securityLevel;
+            }
+            processResponse = (response) => {
+              this.mibTreeData[deviceId] = response.data;
+            };
+            break;
+          default:
+            throw new Error('Invalid action');
+        }
+
+        console.log('Sending request to:', endpoint, 'with params:', requestParams);
+
+        const response = await axios.post(endpoint, null, {
+          params: requestParams,
         });
-        this.results[deviceId] = response.data.map((item) => ({
-          oid: item.oid,
-          value: item.value,
-          deviceIp: device.ipAddress,
-          community: 'public',
-        }));
-        this.searchHistory.push(
-          ...response.data.map((item) => ({
-            oid: item.oid,
-            value: item.value,
-            deviceIp: device.ipAddress,
-            community: 'public',
-            timestamp: new Date().toLocaleString(),
-          }))
-        );
+
+        processResponse(response);
       } catch (err) {
-        this.error = err.response?.data?.error || 'An error occurred while performing SNMP GetBulk.';
-        console.error(err);
-      } finally {
-        this.isLoading = false;
-      }
-    },
-    async fetchSnmpWalk(deviceId) {
-      this.isLoading = true;
-      this.error = null;
-      try {
-        const device = this.devices.find(d => d.id === deviceId);
-        if (!device) throw new Error('Device not found');
-        const response = await axios.post('/api/snmp/walk', null, {
-          params: {
-            deviceIp: device.ipAddress,
-            oid: '1.3.6.1.2.1.1.1.0', // Mặc định OID
-            community: 'public',
-          },
-        });
-        this.results[deviceId] = response.data.map((item) => ({
-          oid: item.oid,
-          value: item.value,
-          deviceIp: device.ipAddress,
-          community: 'public',
-        }));
-      } catch (err) {
-        this.error = err.response?.data?.error || 'An error occurred while performing SNMP Walk.';
-        console.error(err);
+        this.error = err.response?.data?.error || `An error occurred while performing ${action}: ${err.message}`;
+        console.error('Request error:', err.response ? err.response.data : err.message);
       } finally {
         this.isLoading = false;
       }

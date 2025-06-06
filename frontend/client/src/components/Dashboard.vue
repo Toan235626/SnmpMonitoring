@@ -12,22 +12,31 @@
       </v-tabs>
 
       <v-window v-model="activeTab">
-        <v-window-item v-for="device in devices" :key="device.id" :value="device.id">
+        <v-window-item
+          v-for="device in devices"
+          :key="device.id"
+          :value="device.id"
+        >
           <DeviceTab :deviceId="device.id" />
         </v-window-item>
       </v-window>
     </div>
 
     <div class="mib-tree">
+      <div v-if="mibTreeData && Object.keys(mibTreeData).length">
+        <h3>MIB Tree for Device {{ activeTab }}</h3>
+        <pre>{{ JSON.stringify(mibTreeData[activeTab], null, 2) }}</pre>
+      </div>
+      <div v-if="error" class="error">{{ error }}</div>
       <MibTree :data="mibTreeData[activeTab] || {}" />
     </div>
   </div>
 </template>
 
 <script>
-import { deviceStore } from '@/stores/device';
-import MibTree from '@/components/MibTree.vue';
-import DeviceTab from '@/components/DeviceTab.vue';
+import { deviceStore } from "@/stores/device";
+import MibTree from "@/components/MibTree.vue";
+import DeviceTab from "@/components/DeviceTab.vue";
 
 export default {
   components: { MibTree, DeviceTab },

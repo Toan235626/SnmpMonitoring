@@ -23,7 +23,7 @@ public class MibTreeController {
 
     @PostMapping("/mib-tree")
     public ResponseEntity<List<JsonNode>> getMibTree(
-                                    @RequestParam("ipAddress") String ipAddress,
+                                    @RequestParam("deviceIp") String ipAddress,
                                     @RequestParam(value = "community", required = false, defaultValue = "public") String community,
                                     @RequestParam(value = "port", required = false, defaultValue = "161") int port,
                                     @RequestParam(value = "version", required = false, defaultValue = "2c") String version,

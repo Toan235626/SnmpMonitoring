@@ -45,22 +45,22 @@ export const networkStore = defineStore('network', {
         this.devices = response.data.map((device, index) => ({
           id: `d${networkId}-${index + 1}`,
           name: (device.name || `Device ${index + 1}`).substring(0, 30),
-          ipAddress: device.ipAddress || `${baseIp}.${index + 1}`,
+          deviceIp: device.deviceIp || `${baseIp}.${index + 1}`,
         }));
 
-        // // Gọi endpoint /mib-tree cho từng thiết bị
-        // const deviceStoreInstance = deviceStore();
-        // for (const dev of this.devices) {
-        //   const mibTreeResponse = await axios.post('/api/mib-tree', null, {
-        //     params: {
-        //       ipAddress: dev.ipAddress,
-        //       community: community || 'public',
-        //       port: port || 161,
-        //       version: version || '2c',
-        //     },
-        //   });
-        //   deviceStoreInstance.setMibTreeData(dev.id, mibTreeResponse.data);
-        // }
+        // Gọi endpoint /mib-tree cho từng thiết bị
+        const deviceStoreInstance = deviceStore();
+        for (const dev of this.devices) {
+          const mibTreeResponse = await axios.post('/api/mib-tree', null, {
+            params: {
+              deviceIp: dev.deviceIp,
+              community: community || 'public',
+              port: port || 161,
+              version: version || '2c',
+            },
+          });
+          deviceStoreInstance.setMibTreeData(dev.id, mibTreeResponse.data);
+        }
       } catch (err) {
         this.error = err.message || 'Failed to scan devices';
         console.error('Scan Devices Error:', err);

@@ -38,8 +38,8 @@ public class SnmpGet{
         CommunityTarget target = new CommunityTarget();
         target.setCommunity(new OctetString(community));
         target.setAddress(new UdpAddress(deviceIp + "/" + port));
-        target.setRetries(2);
-        target.setTimeout(1500);
+        target.setRetries(1);
+        target.setTimeout(100);
         if (version.equals("1")) {
             target.setVersion(SnmpConstants.version1);
         } else if (version.equals("2c")) {
@@ -103,8 +103,8 @@ public class SnmpGet{
 
         UserTarget target = new UserTarget();
         target.setAddress(new UdpAddress(deviceIp + "/" + port));
-        target.setRetries(2);
-        target.setTimeout(1500);
+        target.setRetries(1);
+        target.setTimeout(100);
         target.setVersion(SnmpConstants.version3);
         target.setSecurityLevel(securityLevel);
         target.setSecurityName(new OctetString(username));
