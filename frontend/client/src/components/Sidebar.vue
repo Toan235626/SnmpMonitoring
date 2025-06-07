@@ -1,64 +1,150 @@
 <template>
-    <div class="sidebar">
-      <router-link to="/dashboard">Dashboard</router-link>
-      <router-link to="/devices-network">Devices & Network</router-link>
-      <router-link to="/mib-tree">MIB Tree</router-link>
-    </div>
-  </template>
-  
-  <style scoped>
-  .sidebar {
-    width: 220px; /* Slightly wider for a premium feel */
-    background: linear-gradient(135deg, #2c3e50, #1a252f); /* Deep, gradient background */
-    padding: 25px;
-    border-radius: 12px; /* Smooth, modern corners */
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3), inset 0 0 10px rgba(0, 0, 0, 0.2); /* Dramatic shadow + inner glow */
-    position: relative;
-    overflow: hidden; /* Contain pseudo-elements */
-    font-family: 'Poppins', 'Segoe UI', sans-serif; /* Elegant, modern font */
+  <div class="sidebar">
+    <router-link to="/devices-network">Devices & Network</router-link>
+    <router-link
+      to="/dashboard"
+      :class="{ highlight: highlightTabs }"
+      @click="resetHighlight"
+    >Dashboard</router-link>
+    <router-link
+      to="/mib-tree"
+      :class="{ highlight: highlightTabs }"
+      @click="resetHighlight"
+    >MIB Tree</router-link>
+  </div>
+</template>
+
+<script>
+import { networkStore } from "@/stores/network";
+import { ref, computed, onMounted, onUnmounted } from "vue";
+
+export default {
+  setup() {
+    const store = networkStore();
+    const highlightTabs = computed(() => store.scanDevicesSuccess);
+    let timeoutId = null;
+
+    const resetHighlight = () => {
+      store.scanDevicesSuccess = false; 
+    };
+
+    onMounted(() => {
+      if (highlightTabs.value) {
+        timeoutId = setTimeout(() => {
+          store.scanDevicesSuccess = false; 
+        }, 5000); 
+      }
+    });
+
+    onUnmounted(() => {
+      if (timeoutId) {
+        clearTimeout(timeoutId); 
+      }
+    });
+
+    return {
+      highlightTabs,
+      resetHighlight,
+    };
+  },
+};
+</script>
+
+<style scoped>
+.sidebar {
+  width: 220px; 
+  background: linear-gradient(
+    135deg,
+    #2c3e50,
+    #1a252f
+  ); 
+  padding: 25px;
+  border-radius: 12px; 
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3), inset 0 0 10px rgba(0, 0, 0, 0.2); 
+  position: relative;
+  overflow: hidden; 
+  font-family: "Poppins", "Segoe UI", sans-serif; 
+}
+.sidebar::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    circle,
+    rgba(0, 184, 212, 0.25),
+    transparent 70%
+  ); 
+  opacity: 0.2;
+  pointer-events: none; 
+}
+.sidebar a {
+  display: block;
+  padding: 15px 20px; 
+  text-decoration: none;
+  color: #ffffff; 
+  font-weight: 500; 
+  text-transform: uppercase; 
+  letter-spacing: 1.2px; 
+  border-radius: 8px; 
+  transition: all 0.3s ease; 
+  position: relative;
+  overflow: hidden; 
+  margin-bottom: 10px;
+}
+.sidebar a:hover {
+  background: linear-gradient(
+    135deg,
+    #00b8d4,
+    #007bff
+  ); 
+  transform: translateX(5px); 
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); 
+  color: #ffd700; 
+}
+.sidebar a.highlight {
+  background: linear-gradient(
+    135deg,
+    #00b8d4,
+    #007bff
+  );
+  transform: translateX(5px); 
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); 
+  color: #ffd700; 
+  animation: pulse 2s infinite;
+  margin-bottom: 10px;
+}
+.sidebar a::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  ); 
+  transform: translateX(-100%);
+  transition: transform 0.5s ease;
+}
+.sidebar a:hover::after,
+.sidebar a.highlight::after {
+  transform: translateX(100%); 
+}
+@keyframes pulse {
+  0% {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   }
-  .sidebar::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle, rgba(0, 184, 212, 0.25), transparent 70%); /* Subtle cyan glow */
-    opacity: 0.2;
-    pointer-events: none; /* Allow interaction through overlay */
+  50% {
+    box-shadow: 0 6px 15px rgba(0, 184, 212, 0.5); 
   }
-  .sidebar a {
-    display: block;
-    padding: 15px 20px; /* More padding for comfort */
-    text-decoration: none;
-    color: #ffffff; /* Crisp white text */
-    font-weight: 500; /* Bold but refined */
-    text-transform: uppercase; /* Elegant, professional look */
-    letter-spacing: 1.2px; /* Spaced letters for sophistication */
-    border-radius: 8px; /* Rounded links */
-    transition: all 0.3s ease; /* Smooth transitions for all properties */
-    position: relative;
-    overflow: hidden; /* Contain hover effects */
+  100% {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   }
-  .sidebar a:hover {
-    background: linear-gradient(135deg, #00b8d4, #007bff); /* Vibrant gradient on hover */
-    transform: translateX(5px); /* Subtle slide effect */
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Glow-like shadow */
-    color: #ffd700; /* Gold text on hover for VIP feel */
-  }
-  .sidebar a::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent); /* Shine effect */
-    transform: translateX(-100%);
-    transition: transform 0.5s ease;
-  }
-  .sidebar a:hover::after {
-    transform: translateX(100%); /* Shine moves across on hover */
-  }
-  </style>
+}
+</style>

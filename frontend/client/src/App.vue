@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import Sidebar from '@/components/Sidebar.vue';
+import Sidebar from "@/components/Sidebar.vue";
 
 export default {
   components: { Sidebar },
@@ -21,14 +21,14 @@ export default {
   display: flex;
   min-height: 100vh;
   gap: 8px;
-  background-color: #f0f2f5; 
-  padding: 20px; 
+  background-color: #f0f2f5;
+  padding: 20px;
 }
 .main-content {
   flex: 1;
   padding: 20px;
-  background-color: #ffffff; 
-  border-radius: 8px; 
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 </style>

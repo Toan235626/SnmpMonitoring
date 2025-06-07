@@ -19,11 +19,14 @@
           :value="device.id"
         >
           <div class="device-header">
-            <div v-if="deviceData && deviceData[device.id] && deviceData[device.id].length"></div>
-              <DeviceTab
-                :deviceId="device.id"
-                :selected-oid="selectedOid"
-              />
+            <div
+              v-if="
+                deviceData &&
+                deviceData[device.id] &&
+                deviceData[device.id].length
+              "
+            ></div>
+            <DeviceTab :deviceId="device.id" :selected-oid="selectedOid" />
             <div v-if="error" class="error">{{ error }}</div>
           </div>
         </v-window-item>
@@ -33,9 +36,9 @@
 </template>
 
 <script>
-import { deviceStore } from '@/stores/device';
-import DeviceTab from '@/components/DeviceTab.vue';
-import { ref } from 'vue';
+import { deviceStore } from "@/stores/device";
+import DeviceTab from "@/components/DeviceTab.vue";
+import { ref } from "vue";
 
 export default {
   components: { DeviceTab },
@@ -43,7 +46,7 @@ export default {
     const device = deviceStore();
     device.setDevices();
     const activeTab = ref(device.devices.length ? device.devices[0].id : null);
-    const selectedOid = ref('');
+    const selectedOid = ref("");
 
     return {
       devices: device.devices,
@@ -62,38 +65,38 @@ export default {
   display: flex;
   min-height: 100vh;
   position: relative;
-  overflow: hidden; /* Contain pseudo-elements */
-  font-family: 'Poppins', 'Segoe UI', sans-serif; /* Clean, modern font */
-  padding: 15px; /* Light padding */
+  overflow: hidden; 
+  font-family: "Poppins", "Segoe UI", sans-serif; 
+  padding: 15px; 
 }
 .dashboard::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   opacity: 0.4;
-  pointer-events: none; /* Allow interaction */
+  pointer-events: none; 
 }
 .main-content {
   flex: 1;
   padding: 20px;
   overflow-y: auto;
-  border-radius: 10px; /* Soft, rounded corners */
-  transition: all 0.3s ease; /* Smooth transitions */
+  border-radius: 10px; 
+  transition: all 0.3s ease; 
 }
 .main-content:hover {
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Slightly stronger shadow on hover */
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); 
 }
 .v-tabs {
-  background: rgba(255, 255, 255, 0.8); /* Light, semi-transparent background */
+  background: rgba(255, 255, 255, 0.8); 
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Gentle shadow */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); 
   margin-bottom: 15px;
 }
 .v-tab {
-  color: #475569; /* Soft slate text */
+  color: #475569; 
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.8px;
@@ -101,21 +104,25 @@ export default {
   transition: all 0.3s ease;
 }
 .v-tab:hover {
-  background: rgba(79, 70, 229, 0.1); /* Subtle indigo hover */
-  transform: scale(1.03); /* Gentle scale effect */
+  background: rgba(79, 70, 229, 0.1); 
+  transform: scale(1.03); 
 }
 .v-tab--active {
-  color: #4f46e5; /* Soft indigo for active tab */
-  background: linear-gradient(135deg, #e0e7ff, #c7d2fe); /* Light gradient for active */
+  color: #4f46e5; 
+  background: linear-gradient(
+    135deg,
+    #e0e7ff,
+    #c7d2fe
+  ); 
   border-radius: 6px;
-  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.2); /* Subtle glow */
+  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.2); 
 }
 .v-alert {
   border-radius: 6px;
   margin: 15px 0;
   padding: 12px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-  animation: fadeIn 0.4s ease-in; /* Gentle fade-in */
+  animation: fadeIn 0.4s ease-in; 
 }
 @keyframes fadeIn {
   from {

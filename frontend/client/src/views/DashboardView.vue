@@ -1,11 +1,11 @@
 <template>
-    <Dashboard />
-  </template>
+  <Dashboard />
+</template>
 
-  <script>
-  import Dashboard from '@/components/Dashboard.vue';
+<script>
+import Dashboard from "@/components/Dashboard.vue";
 
-  export default {
-    components: { Dashboard },
-  };
-  </script>
+export default {
+  components: { Dashboard },
+};
+</script>

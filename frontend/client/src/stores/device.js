@@ -1,8 +1,8 @@
-import { defineStore } from 'pinia';
-import axios from 'axios';
-import { networkStore } from './network';
+import { defineStore } from "pinia";
+import axios from "axios";
+import { networkStore } from "./network";
 
-export const deviceStore = defineStore('device', {
+export const deviceStore = defineStore("device", {
   state: () => ({
     devices: [],
     activeTab: null,
@@ -23,15 +23,24 @@ export const deviceStore = defineStore('device', {
       this.isLoading = true;
       this.error = null;
       try {
-        const device = this.devices.find(d => d.id === deviceId);
-        if (!device) throw new Error('Device not found');
+        const device = this.devices.find((d) => d.id === deviceId);
+        if (!device) throw new Error("Device not found");
 
         if (!params.community || !params.port || !params.version) {
-          throw new Error('Missing required parameters: Community, Port, or Version');
+          throw new Error(
+            "Missing required parameters: Community, Port, or Version"
+          );
         }
 
-        if (params.version === '3' && (!params.authUsername || !params.authPass || !params.privPass || !params.authProtocol || !params.privProtocol)) {
-          throw new Error('SNMPv3 requires all authentication parameters');
+        if (
+          params.version === "3" &&
+          (!params.authUsername ||
+            !params.authPass ||
+            !params.privPass ||
+            !params.authProtocol ||
+            !params.privProtocol)
+        ) {
+          throw new Error("SNMPv3 requires all authentication parameters");
         }
 
         let endpoint;
@@ -44,7 +53,7 @@ export const deviceStore = defineStore('device', {
           version: params.version,
         };
 
-        if (params.version === '3') {
+        if (params.version === "3") {
           requestParams.authUsername = params.authUsername;
           requestParams.authPass = params.authPass;
           requestParams.privPass = params.privPass;
@@ -54,11 +63,11 @@ export const deviceStore = defineStore('device', {
         }
 
         switch (action) {
-          case 'get':
-            endpoint = '/api/snmp/get';
+          case "get":
+            endpoint = "/api/snmp/get";
             processResponse = (response) => {
               if (!response.data || response.data.length === 0) {
-                this.error = 'No SNMP data returned.';
+                this.error = "No SNMP data returned.";
                 return;
               }
               this.results[deviceId] = response.data.map((item) => ({
@@ -81,13 +90,16 @@ export const deviceStore = defineStore('device', {
               );
             };
             break;
-          case 'getNext':
-            endpoint = '/api/snmp/getnext';
+          case "getNext":
+            endpoint = "/api/snmp/getnext";
             const currentResults = this.results[deviceId] || [];
-            requestParams.oid = currentResults.length > 0 ? currentResults[currentResults.length - 1].oid : params.oid;
+            requestParams.oid =
+              currentResults.length > 0
+                ? currentResults[currentResults.length - 1].oid
+                : params.oid;
             processResponse = (response) => {
               if (!response.data || response.data.length === 0) {
-                this.error = 'No more SNMP data available.';
+                this.error = "No more SNMP data available.";
                 return;
               }
               this.results[deviceId] = response.data.map((item) => ({
@@ -110,11 +122,11 @@ export const deviceStore = defineStore('device', {
               );
             };
             break;
-          case 'getBulk':
-            endpoint = '/api/snmp/bulk';
+          case "getBulk":
+            endpoint = "/api/snmp/bulk";
             processResponse = (response) => {
               if (!response.data || response.data.length === 0) {
-                this.error = 'No SNMP data returned.';
+                this.error = "No SNMP data returned.";
                 return;
               }
               this.results[deviceId] = response.data.map((item) => ({
@@ -137,11 +149,11 @@ export const deviceStore = defineStore('device', {
               );
             };
             break;
-          case 'walk':
-            endpoint = '/api/snmp/walk';
+          case "walk":
+            endpoint = "/api/snmp/walk";
             processResponse = (response) => {
               if (!response.data || response.data.length === 0) {
-                this.error = 'No SNMP data returned.';
+                this.error = "No SNMP data returned.";
                 return;
               }
               this.results[deviceId] = response.data.map((item) => ({
@@ -153,10 +165,15 @@ export const deviceStore = defineStore('device', {
             };
             break;
           default:
-            throw new Error('Invalid action');
+            throw new Error("Invalid action");
         }
 
-        console.log('Sending request to:', endpoint, 'with params:', requestParams);
+        console.log(
+          "Sending request to:",
+          endpoint,
+          "with params:",
+          requestParams
+        );
 
         const response = await axios.post(endpoint, null, {
           params: requestParams,
@@ -164,8 +181,13 @@ export const deviceStore = defineStore('device', {
 
         processResponse(response);
       } catch (err) {
-        this.error = err.response?.data?.error || `An error occurred while performing ${action}: ${err.message}`;
-        console.error('Request error:', err.response ? err.response.data : err.message);
+        this.error =
+          err.response?.data?.error ||
+          `An error occurred while performing ${action}: ${err.message}`;
+        console.error(
+          "Request error:",
+          err.response ? err.response.data : err.message
+        );
       } finally {
         this.isLoading = false;
       }

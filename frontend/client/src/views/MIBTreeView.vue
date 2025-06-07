@@ -1,11 +1,11 @@
 <template>
-    <MIBTreePage />
-  </template>
+  <MIBTreePage />
+</template>
 
-  <script>
-  import MIBTreePage from '@/components/MIBTreePage.vue';
+<script>
+import MIBTreePage from "@/components/MIBTreePage.vue";
 
-  export default {
-    components: { MIBTreePage },
-  };
-  </script>
+export default {
+  components: { MIBTreePage },
+};
+</script>

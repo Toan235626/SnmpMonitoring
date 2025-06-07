@@ -82,7 +82,9 @@
       <v-btn color="primary" @click="performAction('getNext')">GetNext</v-btn>
       <v-btn color="primary" @click="performAction('getBulk')">GetBulk</v-btn>
       <v-btn color="primary" @click="performAction('walk')">Walk</v-btn>
-      <v-btn color="grey" @click="clearResults" class="clear-btn">Clear Results</v-btn>
+      <v-btn color="grey" @click="clearResults" class="clear-btn"
+        >Clear Results</v-btn
+      >
     </div>
 
     <v-progress-circular
@@ -113,7 +115,9 @@
     <div class="table-container">
       <div class="table-header">
         <h3 class="table-title">History</h3>
-        <v-btn color="grey" @click="clearHistory" class="clear-btn">Clear History</v-btn>
+        <v-btn color="grey" @click="clearHistory" class="clear-btn"
+          >Clear History</v-btn
+        >
       </div>
       <v-table v-if="deviceHistory.length" class="custom-table">
         <thead>
@@ -138,8 +142,8 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue';
-import { deviceStore } from '@/stores/device';
+import { ref, computed } from "vue";
+import { deviceStore } from "@/stores/device";
 
 export default {
   props: {
@@ -149,29 +153,29 @@ export default {
     },
     selectedOid: {
       type: String,
-      default: '',
+      default: "",
     },
   },
   setup(props) {
     const store = deviceStore();
-    const oid = ref(props.selectedOid || '');
-    const community = ref('public');
+    const oid = ref(props.selectedOid || "");
+    const community = ref("public");
     const port = ref(161);
-    const version = ref('2c');
-    const authUsername = ref('');
-    const authPass = ref('');
-    const privPass = ref('');
-    const authProtocol = ref('');
-    const privProtocol = ref('');
+    const version = ref("2c");
+    const authUsername = ref("");
+    const authPass = ref("");
+    const privPass = ref("");
+    const authProtocol = ref("");
+    const privProtocol = ref("");
     const securityLevel = ref(0);
 
     const onVersionChange = (newVersion) => {
-      if (newVersion !== '3') {
-        authUsername.value = '';
-        authPass.value = '';
-        privPass.value = '';
-        authProtocol.value = '';
-        privProtocol.value = '';
+      if (newVersion !== "3") {
+        authUsername.value = "";
+        authPass.value = "";
+        privPass.value = "";
+        authProtocol.value = "";
+        privProtocol.value = "";
         securityLevel.value = 0;
       }
     };
@@ -191,7 +195,8 @@ export default {
     const clearHistory = () => {
       store.searchHistory = store.searchHistory.filter(
         (history) => history.deviceId !== props.deviceId
-      )};
+      );
+    };
     return {
       oid,
       community,
@@ -233,52 +238,56 @@ export default {
 <style scoped>
 .device-tab {
   padding: 30px;
-  background: linear-gradient(145deg, #6f6f75, #16213e); /* Dark, cosmic gradient for premium feel */
-  min-height: 100vh; /* Full viewport height for immersion */
-  border-radius: 12px; /* Smooth, modern corners */
+  background: linear-gradient(
+    145deg,
+    #6f6f75,
+    #16213e
+  ); 
+  min-height: 100vh; 
+  border-radius: 12px; 
   position: relative;
-  overflow: hidden; /* Contain pseudo-elements */
-  font-family: 'Poppins', 'Segoe UI', sans-serif; /* Elegant, modern font */
+  overflow: hidden; 
+  font-family: "Poppins", "Segoe UI", sans-serif; 
 }
 .device-tab::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
   opacity: 0.3;
-  pointer-events: none; /* Allow interaction through overlay */
+  pointer-events: none; 
 }
 .search-bar {
   display: flex;
   flex-wrap: wrap;
-  gap: 15px; /* Wider gap for breathing room */
+  gap: 15px; 
   margin-bottom: 30px;
   padding: 15px;
-  background: rgba(255, 255, 255, 0.959); /* Subtle transparent white */
+  background: rgba(255, 255, 255, 0.959); 
   border-radius: 10px;
-  backdrop-filter: blur(5px); /* Glassmorphism effect */
+  backdrop-filter: blur(5px); 
 }
 .search-input {
   max-width: 320px;
-  max-height: 58px; /* Limit height for better layout */
-  background: rgba(255, 255, 255, 0.1); /* Semi-transparent input background */
+  max-height: 58px; 
+  background: rgba(255, 255, 255, 0.1); 
   border-radius: 10px;
-  transition: all 0.3s ease; /* Smooth transitions */
+  transition: all 0.3s ease; 
 }
-.search-input:hover, .search-input:focus-within {
-  transform: scale(1.02); /* Slight scale on hover/focus */
-  box-shadow: 0 0 6px rgba(0, 184, 212, 0.5); /* Cyan glow */
+.search-input:hover,
+.search-input:focus-within {
+  transform: scale(1.02); 
 }
 .actions {
   display: flex;
   gap: 15px;
   margin-bottom: 30px;
-  justify-content: center; /* Center buttons for premium layout */
+  justify-content: center; 
 }
 .actions .v-btn {
-  background: linear-gradient(135deg, #00b8d4, #007bff); /* Vibrant gradient */
+  background: linear-gradient(135deg, #00b8d4, #007bff); 
   color: #fff;
   border-radius: 8px;
   padding: 10px 20px;
@@ -289,12 +298,20 @@ export default {
   transition: all 0.3s ease;
 }
 .actions .v-btn:hover {
-  background: linear-gradient(135deg, #007bff, #00b8d4); /* Reverse gradient on hover */
-  transform: scale(1.05); /* Slight scale for interaction */
+  background: linear-gradient(
+    135deg,
+    #007bff,
+    #00b8d4
+  ); 
+  transform: scale(1.05); 
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
 .clear-btn {
-  background: linear-gradient(135deg, #ff5252, #b71c1c); /* Red gradient for clear button */
+  background: linear-gradient(
+    135deg,
+    #ff5252,
+    #b71c1c
+  ); 
   margin-right: 10px;
 }
 .clear-btn:hover {
@@ -303,44 +320,47 @@ export default {
 .loading {
   display: block;
   margin: 30px auto;
-  color: #00b8d4; /* Cyan for loading spinner */
+  color: #00b8d4; 
   width: 50px;
   height: 50px;
-  animation: spin 1s linear infinite; /* Smooth spin animation */
+  animation: spin 1s linear infinite; 
 }
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 .error {
-  color: #ff5252; /* Vivid red */
+  color: #ff5252; 
   margin-top: 15px;
   padding: 10px;
-  background: rgba(255, 82, 82, 0.1); /* Subtle red background */
+  background: rgba(255, 82, 82, 0.1); 
   border-radius: 6px;
   border: 1px solid #ff5252;
   text-align: center;
   font-weight: 500;
-  animation: fadeIn 0.5s ease-in; /* Fade-in effect */
+  animation: fadeIn 0.5s ease-in; 
 }
 .table-container {
   margin-bottom: 40px;
-  overflow-x: auto;
   padding: 15px;
-  background: rgba(255, 255, 255, 0.05); /* Semi-transparent white */
+  background: rgba(255, 255, 255, 0.05); 
   border-radius: 10px;
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(5px); /* Glassmorphism effect */
+  backdrop-filter: blur(5px); 
 }
 .table-title {
   font-size: 1.8rem;
   font-weight: 600;
-  color: #fff; /* White for contrast */
+  color: #fff; 
   margin-bottom: 15px;
   padding-left: 15px;
   text-transform: uppercase;
   letter-spacing: 1.2px;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Subtle shadow for text */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); 
 }
 .table-header {
   display: flex;
@@ -351,13 +371,14 @@ export default {
 .custom-table {
   width: 100%;
   border-collapse: collapse;
-  background-color: rgba(255, 255, 255, 0.9); /* Slightly transparent white */
+  background-color: rgba(255, 255, 255, 0.9); 
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   border-radius: 8px;
-  overflow: hidden; /* Round corners for table */
+  overflow: hidden; 
+  table-layout: fixed; 
 }
 .custom-table th {
-  background: linear-gradient(135deg, #007bff, #00b8d4); /* Gradient header */
+  background: linear-gradient(135deg, #007bff, #00b8d4); 
   color: #fff;
   padding: 15px 18px;
   text-align: left;
@@ -365,24 +386,26 @@ export default {
   border-bottom: 2px solid rgba(255, 255, 255, 0.2);
   text-transform: uppercase;
   letter-spacing: 1px;
+  white-space: nowrap; 
 }
 .custom-table td {
   padding: 15px 18px;
-  color: #2c3e50; /* Dark text for contrast */
+  color: #2c3e50; 
   transition: background 0.3s ease;
+  word-break: break-word; 
 }
 .custom-table tr:nth-child(even) {
-  background-color: rgba(245, 245, 245, 0.8); /* Subtle even row color */
+  background-color: rgba(245, 245, 245, 0.8); 
 }
 .custom-table tr:hover {
-  background-color: rgba(227, 242, 253, 0.9); /* Light hover effect */
-  transform: scale(1.01); /* Slight scale on hover */
+  background-color: rgba(227, 242, 253, 0.9); 
+  transform: scale(1.01); 
 }
 .text-cell {
   word-break: break-word;
-  max-width: 320px; /* Slightly wider for balance */
+  max-width: 320px; 
   white-space: normal;
-  color: #ececec; /* Softer dark color */
+  color: #ececec; 
   padding: 12px 18px;
 }
 @keyframes fadeIn {

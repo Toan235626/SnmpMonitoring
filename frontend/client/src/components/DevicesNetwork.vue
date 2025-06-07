@@ -1,8 +1,9 @@
 <template>
   <div>
-    <div class="header">
-    </div>  
-    <v-btn color="green" @click="handleScanNetwork" :disabled="isLoading">Scan Network</v-btn>
+    <div class="header"></div>
+    <v-btn color="green" @click="handleScanNetwork" :disabled="isLoading"
+      >Scan Network</v-btn
+    >
     <v-progress-circular
       v-if="isLoading"
       indeterminate
@@ -26,13 +27,14 @@
           <td>{{ network.name }}</td>
           <td>{{ network.ipRange }}</td>
           <td>
-            <v-btn color="green" @click="openScanDialog(network)">Scan Devices</v-btn>
+            <v-btn color="green" @click="openScanDialog(network)"
+              >Scan Devices</v-btn
+            >
           </td>
         </tr>
       </tbody>
     </v-table>
 
-    <!-- Dialog nhập thông tin quét -->
     <v-dialog v-model="dialog" max-width="500px">
       <v-card>
         <v-card-title>Scan Devices</v-card-title>
@@ -73,8 +75,8 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn color="grey" text @click="dialog = false">Cancel</v-btn>
-          <v-btn color="primary" @click="handleScanDevices">Scan</v-btn>
+          <v-btn color="white" text @click="dialog = false">Cancel</v-btn>
+          <v-btn color="white" @click="handleScanDevices">Scan</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -109,8 +111,8 @@ export default {
 
     const openScanDialog = (network) => {
       selectedNetwork.value = network;
-      scanForm.value.baseIp = network.ipRange.split("/")[0]; // Lấy baseIp từ ipRange
-      scanForm.value.prefix = network.ipRange.split("/")[1]; // Lấy prefix từ ipRange
+      scanForm.value.baseIp = network.ipRange.split("/")[0];
+      scanForm.value.prefix = network.ipRange.split("/")[1];
       dialog.value = true;
     };
 
@@ -158,47 +160,55 @@ export default {
 .loading {
   display: block;
   margin: 30px auto;
-  width: 60px; /* Larger for visibility */
+  width: 60px; 
   height: 60px;
-  color: #1e88e5; /* Vibrant blue to match theme */
-  border-radius: 50%; /* Circular shape */
-  animation: pulse 1.5s infinite ease-in-out; /* Pulsing effect for dynamism */
-  box-shadow: 0 0 15px rgba(30, 136, 229, 0.6); /* Glow effect */
+  color: #1e88e5; 
+  border-radius: 50%; 
+  animation: pulse 1.5s infinite ease-in-out; 
+  box-shadow: 0 0 15px rgba(30, 136, 229, 0.6); 
 }
 .v-btn {
-  background: linear-gradient(135deg, #43a047, #1e88e5); /* Green to blue gradient for buttons */
-  color: #ffffff; /* White text */
-  border-radius: 8px; /* Rounded corners */
-  padding: 10px 20px; /* Comfortable padding */
+  background: linear-gradient(
+    135deg,
+    #43a047,
+    #1e88e5
+  ); 
+  color: #ffffff; 
+  border-radius: 8px; 
+  padding: 10px 20px; 
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 1px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease; /* Smooth transitions */
+  transition: all 0.3s ease; 
 }
 .v-btn:hover {
-  background: linear-gradient(135deg, #1e88e5, #43a047); /* Reverse gradient on hover */
-  transform: scale(1.05); /* Slight scale for interaction */
+  background: linear-gradient(
+    135deg,
+    #1e88e5,
+    #43a047
+  ); 
+  transform: scale(1.05); 
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
 .v-alert {
-  border-radius: 8px; /* Rounded corners */
-  margin: 20px 0; /* Spacing */
+  border-radius: 8px; 
+  margin: 20px 0; 
   padding: 15px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); /* Subtle shadow */
-  animation: fadeIn 0.5s ease-in; /* Fade-in for alerts */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); 
+  animation: fadeIn 0.5s ease-in; 
 }
 .v-table {
   width: 100%;
   border-collapse: collapse;
-  background-color: rgba(255, 255, 255, 0.9); /* Slightly transparent white */
+  background-color: rgba(255, 255, 255, 0.9); 
   border-radius: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  overflow: hidden; /* Round corners for table */
+  overflow: hidden; 
   margin: 20px 0;
 }
 .v-table th {
-  background: linear-gradient(135deg, #1e88e5, #43a047); /* Gradient header */
+  background: linear-gradient(135deg, #1e88e5, #43a047); 
   color: #ffffff;
   padding: 15px 18px;
   text-align: left;
@@ -210,22 +220,21 @@ export default {
 .v-table td {
   padding: 15px 18px;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  color: #2c3e50; /* Dark text for contrast */
+  color: #2c3e50; 
   transition: background 0.3s ease;
 }
 .v-table tr:hover {
-  background-color: rgba(227, 242, 253, 0.9); /* Light hover effect */
+  background-color: rgba(227, 242, 253, 0.9); 
 }
 .v-dialog .v-card {
-  border-radius: 12px; /* Rounded dialog */
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Deep shadow */
-  background: linear-gradient(145deg, #ffffff, #e8ecef); /* Subtle gradient */
+  border-radius: 12px; 
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); 
 }
 .v-card-title {
-  background: linear-gradient(135deg, #1e88e5, #43a047); /* Gradient title */
+  background: linear-gradient(135deg, #1e88e5, #43a047); 
   color: #ffffff;
   padding: 15px;
-  border-radius: 12px 12px 0 0; /* Round top corners */
+  border-radius: 3px 3px 0 0; 
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -233,14 +242,12 @@ export default {
 .v-card-text {
   padding: 20px;
 }
-.v-form .v-text-field, .v-form .v-select {
-  background: rgba(255, 255, 255, 0.1); /* Semi-transparent inputs */
+.v-form .v-text-field,
+.v-form .v-select {
+  background: rgba(255, 255, 255, 0.1); 
   border-radius: 8px;
   margin-bottom: 15px;
   transition: all 0.3s ease;
-}
-.v-form .v-text-field:hover, .v-form .v-select:hover {
-  box-shadow: 0 0 10px rgba(30, 136, 229, 0.5); /* Glow on hover */
 }
 .v-card-actions .v-btn {
   padding: 10px 20px;

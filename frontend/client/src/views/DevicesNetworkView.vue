@@ -1,11 +1,11 @@
 <template>
-    <DevicesNetwork />
-  </template>
+  <DevicesNetwork />
+</template>
 
-  <script>
-  import DevicesNetwork from '@/components/DevicesNetwork.vue';
+<script>
+import DevicesNetwork from "@/components/DevicesNetwork.vue";
 
-  export default {
-    components: { DevicesNetwork },
-  };
-  </script>
+export default {
+  components: { DevicesNetwork },
+};
+</script>
