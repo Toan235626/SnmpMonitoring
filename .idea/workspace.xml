@@ -5,8 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="930348d2-e32c-402d-bee5-008ef03ed99b" name="Changes" comment="Chu An - SnmpService.java">
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/project/snmp/model/Trap.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/project/snmp/service/TrapService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/project/snmp/Listener/TrapListener.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/project/snmp/controller/TrapController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
