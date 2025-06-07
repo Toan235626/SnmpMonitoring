@@ -1,5 +1,6 @@
 D:\TOAN\Code\Project1\SnmpMonitoring\backend\src\main\java\com\project\snmp\model\Device.java
 D:\TOAN\Code\Project1\SnmpMonitoring\backend\src\main\java\com\project\snmp\service\SnmpMainService.java
+D:\TOAN\Code\Project1\SnmpMonitoring\backend\src\main\java\com\project\snmp\utils\NetworkUtils.java
 D:\TOAN\Code\Project1\SnmpMonitoring\backend\src\main\java\com\project\snmp\utils\VendorResolver.java
 D:\TOAN\Code\Project1\SnmpMonitoring\backend\src\main\java\com\project\snmp\service\snmpServices\SnmpGet.java
 D:\TOAN\Code\Project1\SnmpMonitoring\backend\src\main\java\com\project\snmp\model\Trap.java
