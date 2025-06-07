@@ -82,6 +82,7 @@
       <v-btn color="primary" @click="performAction('getNext')">GetNext</v-btn>
       <v-btn color="primary" @click="performAction('getBulk')">GetBulk</v-btn>
       <v-btn color="primary" @click="performAction('walk')">Walk</v-btn>
+      <v-btn color="grey" @click="clearResults" class="clear-btn">Clear Results</v-btn>
     </div>
 
     <v-progress-circular
@@ -111,7 +112,7 @@
 
     <div class="table-container">
       <div class="table-header">
-        <h3 class="table-title">Device History</h3>
+        <h3 class="table-title">History</h3>
         <v-btn color="grey" @click="clearHistory" class="clear-btn">Clear History</v-btn>
       </div>
       <v-table v-if="deviceHistory.length" class="custom-table">
@@ -184,8 +185,9 @@ export default {
     const activeTab = computed(() => store.activeTab);
     const results = computed(() => store.results[props.deviceId] || []);
     const error = computed(() => store.error);
-
-    
+    const clearResults = () => {
+      store.results[props.deviceId] = [];
+    };
     const clearHistory = () => {
       store.searchHistory = store.searchHistory.filter(
         (history) => history.deviceId !== props.deviceId
@@ -207,6 +209,7 @@ export default {
       activeTab,
       error,
       clearHistory,
+      clearResults,
       isLoading: computed(() => store.isLoading),
       performAction: async (action) => {
         await store.performAction(action, props.deviceId, {
@@ -229,77 +232,167 @@ export default {
 
 <style scoped>
 .device-tab {
-  padding: 20px;
+  padding: 30px;
+  background: linear-gradient(145deg, #6f6f75, #16213e); /* Dark, cosmic gradient for premium feel */
+  min-height: 100vh; /* Full viewport height for immersion */
+  border-radius: 12px; /* Smooth, modern corners */
+  position: relative;
+  overflow: hidden; /* Contain pseudo-elements */
+  font-family: 'Poppins', 'Segoe UI', sans-serif; /* Elegant, modern font */
+}
+.device-tab::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.3;
+  pointer-events: none; /* Allow interaction through overlay */
 }
 .search-bar {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 15px; /* Wider gap for breathing room */
+  margin-bottom: 30px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.959); /* Subtle transparent white */
+  border-radius: 10px;
+  backdrop-filter: blur(5px); /* Glassmorphism effect */
 }
 .search-input {
-  max-width: 300px;
+  max-width: 320px;
+  max-height: 58px; /* Limit height for better layout */
+  background: rgba(255, 255, 255, 0.1); /* Semi-transparent input background */
+  border-radius: 10px;
+  transition: all 0.3s ease; /* Smooth transitions */
+}
+.search-input:hover, .search-input:focus-within {
+  transform: scale(1.02); /* Slight scale on hover/focus */
+  box-shadow: 0 0 6px rgba(0, 184, 212, 0.5); /* Cyan glow */
 }
 .actions {
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 15px;
+  margin-bottom: 30px;
+  justify-content: center; /* Center buttons for premium layout */
+}
+.actions .v-btn {
+  background: linear-gradient(135deg, #00b8d4, #007bff); /* Vibrant gradient */
+  color: #fff;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+.actions .v-btn:hover {
+  background: linear-gradient(135deg, #007bff, #00b8d4); /* Reverse gradient on hover */
+  transform: scale(1.05); /* Slight scale for interaction */
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+.clear-btn {
+  background: linear-gradient(135deg, #ff5252, #b71c1c); /* Red gradient for clear button */
+  margin-right: 10px;
+}
+.clear-btn:hover {
+  background: linear-gradient(135deg, #b71c1c, #ff5252);
 }
 .loading {
   display: block;
-  margin: 20px auto;
+  margin: 30px auto;
+  color: #00b8d4; /* Cyan for loading spinner */
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite; /* Smooth spin animation */
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 .error {
-  color: red;
-  margin-top: 10px;
+  color: #ff5252; /* Vivid red */
+  margin-top: 15px;
+  padding: 10px;
+  background: rgba(255, 82, 82, 0.1); /* Subtle red background */
+  border-radius: 6px;
+  border: 1px solid #ff5252;
+  text-align: center;
+  font-weight: 500;
+  animation: fadeIn 0.5s ease-in; /* Fade-in effect */
 }
 .table-container {
-  margin-bottom: 30px;
+  margin-bottom: 40px;
   overflow-x: auto;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.05); /* Semi-transparent white */
+  border-radius: 10px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(5px); /* Glassmorphism effect */
 }
 .table-title {
-  font-size: 1.5rem;
-  font-weight: 500;
-  color: #333;
-  margin-bottom: 10px;
-  padding-left: 10px;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #fff; /* White for contrast */
+  margin-bottom: 15px;
+  padding-left: 15px;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Subtle shadow for text */
 }
 .table-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
-}
-.clear-btn {
-  margin-right: 10px;
+  margin-bottom: 15px;
 }
 .custom-table {
   width: 100%;
   border-collapse: collapse;
-  background-color: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.9); /* Slightly transparent white */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  overflow: hidden; /* Round corners for table */
 }
 .custom-table th {
-  background-color: #54aaff; 
-  color: white;
-  padding: 12px 16px;
+  background: linear-gradient(135deg, #007bff, #00b8d4); /* Gradient header */
+  color: #fff;
+  padding: 15px 18px;
   text-align: left;
   font-weight: 600;
-  border-bottom: 2px solid #ddd;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 .custom-table td {
-  padding: 12px 16px;
-  border-bottom: 1px solid #ddd;
+  padding: 15px 18px;
+  color: #2c3e50; /* Dark text for contrast */
+  transition: background 0.3s ease;
 }
 .custom-table tr:nth-child(even) {
-  background-color: #f5f5f5; 
+  background-color: rgba(245, 245, 245, 0.8); /* Subtle even row color */
 }
 .custom-table tr:hover {
-  background-color: #e3f2fd; 
+  background-color: rgba(227, 242, 253, 0.9); /* Light hover effect */
+  transform: scale(1.01); /* Slight scale on hover */
 }
 .text-cell {
-  word-break: break-word; /* Ngắt từ nếu nội dung quá dài */
-  max-width: 300px; /* Giới hạn chiều rộng tối đa */
-  white-space: normal; /* Cho phép xuống dòng */
+  word-break: break-word;
+  max-width: 320px; /* Slightly wider for balance */
+  white-space: normal;
+  color: #ececec; /* Softer dark color */
+  padding: 12px 18px;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

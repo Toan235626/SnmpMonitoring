@@ -8,6 +8,7 @@
       <v-tabs v-model="activeTab">
         <v-tab v-for="device in devices" :key="device.id" :value="device.id">
           {{ device.name }}
+          (IP: {{ device.deviceIp }})
         </v-tab>
       </v-tabs>
 
@@ -17,10 +18,14 @@
           :key="device.id"
           :value="device.id"
         >
-          <DeviceTab
-            :deviceId="device.id"
-            :selected-oid="selectedOid"
-          />
+          <div class="device-header">
+            <div v-if="deviceData && deviceData[device.id] && deviceData[device.id].length"></div>
+              <DeviceTab
+                :deviceId="device.id"
+                :selected-oid="selectedOid"
+              />
+            <div v-if="error" class="error">{{ error }}</div>
+          </div>
         </v-window-item>
       </v-window>
     </div>
@@ -37,6 +42,7 @@ export default {
   setup() {
     const device = deviceStore();
     device.setDevices();
+    const activeTab = ref(device.devices.length ? device.devices[0].id : null);
     const selectedOid = ref('');
 
     return {
@@ -44,8 +50,8 @@ export default {
       activeTab: device.activeTab,
       setActiveTab: device.setActiveTab,
       error: device.error,
-      isLoading: device.isLoading,
       selectedOid,
+      activeTab,
     };
   },
 };
@@ -55,19 +61,70 @@ export default {
 .dashboard {
   display: flex;
   min-height: 100vh;
+  position: relative;
+  overflow: hidden; /* Contain pseudo-elements */
+  font-family: 'Poppins', 'Segoe UI', sans-serif; /* Clean, modern font */
+  padding: 15px; /* Light padding */
+}
+.dashboard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.4;
+  pointer-events: none; /* Allow interaction */
 }
 .main-content {
   flex: 1;
   padding: 20px;
   overflow-y: auto;
+  border-radius: 10px; /* Soft, rounded corners */
+  transition: all 0.3s ease; /* Smooth transitions */
 }
-@media (max-width: 768px) {
-  .dashboard {
-    flex-direction: column;
+.main-content:hover {
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Slightly stronger shadow on hover */
+}
+.v-tabs {
+  background: rgba(255, 255, 255, 0.8); /* Light, semi-transparent background */
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Gentle shadow */
+  margin-bottom: 15px;
+}
+.v-tab {
+  color: #475569; /* Soft slate text */
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 12px 18px;
+  transition: all 0.3s ease;
+}
+.v-tab:hover {
+  background: rgba(79, 70, 229, 0.1); /* Subtle indigo hover */
+  transform: scale(1.03); /* Gentle scale effect */
+}
+.v-tab--active {
+  color: #4f46e5; /* Soft indigo for active tab */
+  background: linear-gradient(135deg, #e0e7ff, #c7d2fe); /* Light gradient for active */
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(79, 70, 229, 0.2); /* Subtle glow */
+}
+.v-alert {
+  border-radius: 6px;
+  margin: 15px 0;
+  padding: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  animation: fadeIn 0.4s ease-in; /* Gentle fade-in */
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
   }
-}
-.error {
-  color: red;
-  margin: 10px;
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

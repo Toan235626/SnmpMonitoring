@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
-import { deviceStore } from './device';
 
 export const networkStore = defineStore('network', {
   state: () => ({
@@ -15,55 +14,37 @@ export const networkStore = defineStore('network', {
       this.error = null;
       try {
         const response = await axios.post('/api/device-scan/networks');
-        console.log('API Response:', response.data);
-        this.networks = response.data.map((ip, index) => ({
+        this.networks = response.data.map((item, index) => ({
           id: String(index + 1),
           name: `Network ${index + 1}`,
-          ipRange: `${ip}/24`,
+          ipRange: `${item.baseIp}/${item.prefix}`,
         }));
-        console.log('Updated Networks:', this.networks);
       } catch (err) {
         this.error = err.message || 'Failed to scan networks';
-        console.error('API Error:', err);
       } finally {
         this.isLoading = false;
       }
     },
-    async scanDevices({ networkId, baseIp, community, version, port }) {
+    async scanDevices({ networkId, baseIp, prefix, community, version, port }) {
       this.isLoading = true;
       this.error = null;
       try {
-        const response = await axios.post('/api/device-scan/scan-subnet', null, {
+          const response = await axios.post('/api/device-scan/scan-subnet', null, {
           params: {
             baseIp,
+            prefix,
             community,
             port: port || 161,
             version,
           },
         });
-        console.log('Scan Devices Response:', response.data);
         this.devices = response.data.map((device, index) => ({
           id: `d${networkId}-${index + 1}`,
           name: (device.name || `Device ${index + 1}`).substring(0, 30),
           deviceIp: device.deviceIp || `${baseIp}.${index + 1}`,
         }));
-
-        // Gọi endpoint /mib-tree cho từng thiết bị
-        // const deviceStoreInstance = deviceStore();
-        // for (const dev of this.devices) {
-        //   const mibTreeResponse = await axios.post('/api/mib-tree', null, {
-        //     params: {
-        //       deviceIp: dev.deviceIp,
-        //       community: community || 'public',
-        //       port: port || 161,
-        //       version: version || '2c',
-        //     },
-        //   });
-        //   deviceStoreInstance.setMibTreeData(dev.id, mibTreeResponse.data);
-        // }
       } catch (err) {
         this.error = err.message || 'Failed to scan devices';
-        console.error('Scan Devices Error:', err);
       } finally {
         this.isLoading = false;
       }

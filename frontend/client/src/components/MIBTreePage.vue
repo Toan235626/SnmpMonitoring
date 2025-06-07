@@ -7,6 +7,7 @@
       <v-tabs v-model="activeTab">
         <v-tab v-for="device in devices" :key="device.id" :value="device.id">
           {{ device.name }}
+          (IP: {{ device.deviceIp }})
         </v-tab>
       </v-tabs>
   
@@ -22,7 +23,7 @@
             </div>
             <div v-if="error" class="error">{{ error }}</div>
             <div v-else-if="mibTreeData && mibTreeData[device.id] && mibTreeData[device.id].length">
-              <h3>MIB Tree for Device {{ device.id }}</h3>
+              <h3>MIB Tree for Device {{id}}</h3>
               <MibTree
                 :data="mibTreeData[device.id] || []"
                 @select-oid="handleSelectOid"
@@ -78,20 +79,69 @@
   
   <style scoped>
   .mib-tree-page {
-    padding: 20px;
+    padding: 30px;
     min-height: 100vh;
+    position: relative;
+    overflow: hidden; /* Contain pseudo-elements */
+    font-family: 'Poppins', 'Segoe UI', sans-serif; /* Modern, elegant font */
+  }
+  .mib-tree-page::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(0, 184, 212, 0.3), transparent 70%); /* Subtle cyan glow */
+    opacity: 0.2;
+    pointer-events: none; /* Allow interaction through overlay */
   }
   .mib-tree-content {
-    padding: 10px;
-    background: #f4f4f4;
+    padding: 20px;
+    border-radius: 12px; /* Smooth, modern corners */
     overflow-y: auto;
-    border-left: 1px solid #ddd;
+    transition: all 0.3s ease; /* Smooth transitions */
   }
   .actions {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    gap: 15px; /* Spaced-out buttons */
+    justify-content: center; /* Center actions for a premium layout */
+  }
+  .actions .v-btn {
+    background: linear-gradient(135deg, #00b8d4, #007bff); /* Vibrant gradient for buttons */
+    color: #fff; /* White text */
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+  }
+  .actions .v-btn:hover {
+    background: linear-gradient(135deg, #007bff, #00b8d4); /* Reverse gradient on hover */
+    transform: scale(1.05); /* Slight scale for interaction */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
   }
   .error {
-    color: red;
-    margin: 10px 0;
+    color: #ff5252; /* Vivid red for visibility */
+    margin: 15px 0;
+    padding: 10px;
+    background: rgba(255, 82, 82, 0.1); /* Subtle red background */
+    border-radius: 6px;
+    border: 1px solid #ff5252;
+    font-weight: 500;
+    text-align: center;
+    animation: fadeIn 0.5s ease-in; /* Smooth fade-in for errors */
   }
-  </style>
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>
