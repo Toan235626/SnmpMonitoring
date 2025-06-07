@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import DashboardView from '@/views/DashboardView.vue';
 import DevicesNetworkView from '@/views/DevicesNetworkView.vue';
+import MIBTreeView from '@/views/MIBTreeView.vue';
 
 const routes = [
   {
@@ -16,6 +17,11 @@ const routes = [
     path: '/devices-network',
     name: 'DevicesNetwork',
     component: DevicesNetworkView,
+  },
+  {
+    path: '/mib-tree',
+    name: 'MIB Tree',
+    component: MIBTreeView,
   },
 ];
 

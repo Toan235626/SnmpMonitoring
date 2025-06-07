@@ -49,7 +49,6 @@
     },
     emits: ['select-oid'],
     setup(props) {
-      console.log('MibNode - node:', props.node);
       if (!Object.prototype.hasOwnProperty.call(props.node, 'expanded')) {
         props.node.expanded = false;
       }
@@ -61,7 +60,6 @@
         }
         if (props.node.children && props.node.children.length > 0) {
           props.node.expanded = !props.node.expanded;
-          console.log('MibNode - expanded:', props.node.expanded, 'for node:', props.node.name);
         }
       };
   
@@ -75,8 +73,8 @@
   
   <style scoped>
   li {
-    border: 1px solid #ccc; /* Debug: viền để kiểm tra */
-    margin: 2px 0;
+    border: 3px solid #ccc; /* Debug: viền để kiểm tra */
+    margin: 5px 0;
   }
   span {
     display: flex;
@@ -84,9 +82,8 @@
     gap: 5px;
     padding: 5px 10px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 13px;
     color: #333;
-    font-family: 'Courier New', Courier, monospace;
   }
   span:hover {
     background: #e0e0e0;
@@ -96,23 +93,21 @@
     color: #007bff;
   }
   i {
-    font-size: 12px;
+    font-size: 13px;
   }
   ul {
     list-style: none;
     margin-left: 20px;
   }
   .value {
-    color: #666;
-    font-size: 0.9em;
+    color: #000000;
+    font-size: 1em;
   }
   .details {
     padding: 5px 10px;
-    background: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    background: #ffffff;
     margin: 5px 10px;
-    font-size: 11px;
-    color: #555;
+    font-size: 13px;
+    color: #000000;
   }
   </style>

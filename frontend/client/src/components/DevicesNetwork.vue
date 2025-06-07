@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-btn @click="handleScanNetwork" :disabled="isLoading">Scan Network</v-btn>
+    <v-btn color="green" @click="handleScanNetwork" :disabled="isLoading">Scan Network</v-btn>
     <v-progress-circular
       v-if="isLoading"
       indeterminate
@@ -24,7 +24,7 @@
           <td>{{ network.name }}</td>
           <td>{{ network.ipRange }}</td>
           <td>
-            <v-btn @click="openScanDialog(network)">Scan Devices</v-btn>
+            <v-btn color="green" @click="openScanDialog(network)">Scan Devices</v-btn>
           </td>
         </tr>
       </tbody>
@@ -96,7 +96,6 @@ export default {
     const error = computed(() => store.error);
 
     const handleScanNetwork = async () => {
-      console.log("Scan Network clicked");
       await store.scanNetwork();
     };
 
@@ -114,7 +113,6 @@ export default {
 
     const handleScanDevices = async () => {
       if (form.value.validate()) {
-        console.log("Scanning devices with:", scanForm.value);
         await store.scanDevices({
           networkId: selectedNetwork.value.id,
           baseIp: scanForm.value.baseIp,

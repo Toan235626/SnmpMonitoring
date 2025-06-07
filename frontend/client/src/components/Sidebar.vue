@@ -2,6 +2,7 @@
     <div class="sidebar">
       <router-link to="/dashboard">Dashboard</router-link>
       <router-link to="/devices-network">Devices & Network</router-link>
+      <router-link to="/mib-tree">MIB Tree</router-link>
     </div>
   </template>
   

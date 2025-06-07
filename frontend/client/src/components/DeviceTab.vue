@@ -78,11 +78,10 @@
     </div>
 
     <div class="actions">
-      <v-btn @click="performAction('get')">Get</v-btn>
-      <v-btn @click="performAction('getNext')">GetNext</v-btn>
-      <v-btn @click="performAction('getBulk')">GetBulk</v-btn>
-      <v-btn @click="performAction('walk')">Walk</v-btn>
-      <v-btn @click="performAction('getMibTree')">Refresh MIB Tree</v-btn>
+      <v-btn color="primary" @click="performAction('get')">Get</v-btn>
+      <v-btn color="primary" @click="performAction('getNext')">GetNext</v-btn>
+      <v-btn color="primary" @click="performAction('getBulk')">GetBulk</v-btn>
+      <v-btn color="primary" @click="performAction('walk')">Walk</v-btn>
     </div>
 
     <v-progress-circular
@@ -92,39 +91,48 @@
       class="loading"
     />
 
-    <v-table v-if="results.length">
-      <thead>
-        <tr>
-          <th>OID</th>
-          <th>Value</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="result in results" :key="result.oid">
-          <td>{{ result.oid }}</td>
-          <td>{{ result.value }}</td>
-        </tr>
-      </tbody>
-    </v-table>
+    <div class="table-container">
+      <h3 class="table-title">SNMP Results</h3>
+      <v-table v-if="results.length" class="custom-table">
+        <thead>
+          <tr>
+            <th>OID</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="result in results" :key="result.oid">
+            <td class="text-cell">{{ result.oid }}</td>
+            <td class="text-cell">{{ result.value }}</td>
+          </tr>
+        </tbody>
+      </v-table>
+    </div>
 
-    <v-table v-if="deviceHistory.length">
-      <thead>
-        <tr>
-          <th>Time</th>
-          <th>OID</th>
-          <th>Community</th>
-          <th>Result</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="history in deviceHistory" :key="history.id">
-          <td>{{ history.time }}</td>
-          <td>{{ history.oid }}</td>
-          <td>{{ history.community }}</td>
-          <td>{{ history.result }}</td>
-        </tr>
-      </tbody>
-    </v-table>
+    <div class="table-container">
+      <div class="table-header">
+        <h3 class="table-title">Device History</h3>
+        <v-btn color="grey" @click="clearHistory" class="clear-btn">Clear History</v-btn>
+      </div>
+      <v-table v-if="deviceHistory.length" class="custom-table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>OID</th>
+            <th>Community</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="history in deviceHistory" :key="history.id">
+            <td class="text-cell">{{ history.time }}</td>
+            <td class="text-cell">{{ history.oid }}</td>
+            <td class="text-cell">{{ history.community }}</td>
+            <td class="text-cell">{{ history.value }}</td>
+          </tr>
+        </tbody>
+      </v-table>
+    </div>
   </div>
 </template>
 
@@ -175,9 +183,13 @@ export default {
 
     const activeTab = computed(() => store.activeTab);
     const results = computed(() => store.results[props.deviceId] || []);
-    const mibTreeData = computed(() => store.mibTreeData[props.deviceId] || {});
     const error = computed(() => store.error);
 
+    
+    const clearHistory = () => {
+      store.searchHistory = store.searchHistory.filter(
+        (history) => history.deviceId !== props.deviceId
+      )};
     return {
       oid,
       community,
@@ -192,9 +204,9 @@ export default {
       onVersionChange,
       results,
       deviceHistory,
-      mibTreeData,
       activeTab,
       error,
+      clearHistory,
       isLoading: computed(() => store.isLoading),
       performAction: async (action) => {
         await store.performAction(action, props.deviceId, {
@@ -240,5 +252,54 @@ export default {
 .error {
   color: red;
   margin-top: 10px;
+}
+.table-container {
+  margin-bottom: 30px;
+  overflow-x: auto;
+}
+.table-title {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 10px;
+  padding-left: 10px;
+}
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.clear-btn {
+  margin-right: 10px;
+}
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.custom-table th {
+  background-color: #54aaff; 
+  color: white;
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid #ddd;
+}
+.custom-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #ddd;
+}
+.custom-table tr:nth-child(even) {
+  background-color: #f5f5f5; 
+}
+.custom-table tr:hover {
+  background-color: #e3f2fd; 
+}
+.text-cell {
+  word-break: break-word; /* Ngắt từ nếu nội dung quá dài */
+  max-width: 300px; /* Giới hạn chiều rộng tối đa */
+  white-space: normal; /* Cho phép xuống dòng */
 }
 </style>
