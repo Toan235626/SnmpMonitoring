@@ -41,7 +41,7 @@ public class SnmpWalk {
         target.setCommunity(new OctetString(community));
         target.setAddress(new UdpAddress(deviceIp + "/" + port));
         target.setRetries(1);
-        target.setTimeout(100);
+        target.setTimeout(200);
         target.setVersion(SnmpConstants.version1);
 
         List<SnmpRecord> results = new ArrayList<>();
@@ -106,7 +106,7 @@ public class SnmpWalk {
         target.setCommunity(new OctetString(community));
         target.setAddress(new UdpAddress(deviceIp + "/" + port));
         target.setRetries(1);
-        target.setTimeout(100);
+        target.setTimeout(200);
         target.setVersion(SnmpConstants.version2c);
 
         Snmp snmp = new Snmp(transport);
@@ -170,7 +170,7 @@ public class SnmpWalk {
         UserTarget target = new UserTarget();
         target.setAddress(new UdpAddress(deviceIp + "/" + port));
         target.setRetries(1);
-        target.setTimeout(100);
+        target.setTimeout(200);
         target.setVersion(SnmpConstants.version3);
         target.setSecurityLevel(securityLevel);
         target.setSecurityName(new OctetString(username));

@@ -23,7 +23,7 @@ public class SnmpGetNext {
         target.setCommunity(new OctetString(community));
         target.setAddress(new UdpAddress(deviceIp + "/" + port));
         target.setRetries(1);
-        target.setTimeout(100);
+        target.setTimeout(200);
         target.setVersion("1".equals(version) ? SnmpConstants.version1 : SnmpConstants.version2c);
 
         PDU pdu = new PDU();
@@ -75,7 +75,7 @@ public class SnmpGetNext {
         UserTarget target = new UserTarget();
         target.setAddress(new UdpAddress(deviceIp + "/" + port));
         target.setRetries(1);
-        target.setTimeout(100);
+        target.setTimeout(200);
         target.setVersion(SnmpConstants.version3);
         target.setSecurityLevel(securityLevel);
         target.setSecurityName(new OctetString(username));
