@@ -1,16 +1,21 @@
+<!-- MIBTreePage.vue -->
 <template>
   <div class="mib-tree-page">
     <v-alert v-if="!devices.length" type="info">
       No devices found. Please scan devices in Devices & Network.
     </v-alert>
-
     <v-tabs v-model="activeTab">
       <v-tab v-for="device in devices" :key="device.id" :value="device.id">
         {{ device.name }}
         (IP: {{ device.deviceIp }})
       </v-tab>
     </v-tabs>
-
+    <v-progress-circular
+      v-if="isLoadingForDevice"
+      indeterminate
+      color="primary"
+      class="loading"
+    />
     <v-window v-model="activeTab">
       <v-window-item
         v-for="device in devices"
@@ -31,7 +36,7 @@
               mibTreeData[device.id].length
             "
           >
-            <h3>MIB Tree for Device {{ id }}</h3>
+            <h3>MIB Tree for Device {{ device.id }}</h3>
             <MibTree
               :data="mibTreeData[device.id] || []"
               @select-oid="handleSelectOid"
@@ -49,7 +54,7 @@
 <script>
 import { mibTreeStore } from "@/stores/mibtree";
 import MibTree from "@/components/MibTree.vue";
-import { ref } from "vue";
+import { ref, watch, computed } from "vue";
 
 export default {
   components: { MibTree },
@@ -66,6 +71,7 @@ export default {
     };
 
     const refreshMibTree = async (deviceId) => {
+      if (mibTree.loadingStates[deviceId]) return;
       const selectedDevice = mibTree.devices.find((d) => d.id === deviceId);
       if (selectedDevice) {
         await mibTree.buildMibTree(deviceId, selectedDevice.deviceIp);
@@ -74,10 +80,22 @@ export default {
       }
     };
 
+    watch(activeTab, (newTab) => {
+      if (newTab && !mibTree.loadingStates[newTab]) {
+        const selectedDevice = mibTree.devices.find((d) => d.id === newTab);
+        if (selectedDevice && (!mibTree.mibTreeData[newTab] || mibTree.mibTreeData[newTab].length === 0)) {
+          mibTree.buildMibTree(newTab, selectedDevice.deviceIp);
+        }
+      }
+    });
+
+    const isLoadingForDevice = computed(() => mibTree.loadingStates[activeTab.value] || false);
+
     return {
       devices: mibTree.devices,
       mibTreeData: mibTree.mibTreeData,
       error: mibTree.error,
+      isLoadingForDevice, // Sử dụng computed để kiểm tra loading cho tab hiện tại
       activeTab,
       selectedOid,
       handleSelectOid,
@@ -156,6 +174,15 @@ export default {
   text-align: center;
   animation: fadeIn 0.5s ease-in; 
 }
+
+.loading {
+  display: block;
+  margin: 30px auto;
+  color: #00b8d4; 
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite; 
+}
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -164,6 +191,14 @@ export default {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
 </style>

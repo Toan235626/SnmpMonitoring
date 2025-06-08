@@ -26,6 +26,10 @@ export const deviceStore = defineStore("device", {
         const device = this.devices.find((d) => d.id === deviceId);
         if (!device) throw new Error("Device not found");
 
+        const community = device.community || params.community || "public";
+        const port = device.port || params.port || 161;
+        const version = device.version || params.version || "2c";
+
         if (!params.community || !params.port || !params.version) {
           throw new Error(
             "Missing required parameters: Community, Port, or Version"

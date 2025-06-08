@@ -6,19 +6,34 @@ export const mibTreeStore = defineStore("mibTree", {
   state: () => ({
     devices: [],
     mibTreeData: {},
-    isLoading: false,
+    loadingStates: {},
     error: null,
   }),
   actions: {
-    setMibTreeDevices() {
+    async setMibTreeDevices() { 
+      this.isLoading = true;
       const network = networkStore();
       this.devices = network.devices;
-      this.devices.forEach((device) => {
-        this.buildMibTree(device.id, device.deviceIp);
-      });
+      try {
+        await Promise.all(
+          this.devices.map(async (device) => {
+            this.loadingStates[device.id] = true; 
+            try {
+              await this.buildMibTree(device.id, device.deviceIp);
+            } finally {
+              this.loadingStates[device.id] = false; 
+            }
+          })
+        );
+      } catch (err) {
+        this.error = "Failed to load MIB tree for devices: " + err.message;
+        console.error("setMibTreeDevices error:", err);
+      } finally {
+        this.isLoading = false; 
+      }
     },
     async buildMibTree(deviceId, deviceIp) {
-      this.isLoading = true;
+      this.loadingStates[deviceId] = true;
       this.error = null;
       try {
         const device = this.devices.find((d) => d.id === deviceId);
@@ -26,9 +41,9 @@ export const mibTreeStore = defineStore("mibTree", {
 
         const params = {
           deviceIp: deviceIp || device.deviceIp,
-          community: "public",
-          port: 161,
-          version: "2c",
+          community: device.community || "public",
+          port: device.port || 161,
+          version: device.version || "2c",
         };
 
         const response = await axios.post("/api/mib-tree", null, { params });
@@ -43,15 +58,19 @@ export const mibTreeStore = defineStore("mibTree", {
         );
         this.mibTreeData[deviceId] = [];
       } finally {
-        this.isLoading = false;
+        this.loadingStates[deviceId] = false;
       }
     },
     async performMibTreeAction(action, deviceId, params) {
-      this.isLoading = true;
+      this.loadingStates[deviceId] = true;
       this.error = null;
       try {
         const device = this.devices.find((d) => d.id === deviceId);
         if (!device) throw new Error("Device not found");
+        
+        const community = device.community || params.community || "public";
+        const port = device.port || params.port || 161;
+        const version = device.version || params.version || "2c";
 
         if (!params.community || !params.port || !params.version) {
           throw new Error(
@@ -111,7 +130,7 @@ export const mibTreeStore = defineStore("mibTree", {
           err.response ? err.response.data : err.message
         );
       } finally {
-        this.isLoading = false;
+        this.loadingStates[deviceId] = false;
       }
     },
   },

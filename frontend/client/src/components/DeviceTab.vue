@@ -158,10 +158,12 @@ export default {
   },
   setup(props) {
     const store = deviceStore();
+    const device = store.devices.find((d) => d.id === props.deviceId);
+
     const oid = ref(props.selectedOid || "");
-    const community = ref("public");
-    const port = ref(161);
-    const version = ref("2c");
+    const community = ref(device?.community || "public");
+    const port = ref(device?.port || 161);
+    const version = ref(device?.version || "2c");
     const authUsername = ref("");
     const authPass = ref("");
     const privPass = ref("");

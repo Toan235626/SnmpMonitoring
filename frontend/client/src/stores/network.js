@@ -48,6 +48,11 @@ export const networkStore = defineStore("network", {
           id: `d${networkId}-${index + 1}`,
           name: (device.name || `Device ${index + 1}`).substring(0, 30),
           deviceIp: device.deviceIp || `${baseIp}.${index + 1}`,
+          community: community || "public",
+          port: port || 161,
+          version: version || "2c",
+          prefix,
+          networkId,
         }));
         this.scanDevicesSuccess = true;
       } catch (err) {

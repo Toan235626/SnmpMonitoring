@@ -3,48 +3,56 @@
     <router-link to="/devices-network">Devices & Network</router-link>
     <router-link
       to="/dashboard"
-      :class="{ highlight: highlightTabs }"
-      @click="resetHighlight"
+      :class="{ highlight: highlightDashboard }"
+      @click="resetDashboardHighlight"
     >Dashboard</router-link>
     <router-link
       to="/mib-tree"
-      :class="{ highlight: highlightTabs }"
-      @click="resetHighlight"
+      :class="{ highlight: highlightMibTree }"
+      @click="resetMibTreeHighlight"
     >MIB Tree</router-link>
   </div>
 </template>
 
 <script>
 import { networkStore } from "@/stores/network";
-import { ref, computed, onMounted, onUnmounted } from "vue";
+import { ref, computed, watch } from "vue";
 
 export default {
   setup() {
     const store = networkStore();
-    const highlightTabs = computed(() => store.scanDevicesSuccess);
-    let timeoutId = null;
+    
+    
+    const highlightDashboard = ref(false);
+    const highlightMibTree = ref(false);
+    
+    
+    const scanSuccess = computed(() => store.scanDevicesSuccess);
+    
+    
+    watch(scanSuccess, (newValue) => {
+      if (newValue) {
+        highlightDashboard.value = true;
+        highlightMibTree.value = true;
+      }
+    }, { immediate: true }); 
 
-    const resetHighlight = () => {
+    
+    const resetDashboardHighlight = () => {
+      highlightDashboard.value = false;
+      store.scanDevicesSuccess = false; 
+    };
+    
+    const resetMibTreeHighlight = () => {
+      highlightMibTree.value = false;
       store.scanDevicesSuccess = false; 
     };
 
-    onMounted(() => {
-      if (highlightTabs.value) {
-        timeoutId = setTimeout(() => {
-          store.scanDevicesSuccess = false; 
-        }, 5000); 
-      }
-    });
-
-    onUnmounted(() => {
-      if (timeoutId) {
-        clearTimeout(timeoutId); 
-      }
-    });
-
     return {
-      highlightTabs,
-      resetHighlight,
+      highlightDashboard,
+      highlightMibTree,
+      resetDashboardHighlight,
+      resetMibTreeHighlight,
     };
   },
 };
@@ -92,7 +100,7 @@ export default {
   transition: all 0.3s ease; 
   position: relative;
   overflow: hidden; 
-  margin-bottom: 10px;
+  margin-bottom: 10px; 
 }
 .sidebar a:hover {
   background: linear-gradient(
@@ -109,12 +117,12 @@ export default {
     135deg,
     #00b8d4,
     #007bff
-  );
+  ); 
   transform: translateX(5px); 
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); 
   color: #ffd700; 
-  animation: pulse 2s infinite;
-  margin-bottom: 10px;
+  animation: pulse 2s infinite; 
+  margin-bottom: 10px; 
 }
 .sidebar a::after {
   content: "";
