@@ -1,7 +1,6 @@
 package com.project.snmp.service.snmpServices;
 
 import com.project.snmp.model.SnmpRecord;
-import com.project.snmp.utils.SnmpStringToJson;
 import org.json.JSONObject;
 import org.snmp4j.*;
 import org.snmp4j.event.ResponseEvent;
@@ -15,7 +14,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class SnmpGetNext {
 
-    public SnmpRecord getNextv12(String deviceIp, String community, String oid, int port, String version) throws Exception {
+    public SnmpRecord getNextv12(String deviceIp, String community, String oid, int port, String version)
+            throws Exception {
         TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping();
         transport.listen();
 
@@ -34,16 +34,14 @@ public class SnmpGetNext {
         ResponseEvent response = snmp.getNext(pdu, target);
 
         if (response != null && response.getResponse() != null) {
-            String vbString = response.getResponse().getVariableBindings().toString();
+            String vbString = response.getResponse().getVariableBindings().get(0).getVariable().toString();
             if (vbString.startsWith("[") && vbString.endsWith("]")) {
                 vbString = vbString.substring(1, vbString.length() - 1);
             }
-            SnmpStringToJson snmpStringToJson = new SnmpStringToJson(vbString);
-            JSONObject jsonObject = snmpStringToJson.toJson().getJSONObject(0);
             SnmpRecord snmpRecord = new SnmpRecord();
             snmpRecord.setDeviceIp(deviceIp);
-            snmpRecord.setOid(jsonObject.getString("oid"));
-            snmpRecord.setValue(jsonObject.getString("value"));
+            snmpRecord.setOid(response.getResponse().get(0).getOid().toString());
+            snmpRecord.setValue(vbString);
             snmpRecord.setCommunity(community);
             return snmpRecord;
         } else {
@@ -52,23 +50,28 @@ public class SnmpGetNext {
     }
 
     public SnmpRecord getNextv3(String deviceIp, String username, String authPass, String privPass,
-                                String authProtocol, String privProtocol, int securityLevel,
-                                String oid, int port) throws Exception {
+            String authProtocol, String privProtocol, int securityLevel,
+            String oid, int port) throws Exception {
         TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping();
         transport.listen();
 
         OID authProto = null;
-        if ("SHA".equalsIgnoreCase(authProtocol)) authProto = AuthSHA.ID;
-        else if ("MD5".equalsIgnoreCase(authProtocol)) authProto = AuthMD5.ID;
+        if ("SHA".equalsIgnoreCase(authProtocol))
+            authProto = AuthSHA.ID;
+        else if ("MD5".equalsIgnoreCase(authProtocol))
+            authProto = AuthMD5.ID;
 
         OID privProto = null;
-        if ("AES".equalsIgnoreCase(privProtocol)) privProto = PrivAES128.ID;
-        else if ("DES".equalsIgnoreCase(privProtocol)) privProto = PrivDES.ID;
+        if ("AES".equalsIgnoreCase(privProtocol))
+            privProto = PrivAES128.ID;
+        else if ("DES".equalsIgnoreCase(privProtocol))
+            privProto = PrivDES.ID;
 
         USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
         SecurityModels.getInstance().addSecurityModel(usm);
 
-        UsmUser user = new UsmUser(new OctetString(username), authProto, new OctetString(authPass), privProto, new OctetString(privPass));
+        UsmUser user = new UsmUser(new OctetString(username), authProto, new OctetString(authPass), privProto,
+                new OctetString(privPass));
         Snmp snmp = new Snmp(transport);
         snmp.getUSM().addUser(new OctetString(username), user);
 
@@ -87,16 +90,14 @@ public class SnmpGetNext {
         ResponseEvent response = snmp.getNext(pdu, target);
 
         if (response != null && response.getResponse() != null) {
-            String vbString = response.getResponse().getVariableBindings().toString();
+            String vbString = response.getResponse().getVariableBindings().get(0).getVariable().toString();
             if (vbString.startsWith("[") && vbString.endsWith("]")) {
                 vbString = vbString.substring(1, vbString.length() - 1);
             }
-            SnmpStringToJson snmpStringToJson = new SnmpStringToJson(vbString);
-            JSONObject jsonObject = snmpStringToJson.toJson().getJSONObject(0);
             SnmpRecord snmpRecord = new SnmpRecord();
             snmpRecord.setDeviceIp(deviceIp);
-            snmpRecord.setOid(jsonObject.getString("oid"));
-            snmpRecord.setValue(jsonObject.getString("value"));
+            snmpRecord.setOid(response.getResponse().get(0).getOid().toString());
+            snmpRecord.setValue(vbString);
             snmpRecord.setCommunity(username);
             return snmpRecord;
         } else {

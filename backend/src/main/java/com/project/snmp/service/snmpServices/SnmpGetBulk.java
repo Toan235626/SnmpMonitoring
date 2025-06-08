@@ -1,7 +1,9 @@
 package com.project.snmp.service.snmpServices;
 
 import com.project.snmp.model.SnmpRecord;
-import com.project.snmp.utils.SnmpStringToJson;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -35,7 +37,7 @@ public class SnmpGetBulk {
         target.setRetries(2);
         target.setTimeout(1500);
         target.setVersion(SnmpConstants.version2c);
-        
+
         PDU pdu = new PDU();
         pdu.add(new VariableBinding(new OID(oid)));
         pdu.setType(PDU.GETBULK);
@@ -45,31 +47,30 @@ public class SnmpGetBulk {
         ResponseEvent response = snmp.getBulk(pdu, target);
 
         if (response != null && response.getResponse() != null) {
-            String vbString = response.getResponse().getVariableBindings().toString();
-            if (vbString.startsWith("[") && vbString.endsWith("]")) {
-                vbString = vbString.substring(1, vbString.length() - 1);
+            PDU responsePDU = response.getResponse();
+            List<SnmpRecord> snmpRecordsList = new ArrayList<>();
+
+            for (VariableBinding vb : responsePDU.getVariableBindings()) {
+                // System.out.println("OID: " + vb.getOid() + ", Value: " + vb.getVariable());
+                if (vb.getVariable().toString() != null && vb.getVariable().toString() != ""
+                        && !vb.getVariable().isException()) {
+                    SnmpRecord snmpRecord = new SnmpRecord();
+                    snmpRecord.setDeviceIp(deviceIp);
+                    snmpRecord.setOid(vb.getOid().toString());
+                    snmpRecord.setValue(vb.getVariable().toString());
+                    snmpRecord.setCommunity(community);
+                    snmpRecordsList.add(snmpRecord);
+                }
             }
-            SnmpStringToJson snmpStringToJson = new SnmpStringToJson(vbString);
-            JSONArray jsonArray = snmpStringToJson.toJson();
-            
-            SnmpRecord[] snmpRecords = new SnmpRecord[jsonArray.length()];
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                SnmpRecord snmpRecord = new SnmpRecord();
-                snmpRecord.setDeviceIp(deviceIp);
-                snmpRecord.setOid(jsonObject.getString("oid"));
-                snmpRecord.setValue(jsonObject.getString("value"));
-                snmpRecord.setCommunity(community);
-                snmpRecords[i] = snmpRecord;
-            }
-            return snmpRecords;
+            return snmpRecordsList.toArray(new SnmpRecord[0]);
         } else {
             throw new RuntimeException("SNMP GETBULK request timed out or failed.");
         }
     }
+
     public SnmpRecord[] getBulkv3(String deviceIp, String username, String authPass, String privPass,
-                                  String authProtocol, String privProtocol, int securityLevel,
-                                  String rootOid, int port) throws Exception {
+            String authProtocol, String privProtocol, int securityLevel,
+            String rootOid, int port) throws Exception {
         TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping();
         transport.listen();
 
@@ -78,14 +79,19 @@ public class SnmpGetBulk {
         SecurityModels.getInstance().addSecurityModel(usm);
 
         OID authProto = null;
-        if ("SHA".equalsIgnoreCase(authProtocol)) authProto = AuthSHA.ID;
-        else if ("MD5".equalsIgnoreCase(authProtocol)) authProto = AuthMD5.ID;
+        if ("SHA".equalsIgnoreCase(authProtocol))
+            authProto = AuthSHA.ID;
+        else if ("MD5".equalsIgnoreCase(authProtocol))
+            authProto = AuthMD5.ID;
 
         OID privProto = null;
-        if ("AES".equalsIgnoreCase(privProtocol)) privProto = PrivAES128.ID;
-        else if ("DES".equalsIgnoreCase(privProtocol)) privProto = PrivDES.ID;
+        if ("AES".equalsIgnoreCase(privProtocol))
+            privProto = PrivAES128.ID;
+        else if ("DES".equalsIgnoreCase(privProtocol))
+            privProto = PrivDES.ID;
 
-        UsmUser user = new UsmUser(new OctetString(username), authProto, new OctetString(authPass), privProto, new OctetString(privPass));
+        UsmUser user = new UsmUser(new OctetString(username), authProto, new OctetString(authPass), privProto,
+                new OctetString(privPass));
         Snmp snmp = new Snmp(transport);
         snmp.getUSM().addUser(new OctetString(username), user);
 
@@ -105,41 +111,37 @@ public class SnmpGetBulk {
         ResponseEvent response = snmp.getBulk(pdu, target);
 
         if (response != null && response.getResponse() != null) {
-            String vbString = response.getResponse().getVariableBindings().toString();
-            if (vbString.startsWith("[") && vbString.endsWith("]")) {
-                vbString = vbString.substring(1, vbString.length() - 1);
-            }
-            SnmpStringToJson snmpStringToJson = new SnmpStringToJson(vbString);
-            JSONArray jsonArray = snmpStringToJson.toJson();
+            PDU responsePDU = response.getResponse();
+            List<SnmpRecord> snmpRecordsList = new ArrayList<>();
 
-            SnmpRecord[] snmpRecords = new SnmpRecord[jsonArray.length()];
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                SnmpRecord snmpRecord = new SnmpRecord();
-                snmpRecord.setDeviceIp(deviceIp);
-                snmpRecord.setOid(jsonObject.getString("oid"));
-                snmpRecord.setValue(jsonObject.getString("value"));
-                snmpRecord.setCommunity(username); // For SNMPv3, use username instead of community
-                snmpRecords[i] = snmpRecord;
+            for (VariableBinding vb : responsePDU.getVariableBindings()) {
+                // System.out.println("OID: " + vb.getOid() + ", Value: " + vb.getVariable());
+                if (vb.getVariable().toString() != null && vb.getVariable().toString() != ""
+                        && !vb.getVariable().isException()) {
+                    SnmpRecord snmpRecord = new SnmpRecord();
+                    snmpRecord.setDeviceIp(deviceIp);
+                    snmpRecord.setOid(vb.getOid().toString());
+                    snmpRecord.setValue(vb.getVariable().toString());
+                    snmpRecord.setCommunity(username); // Using username as community for SNMPv3
+                    snmpRecordsList.add(snmpRecord);
+                }
             }
-            return snmpRecords;
+            return snmpRecordsList.toArray(new SnmpRecord[0]);
         } else {
             throw new RuntimeException("SNMP GETBULK request timed out or failed.");
         }
     }
 
-
-
-
     // public static void main(String[] args) {
-    //     SnmpGetBulk snmpGetBulk = new SnmpGetBulk();
-    //     try {
-    //         JSONArray result = snmpGetBulk.getBulkAsJson("127.0.0.1", "public", "1.3.6.1.2.1.1.1.0", 0, 10);
-    //         for (Object jsonObject : result) {
-    //             System.out.println(jsonObject.toString());
-    //         }
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //     }
+    // SnmpGetBulk snmpGetBulk = new SnmpGetBulk();
+    // try {
+    // JSONArray result = snmpGetBulk.getBulkAsJson("127.0.0.1", "public",
+    // "1.3.6.1.2.1.1.1.0", 0, 10);
+    // for (Object jsonObject : result) {
+    // System.out.println(jsonObject.toString());
     // }
-    }
+    // } catch (Exception e) {
+    // e.printStackTrace();
+    // }
+    // }
+}

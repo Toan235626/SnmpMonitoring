@@ -26,7 +26,10 @@ import com.project.snmp.model.SnmpRecord;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class SnmpWalk {
@@ -65,12 +68,15 @@ public class SnmpWalk {
                 }
 
                 VariableBinding vb = responseEvent.getResponse().get(0);
-                if (vb == null || vb.getOid() == null) break;
+                if (vb == null || vb.getOid() == null)
+                    break;
 
-                if (lastOid != null && vb.getOid().equals(lastOid)) break;
+                if (lastOid != null && vb.getOid().equals(lastOid))
+                    break;
                 lastOid = vb.getOid();
 
-                if (!vb.getOid().startsWith(root)) break;
+                if (!vb.getOid().startsWith(root))
+                    break;
 
                 String varStr = vb.getVariable() == null ? "" : vb.getVariable().toString().toLowerCase();
                 if (varStr.contains("error") || varStr.contains("nosuch")) {
@@ -97,7 +103,6 @@ public class SnmpWalk {
         return results.toArray(new SnmpRecord[0]);
     }
 
-
     public SnmpRecord[] walkV2Records(String deviceIp, String community, String rootOid, int port) throws IOException {
         TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping();
         transport.listen();
@@ -106,171 +111,242 @@ public class SnmpWalk {
         target.setCommunity(new OctetString(community));
         target.setAddress(new UdpAddress(deviceIp + "/" + port));
         target.setRetries(1);
-        target.setTimeout(200);
+        target.setTimeout(1000);
         target.setVersion(SnmpConstants.version2c);
 
         Snmp snmp = new Snmp(transport);
-        List<SnmpRecord> resultList = new ArrayList<>();
+        List<SnmpRecord> results = new ArrayList<>();
+        Set<String> seenOids = new HashSet<>();
+        LinkedList<OID> queueGetNext = new LinkedList<>(); // fallback queue
+
+        OID currentOid = new OID(rootOid);
+        OID root = new OID(rootOid);
+        int step = 0, maxSteps = 10000;
 
         try {
-            TreeUtils treeUtils = new TreeUtils(snmp, new DefaultPDUFactory(PDU.GETBULK));
-            List<TreeEvent> events = treeUtils.getSubtree(target, new OID(rootOid));
+            while (step++ < maxSteps) {
+                PDU pdu = new PDU();
+                if (currentOid.startsWith(new OID("1.3.6.1.4.1"))) {
+                    // dùng GETNEXT cho enterprise
+                    pdu.setType(PDU.GETNEXT);
+                    pdu.add(new VariableBinding(currentOid));
+                    // System.out.println("GETNEXT → " + currentOid);
+                } else {
+                    // dùng GETBULK cho phần còn lại
+                    pdu.setType(PDU.GETBULK);
+                    pdu.setMaxRepetitions(20);
+                    pdu.setNonRepeaters(0);
+                    pdu.add(new VariableBinding(currentOid));
+                    // System.out.println("GETBULK → " + currentOid);
+                }
 
-            boolean fallback = (events == null || events.isEmpty());
+                ResponseEvent responseEvent = snmp.send(pdu, target);
+                PDU response = responseEvent.getResponse();
+                if (response == null || response.getVariableBindings().isEmpty())
+                    break;
 
-            if (!fallback) {
-                for (TreeEvent event : events) {
-                    if (event == null || event.isError()) {
-                        fallback = true;
-                        break;
+                boolean gotValid = false;
+
+                for (VariableBinding vb : response.getVariableBindings()) {
+                    if (vb == null || vb.getOid() == null)
+                        continue;
+                    OID oid = vb.getOid();
+
+                    if (!oid.startsWith(root)) {
+                        // System.out.println("→ Out of root: " + oid);
+                        continue;
                     }
-                    VariableBinding[] varBindings = event.getVariableBindings();
-                    if (varBindings == null || varBindings.length == 0) continue;
 
-                    for (VariableBinding vb : varBindings) {
-                        resultList.add(toSnmpRecord(deviceIp, community, vb));
+                    if (seenOids.contains(oid.toDottedString()))
+                        continue;
+                    seenOids.add(oid.toDottedString());
+                    currentOid = oid;
+
+                    String val = vb.getVariable() == null ? "" : vb.getVariable().toString().toLowerCase();
+                    if (val.contains("nosuch") || val.contains("error") || val.isEmpty() || val.equals("null"))
+                        continue;
+
+                    gotValid = true;
+                    results.add(toSnmpRecord(deviceIp, community, vb));
+
+                    // Nếu là enterprise node → có thể còn .0 con → đưa vào GETNEXT fallback
+                    if (oid.toDottedString().startsWith("1.3.6.1.4.1"))
+                        queueGetNext.add(oid);
+                }
+
+                if (!gotValid)
+                    break;
+            }
+
+            if ("1.3.6.1.4.1".startsWith(rootOid) && !seenOids.contains("1.3.6.1.4.1")) {
+                System.out.println("→ Fallback walk from 1.3.6.1.4.1");
+
+                OID currentOid1 = new OID("1.3.6.1.4.1");
+                OID enterpriseRoot = new OID("1.3.6.1.4.1");
+                int maxSteps1 = 1000;
+                int step1 = 0;
+
+                while (step1++ < maxSteps1) {
+                    PDU pdu = new PDU();
+                    pdu.setType(PDU.GETNEXT);
+                    pdu.add(new VariableBinding(currentOid1));
+
+                    ResponseEvent fallback = snmp.send(pdu, target);
+                    if (fallback == null || fallback.getResponse() == null)
+                        break;
+
+                    VariableBinding vb = fallback.getResponse().get(0);
+                    if (vb == null || vb.getOid() == null)
+                        break;
+
+                    OID oid = vb.getOid();
+                    if (!oid.startsWith(enterpriseRoot))
+                        break;
+
+                    String oidStr = oid.toDottedString();
+                    if (seenOids.contains(oidStr))
+                        break;
+                    seenOids.add(oidStr);
+                    currentOid1 = oid;
+
+                    String val = vb.getVariable() == null ? "" : vb.getVariable().toString().toLowerCase();
+                    if (!val.contains("nosuch") && !val.contains("error") && !val.isEmpty() && !val.equals("null")) {
+                        results.add(toSnmpRecord(deviceIp, community, vb));
                     }
                 }
             }
-
-            if (fallback) {
-                System.err.println("TreeUtils failed. Fallback to manual walk for OID: " + rootOid);
-                resultList.addAll(Arrays.asList(walkManually(snmp, target, rootOid, deviceIp, community)));
-            }
-
+            // System.out.println("Smart walk (v2c + fallback) completed with " +
+            // results.size() + " OIDs");
         } finally {
             snmp.close();
             transport.close();
         }
 
-        return resultList.toArray(new SnmpRecord[0]);
+        return results.toArray(new SnmpRecord[0]);
     }
 
     public SnmpRecord[] walkV3Records(String deviceIp, String username, String authPass, String privPass,
-                               String authProtocol, String privProtocol, int securityLevel,
-                               String rootOid, int port) throws IOException {
+            String authProtocol, String privProtocol, int securityLevel,
+            String rootOid, int port) throws IOException {
         TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping();
         transport.listen();
 
         Snmp snmp = new Snmp(transport);
-
-        // USM + User
-        USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
-        SecurityModels.getInstance().addSecurityModel(usm);
-
         OID authProt = "MD5".equalsIgnoreCase(authProtocol) ? AuthMD5.ID : AuthSHA.ID;
         OID privProt = "DES".equalsIgnoreCase(privProtocol) ? PrivDES.ID : PrivAES128.ID;
 
+        USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
+        SecurityModels.getInstance().addSecurityModel(usm);
         snmp.getUSM().addUser(new OctetString(username),
-            new UsmUser(new OctetString(username),
-                authProt, new OctetString(authPass),
-                privProt, new OctetString(privPass))
-        );
+                new UsmUser(new OctetString(username),
+                        authProt, new OctetString(authPass),
+                        privProt, new OctetString(privPass)));
 
         UserTarget target = new UserTarget();
         target.setAddress(new UdpAddress(deviceIp + "/" + port));
         target.setRetries(1);
-        target.setTimeout(200);
+        target.setTimeout(1000);
         target.setVersion(SnmpConstants.version3);
         target.setSecurityLevel(securityLevel);
         target.setSecurityName(new OctetString(username));
 
-        List<SnmpRecord> resultList = new ArrayList<>();
+        List<SnmpRecord> results = new ArrayList<>();
+        Set<String> seenOids = new HashSet<>();
+
+        OID currentOid = new OID(rootOid);
+        OID root = new OID(rootOid);
+        OID enterpriseRoot = new OID("1.3.6.1.4.1");
 
         try {
-            TreeUtils treeUtils = new TreeUtils(snmp, new DefaultPDUFactory(PDU.GETBULK));
-            List<TreeEvent> events = treeUtils.getSubtree(target, new OID(rootOid));
+            int step = 0, maxSteps = 10000;
+            while (step++ < maxSteps) {
+                ScopedPDU pdu = new ScopedPDU();
+                pdu.setType(PDU.GETBULK);
+                pdu.setMaxRepetitions(10);
+                pdu.setNonRepeaters(0);
+                pdu.add(new VariableBinding(currentOid));
 
-            boolean fallback = (events == null || events.isEmpty());
+                ResponseEvent responseEvent = snmp.send(pdu, target);
+                PDU response = responseEvent.getResponse();
+                if (response == null || response.getVariableBindings().isEmpty())
+                    break;
 
-            if (!fallback) {
-                for (TreeEvent event : events) {
-                    if (event == null || event.isError()) {
-                        fallback = true;
+                boolean foundValid = false;
+
+                for (VariableBinding vb : response.getVariableBindings()) {
+                    if (vb == null || vb.getOid() == null)
+                        continue;
+                    OID oid = vb.getOid();
+
+                    if (!oid.startsWith(root))
+                        continue;
+                    String oidStr = oid.toDottedString();
+                    if (seenOids.contains(oidStr))
+                        continue;
+
+                    seenOids.add(oidStr);
+                    currentOid = oid;
+
+                    String val = vb.getVariable() == null ? "" : vb.getVariable().toString().toLowerCase();
+                    if (val.contains("nosuch") || val.contains("error") || val.isEmpty() || val.equals("null"))
+                        continue;
+
+                    SnmpRecord rec = new SnmpRecord();
+                    rec.setDeviceIp(deviceIp);
+                    rec.setCommunity(username);
+                    rec.setOid(oidStr);
+                    rec.setValue(vb.getVariable().toString());
+                    results.add(rec);
+
+                    foundValid = true;
+                }
+
+                if (!foundValid)
+                    break;
+            }
+
+            // fallback GETNEXT từ 1.3.6.1.4.1 nếu cần
+            if (new OID(rootOid).compareTo(enterpriseRoot) > 0 && !seenOids.contains("1.3.6.1.4.1")) {
+                OID fallbackOid = enterpriseRoot;
+                int fallbackSteps = 100;
+                for (int i = 0; i < fallbackSteps; i++) {
+                    ScopedPDU pdu = new ScopedPDU();
+                    pdu.setType(PDU.GETNEXT);
+                    pdu.add(new VariableBinding(fallbackOid));
+
+                    ResponseEvent fallback = snmp.send(pdu, target);
+                    if (fallback == null || fallback.getResponse() == null)
                         break;
-                    }
-                    VariableBinding[] varBindings = event.getVariableBindings();
-                    if (varBindings == null || varBindings.length == 0) continue;
 
-                    for (VariableBinding vb : varBindings) {
-                        SnmpRecord record = new SnmpRecord();
-                        record.setDeviceIp(deviceIp);
-                        record.setCommunity(username);
-                        record.setOid(vb.getOid().toString());
-                        record.setValue((vb.getVariable() == null || vb.getVariable().toString().isEmpty())
-                                ? "null" : vb.getVariable().toString());
-                        resultList.add(record);
+                    VariableBinding vb = fallback.getResponse().get(0);
+                    if (vb == null || vb.getOid() == null || !vb.getOid().startsWith(enterpriseRoot))
+                        break;
+
+                    String oidStr = vb.getOid().toDottedString();
+                    if (seenOids.contains(oidStr))
+                        break;
+
+                    String val = vb.getVariable() == null ? "" : vb.getVariable().toString().toLowerCase();
+                    if (!val.contains("nosuch") && !val.contains("error") && !val.isEmpty() && !val.equals("null")) {
+                        SnmpRecord rec = new SnmpRecord();
+                        rec.setDeviceIp(deviceIp);
+                        rec.setCommunity(username);
+                        rec.setOid(oidStr);
+                        rec.setValue(vb.getVariable().toString());
+                        results.add(rec);
                     }
+
+                    seenOids.add(oidStr);
+                    fallbackOid = vb.getOid();
                 }
             }
 
-            if (fallback) {
-                System.err.println("SNMPv3 TreeUtils fallback for OID: " + rootOid);
-                // bạn có thể gọi manualWalkV3 tương tự nếu muốn
-            }
-
+            System.out.println("SNMPv3 smart walk done: " + results.size() + " OIDs");
         } finally {
             snmp.close();
             transport.close();
         }
 
-        return resultList.toArray(new SnmpRecord[0]);
-    }
-
-
-
-    private SnmpRecord[] walkManually(Snmp snmp, CommunityTarget target, String rootOid, String deviceIp, String community) throws IOException {
-        List<SnmpRecord> results = new ArrayList<>();
-        OID currentOid = new OID(rootOid);
-        OID root = new OID(rootOid);
-
-        int step = 0;
-        int maxSteps = 50000; // avoid infinite loop
-
-        OID lastOid = null;
-        while (step++ < maxSteps) {
-            PDU pdu = new PDU();
-            pdu.add(new VariableBinding(currentOid));
-            pdu.setType(PDU.GETNEXT);
-
-            ResponseEvent responseEvent = snmp.send(pdu, target);
-
-            if (responseEvent == null || responseEvent.getResponse() == null) {
-                System.err.println("Timeout or no response at step " + step);
-                break;
-            }
-
-            VariableBinding vb = responseEvent.getResponse().get(0);
-            if (vb == null || vb.getOid() == null) {
-                System.err.println("Invalid variable binding at step " + step);
-                break;
-            }
-
-            // Dừng nếu OID không thay đổi (bị lặp)
-            if (lastOid != null && vb.getOid().equals(lastOid)) {
-                System.out.println("OID repeated at step " + step + ": " + vb.getOid());
-                break;
-            }
-            lastOid = vb.getOid();
-
-            if (!vb.getOid().startsWith(root)) {
-                System.out.println("Reached outside of root OID at step " + step + ": " + vb.getOid());
-                break;
-            }
-
-            // Skip error values (genError, noSuchName, ...)
-            String varStr = vb.getVariable() == null ? "" : vb.getVariable().toString().toLowerCase();
-            if (varStr.contains("error") || varStr.contains("nosuch")) {
-                System.err.println("Skipped failed OID: " + vb.getOid());
-                currentOid = vb.getOid().successor(); // move to next OID
-                continue;
-            }
-
-            results.add(toSnmpRecord(deviceIp, community, vb));
-            currentOid = vb.getOid();
-        }
-
-        System.out.println("Walked " + step + " steps from OID: " + rootOid);
         return results.toArray(new SnmpRecord[0]);
     }
 
@@ -280,21 +356,21 @@ public class SnmpWalk {
         record.setCommunity(community);
         record.setOid(vb.getOid().toString());
         record.setValue((vb.getVariable() == null || vb.getVariable().toString().isEmpty())
-                ? "null" : vb.getVariable().toString());
+                ? "null"
+                : vb.getVariable().toString());
         return record;
     }
 
-
-
     // public static void main(String[] args) {
-    //     SnmpWalk snmpWalk = new SnmpWalk();
-    //     try {
-    //         SnmpRecord[] records = snmpWalk.walkAsRecords("127.0.0.1", "public", "1.3.6", 161);
-    //         for (SnmpRecord snmpRecord : records) {
-    //             System.out.println(snmpRecord.getOid() + " = " + snmpRecord.getValue());
-    //         }
-    //     } catch (IOException e) {
-    //         e.printStackTrace();
-    //     }
+    // SnmpWalk snmpWalk = new SnmpWalk();
+    // try {
+    // SnmpRecord[] records = snmpWalk.walkAsRecords("127.0.0.1", "public", "1.3.6",
+    // 161);
+    // for (SnmpRecord snmpRecord : records) {
+    // System.out.println(snmpRecord.getOid() + " = " + snmpRecord.getValue());
+    // }
+    // } catch (IOException e) {
+    // e.printStackTrace();
+    // }
     // }
 }
