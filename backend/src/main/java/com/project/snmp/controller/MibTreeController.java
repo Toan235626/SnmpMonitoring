@@ -21,7 +21,7 @@ public class MibTreeController {
     @Autowired
     private MibTreeService mibTreeService;
 
-    @PostMapping("/mib-tree")
+    @GetMapping("/mib-tree")
     public ResponseEntity<List<JsonNode>> getMibTree(
                                     @RequestParam("deviceIp") String ipAddress,
                                     @RequestParam(value = "community", required = false, defaultValue = "public") String community,
@@ -32,14 +32,27 @@ public class MibTreeController {
                                     @RequestParam(value = "privPass", required = false) String privPass,
                                     @RequestParam(value = "authProtocol", required = false) String authProtocol,
                                     @RequestParam(value = "privProtocol", required = false) String privProtocol,
-                                    @RequestParam(value = "securityLevel", required = false, defaultValue = "0") String securityLevel
+                                    @RequestParam(value = "securityLevel", required = false, defaultValue = "3") String securityLevel
                                     ) throws Exception {
         if (version.equals("3") && (authUsername == null || authPass == null || privPass == null || authProtocol == null || privProtocol == null)) {
             throw new IllegalArgumentException("SNMPv3 requires all authentication parameters to be provided.");
         }
-        JsonNode resultTree = mibTreeService.buildMergedTree(ipAddress, community, port, version);
-        List<JsonNode> resultList = new ArrayList<JsonNode>();
-        resultList.add(resultTree);
-        return ResponseEntity.ok(resultList);
+        if (version.equals("3")) {
+            // Handle SNMPv3 parameters
+            int securityLevelInt = Integer.parseInt(securityLevel);
+            JsonNode resultTree = mibTreeService.buildMergedTreeV3(ipAddress, community, port, authUsername, authPass, privPass, authProtocol, privProtocol, securityLevelInt);
+            List<JsonNode> resultList = new ArrayList<>();
+            resultList.add(resultTree);
+            return ResponseEntity.ok(resultList);
+        }
+        else if (version.equals("1") || version.equals("2c")) {
+            // Handle SNMPv1 and SNMPv2c parameters
+            JsonNode resultTree = mibTreeService.buildMergedTreeV12(ipAddress, community, port, version);
+            List<JsonNode> resultList = new ArrayList<>();
+            resultList.add(resultTree);
+            return ResponseEntity.ok(resultList);
+        } else {
+            throw new IllegalArgumentException("Unsupported SNMP version: " + version);
+        }
     }
 }

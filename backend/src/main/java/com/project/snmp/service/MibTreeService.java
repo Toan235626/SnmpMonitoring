@@ -22,9 +22,9 @@ public class MibTreeService {
     @Autowired
     private SnmpMainService snmpMainService;
 
-    public JsonNode buildMergedTree(String ip, String community, int port, String version) throws Exception {
-        String sysObjectID = snmpMainService.getSnmpValue(ip,community, ".1.3.6.1.2.1.1.2.0", port, version).getValue();
-        String sysDescr = snmpMainService.getSnmpValue(ip,community, ".1.3.6.1.2.1.1.1.0", port, version).getValue();
+    public JsonNode buildMergedTreeV12(String ip, String community, int port, String version) throws Exception {
+        String sysObjectID = snmpMainService.getSnmpValue(ip,community, "1.3.6.1.2.1.1.2.0", port, version).getValue();
+        String sysDescr = snmpMainService.getSnmpValue(ip,community, "1.3.6.1.2.1.1.1.0", port, version).getValue();
 
 
         String vendor = VendorResolver.resolve(sysObjectID, sysDescr);
@@ -32,6 +32,36 @@ public class MibTreeService {
         System.out.println("Vendor: " + vendor);
 
         SnmpRecord[] snmpRecords = snmpMainService.getSnmpWalkValue(ip,community,"1.3.6.1",port, version); // OID → value
+        Map<String, String> oidValues = new java.util.HashMap<>();
+        for (SnmpRecord record : snmpRecords) {
+            oidValues.put(record.getOid(), record.getValue());
+        }
+
+
+        ArrayNode standardList = loadStandardTree(); 
+        JsonNode vendorData = loadVendorMibTree(vendor);
+
+        // vendorData có thể là ArrayNode hoặc ObjectNode
+        JsonNode mergedTree = TreeMerger.mergeTwoTrees(standardList, vendorData);
+        TreeMerger.mergeValues(mergedTree, oidValues);
+        // return mergedTree;
+        return TreeMerger.filterByValue(mergedTree);
+
+
+    }
+
+    public JsonNode buildMergedTreeV3(String ip, String community, int port, String username, String authPass, String privPass,
+                                        String authProtocol, String privProtocol, int securityLevel) throws Exception {
+        String securityLevelStr = String.valueOf(securityLevel);
+        String sysObjectID = snmpMainService.getSnmpValue(ip,community, "1.3.6.1.2.1.1.2.0", port, "3", username, authPass, privPass, authProtocol, privProtocol,securityLevelStr).getValue();
+        String sysDescr = snmpMainService.getSnmpValue(ip,community, "1.3.6.1.2.1.1.1.0", port, "3",username, authPass, privPass, authProtocol, privProtocol,securityLevelStr).getValue();
+
+
+        String vendor = VendorResolver.resolve(sysObjectID, sysDescr);
+
+        System.out.println("Vendor: " + vendor);
+
+        SnmpRecord[] snmpRecords = snmpMainService.getSnmpWalkValue(ip,community,"1.3.6.1",port, "3", username, authPass, privPass, authProtocol, privProtocol,securityLevelStr); // OID → value
         Map<String, String> oidValues = new java.util.HashMap<>();
         for (SnmpRecord record : snmpRecords) {
             oidValues.put(record.getOid(), record.getValue());

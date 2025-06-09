@@ -30,6 +30,7 @@ public class SnmpMainService {
             String authProtocol = v3params[3];
             String privProtocol = v3params[4];
             int securityLevel = Integer.parseInt(v3params[5]);
+            // System.out.println("Hello SNMP GET: " + deviceIp + " " + username + " " + authPass + " " + privPass + " " + authProtocol + " " + privProtocol + " " + securityLevel);
             record = snmpGet.getAsRecordv3(deviceIp, username, authPass, privPass,
                     authProtocol, privProtocol, securityLevel, oid, port);
         } else {
@@ -38,7 +39,7 @@ public class SnmpMainService {
 
         String value = record.getValue();
         System.out.println("SNMP GET: " + record.getOid() + " - " + value);
-        if (value == null || value.isEmpty() || value.equals("noSuchObject") || value.equals("Null")) {
+        if (value == null || value.isEmpty() || value.equals("noSuchObject") || value.equals("Null") || value.equals("noSuchInstance")) {
             System.out.println("SNMP GET: " + record.getOid() + " - " + value + " → Fallback to .0");
             if ("3".equals(version)) {
                 String username = v3params[0];

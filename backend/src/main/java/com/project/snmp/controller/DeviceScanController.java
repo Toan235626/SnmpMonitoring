@@ -39,7 +39,7 @@ public class DeviceScanController {
         System.out.println("[✓] DeviceScanController loaded");
     }
 
-    @PostMapping("/scan-subnet")
+    @GetMapping("/scan-subnet")
     public List<Device> scanSelectedSubnet(
                 @RequestParam("baseIp") String baseIp,
                 @RequestParam(value ="community", required = false, defaultValue = "public") String community,
@@ -51,11 +51,19 @@ public class DeviceScanController {
                 @RequestParam(value = "privPass", required = false) String privPass,
                 @RequestParam(value = "authProtocol", required = false) String authProtocol,
                 @RequestParam(value = "privProtocol", required = false) String privProtocol,
-                @RequestParam(value = "securityLevel", required = false, defaultValue = "0") String securityLevel){
+                @RequestParam(value = "securityLevel", required = false, defaultValue = "3") String securityLevel){
         if (version.equals("3") && (authUsername == null || authPass == null || privPass == null || authProtocol == null || privProtocol == null)) {
             throw new IllegalArgumentException("SNMPv3 requires all authentication parameters to be provided.");
         }
-        return networkScannerService.scanSubnet(baseIp, prefix ,community, port, version);
+        if (version.equals("3")) {
+            int securityLevelInt = Integer.parseInt(securityLevel);
+            return networkScannerService.scanSubnetV3(baseIp, prefix, community, port, version, authUsername, authPass, privPass, authProtocol, privProtocol, securityLevelInt);
+        }
+        else if (version.equals("1") || version.equals("2c")) {
+            return networkScannerService.scanSubnetV12(baseIp, prefix, community, port, version);
+        } else {
+            throw new IllegalArgumentException("Unsupported SNMP version: " + version);
+        }
     }
 
 

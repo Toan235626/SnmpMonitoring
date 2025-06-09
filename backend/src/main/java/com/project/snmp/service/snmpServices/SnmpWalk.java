@@ -52,6 +52,7 @@ public class SnmpWalk {
         try {
             OID root = new OID(rootOid);
             OID currentOid = root;
+            Set<String> seenOids = new HashSet<>();
             OID lastOid = null;
             int step = 0, maxSteps = 50000;
 
@@ -78,20 +79,55 @@ public class SnmpWalk {
                 if (!vb.getOid().startsWith(root))
                     break;
 
-                String varStr = vb.getVariable() == null ? "" : vb.getVariable().toString().toLowerCase();
-                if (varStr.contains("error") || varStr.contains("nosuch")) {
-                    currentOid = vb.getOid().successor();
+                String val = vb.getVariable() == null ? "" : vb.getVariable().toString().toLowerCase();
+                if (val.contains("nosuch") || val.contains("error") || val.isEmpty() || val.equals("null"))
                     continue;
-                }
 
                 SnmpRecord record = new SnmpRecord();
                 record.setDeviceIp(deviceIp);
                 record.setCommunity(community);
                 record.setOid(vb.getOid().toString());
-                record.setValue(varStr.isEmpty() ? "null" : vb.getVariable().toString());
+                record.setValue(val.isEmpty() ? "null" : vb.getVariable().toString());
                 results.add(record);
 
                 currentOid = vb.getOid();
+            }
+            if ("1.3.6.1.4.1".startsWith(rootOid) && !seenOids.contains("1.3.6.1.4.1")) {
+                System.out.println("→ Fallback walk from 1.3.6.1.4.1");
+
+                OID currentOid1 = new OID("1.3.6.1.4.1");
+                OID enterpriseRoot = new OID("1.3.6.1.4.1");
+                int maxSteps1 = 10000;
+                int step1 = 0;
+
+                while (step1++ < maxSteps1) {
+                    PDU pdu = new PDU();
+                    pdu.setType(PDU.GETNEXT);
+                    pdu.add(new VariableBinding(currentOid1));
+
+                    ResponseEvent fallback = snmp.send(pdu, target);
+                    if (fallback == null || fallback.getResponse() == null)
+                        break;
+
+                    VariableBinding vb = fallback.getResponse().get(0);
+                    if (vb == null || vb.getOid() == null)
+                        break;
+
+                    OID oid = vb.getOid();
+                    if (!oid.startsWith(enterpriseRoot))
+                        break;
+
+                    String oidStr = oid.toDottedString();
+                    if (seenOids.contains(oidStr))
+                        break;
+                    seenOids.add(oidStr);
+                    currentOid1 = oid;
+
+                    String val = vb.getVariable() == null ? "" : vb.getVariable().toString().toLowerCase();
+                    if (!val.contains("nosuch") && !val.contains("error") && !val.isEmpty() && !val.equals("null")) {
+                        results.add(toSnmpRecord(deviceIp, community, vb));
+                    }
+                }
             }
 
             System.out.println("SNMPv1 walked " + step + " steps for " + rootOid);
@@ -121,7 +157,7 @@ public class SnmpWalk {
 
         OID currentOid = new OID(rootOid);
         OID root = new OID(rootOid);
-        int step = 0, maxSteps = 10000;
+        int step = 0, maxSteps = 100000;
 
         try {
             while (step++ < maxSteps) {
@@ -134,7 +170,7 @@ public class SnmpWalk {
                 } else {
                     // dùng GETBULK cho phần còn lại
                     pdu.setType(PDU.GETBULK);
-                    pdu.setMaxRepetitions(20);
+                    pdu.setMaxRepetitions(40);
                     pdu.setNonRepeaters(0);
                     pdu.add(new VariableBinding(currentOid));
                     // System.out.println("GETBULK → " + currentOid);
@@ -183,7 +219,7 @@ public class SnmpWalk {
 
                 OID currentOid1 = new OID("1.3.6.1.4.1");
                 OID enterpriseRoot = new OID("1.3.6.1.4.1");
-                int maxSteps1 = 1000;
+                int maxSteps1 = 10000;
                 int step1 = 0;
 
                 while (step1++ < maxSteps1) {
@@ -245,7 +281,7 @@ public class SnmpWalk {
         UserTarget target = new UserTarget();
         target.setAddress(new UdpAddress(deviceIp + "/" + port));
         target.setRetries(1);
-        target.setTimeout(1000);
+        target.setTimeout(1500);
         target.setVersion(SnmpConstants.version3);
         target.setSecurityLevel(securityLevel);
         target.setSecurityName(new OctetString(username));
@@ -255,14 +291,13 @@ public class SnmpWalk {
 
         OID currentOid = new OID(rootOid);
         OID root = new OID(rootOid);
-        OID enterpriseRoot = new OID("1.3.6.1.4.1");
 
         try {
             int step = 0, maxSteps = 10000;
             while (step++ < maxSteps) {
                 ScopedPDU pdu = new ScopedPDU();
                 pdu.setType(PDU.GETBULK);
-                pdu.setMaxRepetitions(10);
+                pdu.setMaxRepetitions(20);
                 pdu.setNonRepeaters(0);
                 pdu.add(new VariableBinding(currentOid));
 
@@ -306,41 +341,43 @@ public class SnmpWalk {
             }
 
             // fallback GETNEXT từ 1.3.6.1.4.1 nếu cần
-            if (new OID(rootOid).compareTo(enterpriseRoot) > 0 && !seenOids.contains("1.3.6.1.4.1")) {
-                OID fallbackOid = enterpriseRoot;
-                int fallbackSteps = 100;
-                for (int i = 0; i < fallbackSteps; i++) {
+            if ("1.3.6.1.4.1".startsWith(rootOid) && !seenOids.contains("1.3.6.1.4.1")) {
+                System.out.println("→ Fallback walk from 1.3.6.1.4.1");
+
+                OID currentOid1 = new OID("1.3.6.1.4.1");
+                OID enterpriseRoot = new OID("1.3.6.1.4.1");
+                int maxSteps1 = 5000;
+                int step1 = 0;
+
+                while (step1++ < maxSteps1) {
                     ScopedPDU pdu = new ScopedPDU();
                     pdu.setType(PDU.GETNEXT);
-                    pdu.add(new VariableBinding(fallbackOid));
+                    pdu.add(new VariableBinding(currentOid1));
 
                     ResponseEvent fallback = snmp.send(pdu, target);
                     if (fallback == null || fallback.getResponse() == null)
                         break;
 
                     VariableBinding vb = fallback.getResponse().get(0);
-                    if (vb == null || vb.getOid() == null || !vb.getOid().startsWith(enterpriseRoot))
+                    if (vb == null || vb.getOid() == null)
                         break;
 
-                    String oidStr = vb.getOid().toDottedString();
+                    OID oid = vb.getOid();
+                    if (!oid.startsWith(enterpriseRoot))
+                        break;
+
+                    String oidStr = oid.toDottedString();
                     if (seenOids.contains(oidStr))
                         break;
+                    seenOids.add(oidStr);
+                    currentOid1 = oid;
 
                     String val = vb.getVariable() == null ? "" : vb.getVariable().toString().toLowerCase();
                     if (!val.contains("nosuch") && !val.contains("error") && !val.isEmpty() && !val.equals("null")) {
-                        SnmpRecord rec = new SnmpRecord();
-                        rec.setDeviceIp(deviceIp);
-                        rec.setCommunity(username);
-                        rec.setOid(oidStr);
-                        rec.setValue(vb.getVariable().toString());
-                        results.add(rec);
+                        results.add(toSnmpRecord(deviceIp, username, vb));
                     }
-
-                    seenOids.add(oidStr);
-                    fallbackOid = vb.getOid();
                 }
             }
-
             System.out.println("SNMPv3 smart walk done: " + results.size() + " OIDs");
         } finally {
             snmp.close();
