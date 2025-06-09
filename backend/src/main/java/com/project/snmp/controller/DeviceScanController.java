@@ -39,7 +39,7 @@ public class DeviceScanController {
         System.out.println("[✓] DeviceScanController loaded");
     }
 
-    @GetMapping("/scan-subnet")
+    @PostMapping("/scan-subnet")
     public List<Device> scanSelectedSubnet(
                 @RequestParam("baseIp") String baseIp,
                 @RequestParam(value ="community", required = false, defaultValue = "public") String community,

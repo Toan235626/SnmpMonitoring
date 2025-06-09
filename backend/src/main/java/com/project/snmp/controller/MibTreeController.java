@@ -21,7 +21,7 @@ public class MibTreeController {
     @Autowired
     private MibTreeService mibTreeService;
 
-    @GetMapping("/mib-tree")
+    @PostMapping("/mib-tree")
     public ResponseEntity<List<JsonNode>> getMibTree(
                                     @RequestParam("deviceIp") String ipAddress,
                                     @RequestParam(value = "community", required = false, defaultValue = "public") String community,

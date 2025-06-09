@@ -24,7 +24,7 @@ public class SnmpController {
     @Autowired
     private SnmpMainService snmpMainService;
 
-    @GetMapping("/get")
+    @PostMapping("/get")
     public SnmpRecord[] getSnmpData(
             @RequestParam("deviceIp") String deviceIp, 
             @RequestParam(value = "community", required = false, defaultValue = "public") String community, 
@@ -61,7 +61,7 @@ public class SnmpController {
         }
     }
 
-    @GetMapping("/getnext")
+    @PostMapping("/getnext")
     public SnmpRecord[] getSnmpNextData(
             @RequestParam("deviceIp") String deviceIp, 
             @RequestParam(value ="community", required = false, defaultValue = "public") String community, 
@@ -100,7 +100,7 @@ public class SnmpController {
     }
 
     
-    @GetMapping("/walk")
+    @PostMapping("/walk")
     public SnmpRecord[] walkSnmpData(
             @RequestParam("deviceIp") String deviceIp,
             @RequestParam(value = "community", required = false, defaultValue = "public") String community,
@@ -133,7 +133,7 @@ public class SnmpController {
         }
     }
 
-    @GetMapping("/bulk")
+    @PostMapping("/bulk")
     public SnmpRecord[] bulkSnmpData(
             @RequestParam("deviceIp") String deviceIp, 
             @RequestParam("oid") String oid, 
