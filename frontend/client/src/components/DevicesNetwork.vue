@@ -1,15 +1,8 @@
 <template>
   <div>
     <div class="header"></div>
-    <v-btn color="green" @click="handleScanNetwork" :disabled="isLoading"
-      >Scan Network</v-btn
-    >
-    <v-progress-circular
-      v-if="isLoading"
-      indeterminate
-      color="primary"
-      class="loading"
-    />
+    <v-btn color="green" @click="handleScanNetwork" :disabled="isLoading">Scan Network</v-btn>
+    <v-progress-circular v-if="isLoading" indeterminate color="primary" class="loading" />
     <v-alert v-if="error" type="error">{{ error }}</v-alert>
     <v-alert v-if="!networks.length && !isLoading && !error" type="info">
       No networks found. Click "Scan Network" to start.
@@ -27,9 +20,7 @@
           <td>{{ network.name }}</td>
           <td>{{ network.ipRange }}</td>
           <td>
-            <v-btn color="green" @click="openScanDialog(network)"
-              >Scan Devices</v-btn
-            >
+            <v-btn color="green" @click="openScanDialog(network)">Scan Devices</v-btn>
           </td>
         </tr>
       </tbody>
@@ -53,7 +44,8 @@
             <v-text-field
               v-model="scanForm.community"
               label="Community String"
-              :rules="[(v) => !!v || 'Community is required']"
+              :rules="[(v) => !isSnmpV3 || !!v || 'Community is required']"
+              v-if="!isSnmpV3"
             />
             <v-text-field
               v-model="scanForm.port"
@@ -71,6 +63,45 @@
               :items="['1', '2c', '3']"
               :rules="[(v) => !!v || 'Version is required']"
             />
+            <template v-if="isSnmpV3">
+              <v-text-field
+                v-model="scanForm.authUsername"
+                label="Auth Username"
+                :rules="[(v) => !!v || 'Auth Username is required']"
+              />
+              <v-text-field
+                v-model="scanForm.authPass"
+                label="Auth Password"
+                :rules="[(v) => !!v || 'Auth Password is required']"
+              />
+              <v-text-field
+                v-model="scanForm.privPass"
+                label="Privacy Password"
+                :rules="[(v) => !!v || 'Privacy Password is required']"
+              />
+              <v-select
+                v-model="scanForm.authProtocol"
+                label="Auth Protocol"
+                :items="['MD5', 'SHA']"
+                :rules="[(v) => !!v || 'Auth Protocol is required']"
+              />
+              <v-select
+                v-model="scanForm.privProtocol"
+                label="Privacy Protocol"
+                :items="['DES', 'AES']"
+                :rules="[(v) => !!v || 'Privacy Protocol is required']"
+              />
+              <v-select
+                v-model="scanForm.securityLevel"
+                label="Security Level"
+                :items="[
+                  { text: 'No Auth, No Priv', value: '0' },
+                  { text: 'Auth, No Priv', value: '1' },
+                  { text: 'Auth, Priv', value: '2' }
+                ]"
+                :rules="[(v) => !!v || 'Security Level is required']"
+              />
+            </template>
           </v-form>
         </v-card-text>
         <v-card-actions>
@@ -97,6 +128,12 @@ export default {
       community: "public",
       port: 161,
       version: "",
+      authUsername: "",
+      authPass: "",
+      privPass: "",
+      authProtocol: "",
+      privProtocol: "",
+      securityLevel: "3", // Mặc định là authPriv
     });
     const selectedNetwork = ref(null);
     const form = ref(null);
@@ -104,6 +141,7 @@ export default {
     const networks = computed(() => store.networks);
     const isLoading = computed(() => store.isLoading);
     const error = computed(() => store.error);
+    const isSnmpV3 = computed(() => scanForm.value.version === "3");
 
     const handleScanNetwork = async () => {
       await store.scanNetwork();
@@ -125,14 +163,26 @@ export default {
           community: scanForm.value.community,
           port: Number(scanForm.value.port),
           version: scanForm.value.version,
+          authUsername: scanForm.value.authUsername,
+          authPass: scanForm.value.authPass,
+          privPass: scanForm.value.privPass,
+          authProtocol: scanForm.value.authProtocol,
+          privProtocol: scanForm.value.privProtocol,
+          securityLevel: scanForm.value.securityLevel,
         });
         dialog.value = false;
         scanForm.value = {
           baseIp: "",
           prefix: "",
-          community: "",
-          port: "161",
+          community: "public",
+          port: 161,
           version: "",
+          authUsername: "",
+          authPass: "",
+          privPass: "",
+          authProtocol: "",
+          privProtocol: "",
+          securityLevel: "3",
         };
       }
     };
@@ -148,6 +198,7 @@ export default {
       form,
       openScanDialog,
       handleScanDevices,
+      isSnmpV3,
     };
   },
 };

@@ -41,6 +41,12 @@ export const networkStore = defineStore("network", {
               community,
               port: port || 161,
               version,
+              authUsername,
+              authPass,
+              privPass,
+              authProtocol,
+              privProtocol,
+              securityLevel: securityLevel || "3",
             },
           }
         );
@@ -53,6 +59,12 @@ export const networkStore = defineStore("network", {
           version: version || "2c",
           prefix,
           networkId,
+          authUsername: device.authUsername,
+          authPass: device.authPass,
+          privPass: device.privPass,
+          authProtocol: device.authProtocol,
+          privProtocol: device.privProtocol,
+          securityLevel: device.securityLevel || "3",
         }));
         this.scanDevicesSuccess = true;
       } catch (err) {
