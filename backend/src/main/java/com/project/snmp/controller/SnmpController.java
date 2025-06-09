@@ -38,7 +38,7 @@ public class SnmpController {
             @RequestParam(value = "privProtocol", required = false, defaultValue = "DES") String privProtocol,
             @RequestParam(value = "securityLevel", required = false, defaultValue = "3") String securityLevel) {
 
-        if (version.equals("3") && (authUsername == null || authPass == null || privPass == null || authProtocol == null || privProtocol == null)) {
+        if (version.equals("3") && (securityLevel.equals("3")) && (authUsername == null || authPass == null || privPass == null || authProtocol == null || privProtocol == null)) {
             throw new IllegalArgumentException("SNMPv3 requires all authentication parameters to be provided.");
         }
         System.out.println("deviceIP: " + deviceIp);
@@ -75,7 +75,7 @@ public class SnmpController {
             @RequestParam(value = "privProtocol", required = false, defaultValue = "DES") String privProtocol,
             @RequestParam(value = "securityLevel", required = false, defaultValue = "3") String securityLevel) {
 
-        if (version.equals("3") && (authUsername == null || authPass == null || privPass == null || authProtocol == null || privProtocol == null)) {
+        if (version.equals("3") && (securityLevel.equals("3")) && (authUsername == null || authPass == null || privPass == null || authProtocol == null || privProtocol == null)) {
             throw new IllegalArgumentException("SNMPv3 requires all authentication parameters to be provided.");
         }
         System.out.println("deviceIP: " + deviceIp);
@@ -107,14 +107,14 @@ public class SnmpController {
             @RequestParam("oid") String oid,
             @RequestParam(value = "port", required = false, defaultValue = "161") int port,
             @RequestParam(value = "version", required = false, defaultValue = "2c") String version,
-            @RequestParam(value = "authUsername", required = false, defaultValue = "nktoan") String authUsername,
-            @RequestParam(value = "authPass", required = false, defaultValue = "nktoanauth") String authPass,
-            @RequestParam(value = "privPass", required = false, defaultValue = "nktoanpriv") String privPass,
+            @RequestParam(value = "authUsername", required = false, defaultValue = "zuzo") String authUsername,
+            @RequestParam(value = "authPass", required = false, defaultValue = "hoangzuzi14") String authPass,
+            @RequestParam(value = "privPass", required = false, defaultValue = "zuzozuzo") String privPass,
             @RequestParam(value = "authProtocol", required = false, defaultValue = "SHA") String authProtocol,
-            @RequestParam(value = "privProtocol", required = false, defaultValue = "DES") String privProtocol,
+            @RequestParam(value = "privProtocol", required = false, defaultValue = "AES") String privProtocol,
             @RequestParam(value = "securityLevel", required = false, defaultValue = "3") String securityLevel) {
         
-        if (version.equals("3") && (authUsername == null || authPass == null || privPass == null || authProtocol == null || privProtocol == null)) {
+        if (version.equals("3") && (securityLevel.equals("3")) && (authUsername == null || authPass == null || privPass == null || authProtocol == null || privProtocol == null)) {
             throw new IllegalArgumentException("SNMPv3 requires all authentication parameters to be provided.");
         }
         try {
@@ -147,7 +147,7 @@ public class SnmpController {
             @RequestParam(value = "privProtocol", required = false) String privProtocol,
             @RequestParam(value = "securityLevel", required = false, defaultValue = "3") String securityLevel) {
         
-        if (version.equals("3") && (authUsername == null || authPass == null || privPass == null || authProtocol == null || privProtocol == null)) {
+        if (version.equals("3") && (securityLevel.equals("3")) && (authUsername == null || authPass == null || privPass == null || authProtocol == null || privProtocol == null)) {
             throw new IllegalArgumentException("SNMPv3 requires all authentication parameters to be provided.");
         }
         try {

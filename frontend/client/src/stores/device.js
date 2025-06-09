@@ -25,30 +25,17 @@ export const deviceStore = defineStore("device", {
       try {
         const device = this.devices.find((d) => d.id === deviceId);
         if (!device) throw new Error("Device not found");
-
+    
         const community = device.community || params.community || "public";
         const port = device.port || params.port || 161;
         const version = device.version || params.version || "2c";
-
+    
         if (!params.community || !params.port || !params.version) {
           throw new Error(
             "Missing required parameters: Community, Port, or Version"
           );
         }
-
-        if (
-          params.version === "3" &&
-          (!params.authUsername ||
-            !params.authPass ||
-            !params.privPass ||
-            !params.authProtocol ||
-            !params.privProtocol)
-        ) {
-          throw new Error("SNMPv3 requires all authentication parameters");
-        }
-
-        let endpoint;
-        let processResponse;
+    
         let requestParams = {
           deviceIp: device.deviceIp,
           oid: params.oid,
@@ -56,15 +43,43 @@ export const deviceStore = defineStore("device", {
           port: params.port,
           version: params.version,
         };
-
+    
         if (params.version === "3") {
           requestParams.authUsername = params.authUsername;
-          requestParams.authPass = params.authPass;
-          requestParams.privPass = params.privPass;
-          requestParams.authProtocol = params.authProtocol;
-          requestParams.privProtocol = params.privProtocol;
+          if (params.securityLevel === "2" || params.securityLevel === "3") {
+            requestParams.authPass = params.authPass;
+            requestParams.authProtocol = params.authProtocol;
+          }
+          if (params.securityLevel === "3") {
+            requestParams.privPass = params.privPass;
+            requestParams.privProtocol = params.privProtocol;
+          }
           requestParams.securityLevel = params.securityLevel;
         }
+    
+        if (
+          params.version === "3" &&
+          !params.authUsername
+        ) {
+          throw new Error("SNMPv3 requires authUsername");
+        }
+        if (
+          params.version === "3" &&
+          (params.securityLevel === "2" || params.securityLevel === "3") &&
+          (!params.authPass || !params.authProtocol)
+        ) {
+          throw new Error("SNMPv3 authNoPriv or authPriv requires authPass and authProtocol");
+        }
+        if (
+          params.version === "3" &&
+          params.securityLevel === "3" &&
+          (!params.privPass || !params.privProtocol)
+        ) {
+          throw new Error("SNMPv3 authPriv requires privPass and privProtocol");
+        }
+
+        let endpoint;
+        let processResponse;
 
         switch (action) {
           case "get":

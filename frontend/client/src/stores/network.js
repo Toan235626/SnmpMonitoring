@@ -26,29 +26,47 @@ export const networkStore = defineStore("network", {
         this.isLoading = false;
       }
     },
-    async scanDevices({ networkId, baseIp, prefix, community, version, port }) {
+    async scanDevices({
+      networkId,
+      baseIp,
+      prefix,
+      community,
+      version,
+      port,
+      authUsername,
+      authPass,
+      privPass,
+      authProtocol,
+      privProtocol,
+      securityLevel
+    }) {
       this.isLoading = true;
       this.error = null;
       this.scanDevicesSuccess = false;
       try {
+        const params = {
+          baseIp,
+          prefix,
+          community,
+          port: port || 161,
+          version,
+        };
+        if (version === "3") {
+          params.authUsername = authUsername;
+          if (securityLevel === "2" || securityLevel === "3") {
+            params.authPass = authPass;
+            params.authProtocol = authProtocol;
+          }
+          if (securityLevel === "3") {
+            params.privPass = privPass;
+            params.privProtocol = privProtocol;
+          }
+          params.securityLevel = securityLevel || "3";
+        }
         const response = await axios.post(
           "/api/device-scan/scan-subnet",
           null,
-          {
-            params: {
-              baseIp,
-              prefix,
-              community,
-              port: port || 161,
-              version,
-              authUsername,
-              authPass,
-              privPass,
-              authProtocol,
-              privProtocol,
-              securityLevel: securityLevel || "3",
-            },
-          }
+          { params }
         );
         this.devices = response.data.map((device, index) => ({
           id: `d${networkId}-${index + 1}`,
@@ -59,12 +77,12 @@ export const networkStore = defineStore("network", {
           version: version || "2c",
           prefix,
           networkId,
-          authUsername: device.authUsername,
-          authPass: device.authPass,
-          privPass: device.privPass,
-          authProtocol: device.authProtocol,
-          privProtocol: device.privProtocol,
-          securityLevel: device.securityLevel || "3",
+          authUsername: version === "3" ? authUsername : undefined,
+          authPass: version === "3" && (securityLevel === "2" || securityLevel === "3") ? authPass : undefined,
+          privPass: version === "3" && securityLevel === "3" ? privPass : undefined,
+          authProtocol: version === "3" && (securityLevel === "2" || securityLevel === "3") ? authProtocol : undefined,
+          privProtocol: version === "3" && securityLevel === "3" ? privProtocol : undefined,
+          securityLevel: version === "3" ? (securityLevel || "3") : undefined,
         }));
         this.scanDevicesSuccess = true;
       } catch (err) {
@@ -73,9 +91,5 @@ export const networkStore = defineStore("network", {
         this.isLoading = false;
       }
     },
-    clearDevices() {
-      this.devices = [];
-      this.scanDevicesSuccess = false;
-    },
-  },
+  }  
 });

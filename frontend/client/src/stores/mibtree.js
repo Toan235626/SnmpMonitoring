@@ -38,14 +38,23 @@ export const mibTreeStore = defineStore("mibTree", {
       try {
         const device = this.devices.find((d) => d.id === deviceId);
         if (!device) throw new Error("Device not found");
-
+    
         const params = {
           deviceIp: deviceIp || device.deviceIp,
           community: device.community || "public",
           port: device.port || 161,
           version: device.version || "2c",
         };
-
+        // Thêm các tham số SNMPv3 nếu version là '3'
+        if (device.version === "3") {
+          params.authUsername = device.authUsername;
+          params.authPass = device.authPass;
+          params.privPass = device.privPass;
+          params.authProtocol = device.authProtocol;
+          params.privProtocol = device.privProtocol;
+          params.securityLevel = device.securityLevel || "3";
+        }
+    
         const response = await axios.post("/api/mib-tree", null, { params });
         this.mibTreeData[deviceId] = response.data;
       } catch (err) {
@@ -67,59 +76,63 @@ export const mibTreeStore = defineStore("mibTree", {
       try {
         const device = this.devices.find((d) => d.id === deviceId);
         if (!device) throw new Error("Device not found");
-        
-        const community = device.community || params.community || "public";
-        const port = device.port || params.port || 161;
-        const version = device.version || params.version || "2c";
-
-        if (!params.community || !params.port || !params.version) {
-          throw new Error(
-            "Missing required parameters: Community, Port, or Version"
-          );
+    
+        const requestParams = {
+          deviceIp: device.deviceIp,
+          community: params.community || device.community || "public",
+          port: params.port || device.port || 161,
+          version: params.version || device.version || "2c",
+        };
+        if (requestParams.version === "3") {
+          requestParams.authUsername = params.authUsername || device.authUsername;
+          if (requestParams.securityLevel === "2" || requestParams.securityLevel === "3") {
+            requestParams.authPass = params.authPass || device.authPass;
+            requestParams.authProtocol = params.authProtocol || device.authProtocol;
+          }
+          if (requestParams.securityLevel === "3") {
+            requestParams.privPass = params.privPass || device.privPass;
+            requestParams.privProtocol = params.privProtocol || device.privProtocol;
+          }
+          requestParams.securityLevel = params.securityLevel || device.securityLevel || "3";
         }
-
+    
         if (
-          params.version === "3" &&
-          (!params.authUsername ||
-            !params.authPass ||
-            !params.privPass ||
-            !params.authProtocol ||
-            !params.privProtocol)
+          requestParams.version === "3" &&
+          !requestParams.authUsername
         ) {
-          throw new Error("SNMPv3 requires all authentication parameters");
+          throw new Error("SNMPv3 requires authUsername");
         }
-
+        if (
+          requestParams.version === "3" &&
+          (requestParams.securityLevel === "2" || requestParams.securityLevel === "3") &&
+          (!requestParams.authPass || !requestParams.authProtocol)
+        ) {
+          throw new Error("SNMPv3 authNoPriv or authPriv requires authPass and authProtocol");
+        }
+        if (
+          requestParams.version === "3" &&
+          requestParams.securityLevel === "3" &&
+          (!requestParams.privPass || !requestParams.privProtocol)
+        ) {
+          throw new Error("SNMPv3 authPriv requires privPass and privProtocol");
+        }
+    
         let endpoint;
         let processResponse;
-        let requestParams;
-
+    
         if (action === "getMibTree") {
           endpoint = "/api/mib-tree";
-          requestParams = {
-            deviceIp: device.deviceIp,
-            community: params.community,
-            port: params.port,
-            version: params.version,
-          };
-          if (params.version === "3") {
-            requestParams.authUsername = params.authUsername;
-            requestParams.authPass = params.authPass;
-            requestParams.privPass = params.privPass;
-            requestParams.authProtocol = params.authProtocol;
-            requestParams.privProtocol = params.privProtocol;
-            requestParams.securityLevel = params.securityLevel;
-          }
           processResponse = (response) => {
             this.mibTreeData[deviceId] = response.data;
           };
         } else {
           throw new Error("Invalid action");
         }
-
+    
         const response = await axios.post(endpoint, null, {
           params: requestParams,
         });
-
+    
         processResponse(response);
       } catch (err) {
         this.error =

@@ -52,7 +52,7 @@ public class DeviceScanController {
                 @RequestParam(value = "authProtocol", required = false) String authProtocol,
                 @RequestParam(value = "privProtocol", required = false) String privProtocol,
                 @RequestParam(value = "securityLevel", required = false, defaultValue = "3") String securityLevel){
-        if (version.equals("3") && (authUsername == null || authPass == null || privPass == null || authProtocol == null || privProtocol == null)) {
+        if (version.equals("3") && (securityLevel.equals("3")) && (authUsername == null || authPass == null || privPass == null || authProtocol == null || privProtocol == null)) {
             throw new IllegalArgumentException("SNMPv3 requires all authentication parameters to be provided.");
         }
         if (version.equals("3")) {
