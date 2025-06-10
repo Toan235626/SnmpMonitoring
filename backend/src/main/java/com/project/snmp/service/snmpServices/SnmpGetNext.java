@@ -54,8 +54,9 @@ public class SnmpGetNext {
             String oid, int port) throws Exception {
         TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping();
         transport.listen();
-        
-        System.out.println(username + " " + authPass+" "+ privPass+" " +authProtocol+" "+ privProtocol+" "+ securityLevel);
+
+        System.out.println(username + " " + authPass + " " + privPass + " " + authProtocol + " " + privProtocol + " "
+                + securityLevel);
 
         OID authProto = null;
         if ("SHA".equalsIgnoreCase(authProtocol))
@@ -72,8 +73,21 @@ public class SnmpGetNext {
         USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
         SecurityModels.getInstance().addSecurityModel(usm);
 
-        UsmUser user = new UsmUser(new OctetString(username), authProto, new OctetString(authPass), privProto,
-                new OctetString(privPass));
+        UsmUser user;
+        if (securityLevel == SecurityLevel.AUTH_PRIV) {
+            user = new UsmUser(new OctetString(username),
+                    authProto, new OctetString(authPass),
+                    privProto, new OctetString(privPass));
+        } else if (securityLevel == SecurityLevel.AUTH_NOPRIV) {
+            user = new UsmUser(new OctetString(username),
+                    authProto, new OctetString(authPass),
+                    null, null);
+        } else if (securityLevel == SecurityLevel.NOAUTH_NOPRIV) {
+            user = new UsmUser(new OctetString(username),
+                    null, null, null, null);
+        } else {
+            throw new IllegalArgumentException("Invalid security level: " + securityLevel);
+        }
         Snmp snmp = new Snmp(transport);
         snmp.getUSM().addUser(new OctetString(username), user);
 

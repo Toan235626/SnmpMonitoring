@@ -27,13 +27,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
 @RestController
 @RequestMapping("/device-scan")
 public class DeviceScanController {
     @Autowired
     NetworkScannerService networkScannerService;
-    
+
     @PostConstruct
     public void debug() {
         System.out.println("[✓] DeviceScanController loaded");
@@ -41,31 +40,33 @@ public class DeviceScanController {
 
     @PostMapping("/scan-subnet")
     public List<Device> scanSelectedSubnet(
-                @RequestParam("baseIp") String baseIp,
-                @RequestParam(value ="community", required = false, defaultValue = "public") String community,
-                @RequestParam(value ="prefix", required = false, defaultValue = "24") String prefix,
-                @RequestParam(value = "port", required = false, defaultValue = "161") int port,
-                @RequestParam("version") String version,
-                @RequestParam(value = "authUsername", required = false) String authUsername,
-                @RequestParam(value = "authPass", required = false) String authPass,
-                @RequestParam(value = "privPass", required = false) String privPass,
-                @RequestParam(value = "authProtocol", required = false) String authProtocol,
-                @RequestParam(value = "privProtocol", required = false) String privProtocol,
-                @RequestParam(value = "securityLevel", required = false, defaultValue = "3") String securityLevel){
-        if (version.equals("3") && (securityLevel.equals("3")) && (authUsername == null || authPass == null || privPass == null || authProtocol == null || privProtocol == null)) {
-            throw new IllegalArgumentException("SNMPv3 requires all authentication parameters to be provided.");
-        }
+            @RequestParam("baseIp") String baseIp,
+            @RequestParam(value = "community", required = false, defaultValue = "public") String community,
+            @RequestParam(value = "prefix", required = false, defaultValue = "24") String prefix,
+            @RequestParam(value = "port", required = false, defaultValue = "161") int port,
+            @RequestParam("version") String version,
+            @RequestParam(value = "authUsername", required = false) String authUsername,
+            @RequestParam(value = "authPass", required = false, defaultValue = "") String authPass,
+            @RequestParam(value = "privPass", required = false, defaultValue = "") String privPass,
+            @RequestParam(value = "authProtocol", required = false, defaultValue = "") String authProtocol,
+            @RequestParam(value = "privProtocol", required = false, defaultValue = "") String privProtocol,
+            @RequestParam(value = "securityLevel", required = false, defaultValue = "1") String securityLevel) {
+        // if (version.equals("3") && (securityLevel.equals("3")) && (authUsername ==
+        // null || authPass == null || privPass == null || authProtocol == null ||
+        // privProtocol == null)) {
+        // throw new IllegalArgumentException("SNMPv3 requires all authentication
+        // parameters to be provided.");
+        // }
         if (version.equals("3")) {
             int securityLevelInt = Integer.parseInt(securityLevel);
-            return networkScannerService.scanSubnetV3(baseIp, prefix, community, port, version, authUsername, authPass, privPass, authProtocol, privProtocol, securityLevelInt);
-        }
-        else if (version.equals("1") || version.equals("2c")) {
+            return networkScannerService.scanSubnetV3(baseIp, prefix, community, port, version, authUsername, authPass,
+                    privPass, authProtocol, privProtocol, securityLevelInt);
+        } else if (version.equals("1") || version.equals("2c")) {
             return networkScannerService.scanSubnetV12(baseIp, prefix, community, port, version);
         } else {
             throw new IllegalArgumentException("Unsupported SNMP version: " + version);
         }
     }
-
 
     @PostMapping("/networks")
     public List<HashMap<String, String>> getLocalSubnets() {
@@ -74,11 +75,13 @@ public class DeviceScanController {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
             while (interfaces.hasMoreElements()) {
                 NetworkInterface iface = interfaces.nextElement();
-                if (iface.isLoopback() || !iface.isUp()) continue;
+                if (iface.isLoopback() || !iface.isUp())
+                    continue;
 
                 for (InterfaceAddress addr : iface.getInterfaceAddresses()) {
                     InetAddress inetAddr = addr.getAddress();
-                    if (!(inetAddr instanceof Inet4Address)) continue;
+                    if (!(inetAddr instanceof Inet4Address))
+                        continue;
 
                     String ip = inetAddr.getHostAddress();
                     int prefix = addr.getNetworkPrefixLength();

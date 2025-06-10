@@ -18,6 +18,7 @@ import org.snmp4j.security.AuthMD5;
 import org.snmp4j.security.AuthSHA;
 import org.snmp4j.security.PrivAES128;
 import org.snmp4j.security.PrivDES;
+import org.snmp4j.security.SecurityLevel;
 import org.snmp4j.security.SecurityModels;
 import org.snmp4j.security.SecurityProtocols;
 import org.snmp4j.security.USM;
@@ -74,8 +75,10 @@ public class SnmpGet {
     public SnmpRecord getAsRecordv3(String deviceIp, String username, String authPass, String privPass,
             String authProtocol, String privProtocol, int securityLevel,
             String rootOid, int port) throws Exception {
-        // System.out.println("SNMPv3 GET: " + deviceIp + " " + username + " " + authPass + " " + privPass
-                // + " " + authProtocol + " " + privProtocol + " " + securityLevel + " " + rootOid + " " + port);
+        // System.out.println("SNMPv3 GET: " + deviceIp + " " + username + " " +
+        // authPass + " " + privPass
+        // + " " + authProtocol + " " + privProtocol + " " + securityLevel + " " +
+        // rootOid + " " + port);
         TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping();
         transport.listen();
 
@@ -91,12 +94,21 @@ public class SnmpGet {
         else if ("DES".equalsIgnoreCase(privProtocol))
             privProto = PrivDES.ID;
 
-        UsmUser user = new UsmUser(
-                new OctetString(username),
-                authProto,
-                (authPass != null) ? new OctetString(authPass) : null,
-                privProto,
-                (privPass != null) ? new OctetString(privPass) : null);
+        UsmUser user;
+        if (securityLevel == SecurityLevel.AUTH_PRIV) {
+            user = new UsmUser(new OctetString(username),
+                    authProto, new OctetString(authPass),
+                    privProto, new OctetString(privPass));
+        } else if (securityLevel == SecurityLevel.AUTH_NOPRIV) {
+            user = new UsmUser(new OctetString(username),
+                    authProto, new OctetString(authPass),
+                    null, null);
+        } else if (securityLevel == SecurityLevel.NOAUTH_NOPRIV) {
+            user = new UsmUser(new OctetString(username),
+                    null, null, null, null);
+        } else {
+            throw new IllegalArgumentException("Invalid SNMPv3 security level: " + securityLevel);
+        }
 
         USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
         SecurityModels.getInstance().addSecurityModel(usm);

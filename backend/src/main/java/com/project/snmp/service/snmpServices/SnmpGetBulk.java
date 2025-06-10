@@ -90,8 +90,21 @@ public class SnmpGetBulk {
         else if ("DES".equalsIgnoreCase(privProtocol))
             privProto = PrivDES.ID;
 
-        UsmUser user = new UsmUser(new OctetString(username), authProto, new OctetString(authPass), privProto,
-                new OctetString(privPass));
+        UsmUser user;
+        if (securityLevel == SecurityLevel.AUTH_PRIV) {
+            user = new UsmUser(new OctetString(username),
+                    authProto, new OctetString(authPass),
+                    privProto, new OctetString(privPass));
+        } else if (securityLevel == SecurityLevel.AUTH_NOPRIV) {
+            user = new UsmUser(new OctetString(username),
+                    authProto, new OctetString(authPass),
+                    null, null);
+        } else if (securityLevel == SecurityLevel.NOAUTH_NOPRIV) {
+            user = new UsmUser(new OctetString(username),
+                    null, null, null, null);
+        } else {
+            throw new IllegalArgumentException("Invalid SNMPv3 security level: " + securityLevel);
+        }
         Snmp snmp = new Snmp(transport);
         snmp.getUSM().addUser(new OctetString(username), user);
 

@@ -19,13 +19,13 @@ public class NetworkScannerService {
     public List<Device> scanSubnetV12(String baseIp, String prefix, String community, int port, String version) {
         ExecutorService executor = Executors.newFixedThreadPool(800);
         List<Device> foundDevices = java.util.Collections.synchronizedList(new java.util.ArrayList<>());
-        
+
         String[] parts = baseIp.split("\\.");
         int prefixInt = Integer.parseInt(prefix);
-        
+
         // Calculate the number of third octets needed for the subnet
         int thirdOctetCount = (prefixInt <= 24) ? (1 << (24 - prefixInt)) : 1;
-        
+
         for (int j = 0; j < thirdOctetCount; j++) {
             int thirdOctet = Integer.parseInt(parts[2]) + j;
             for (int i = 1; i <= 254; i++) {
@@ -33,8 +33,9 @@ public class NetworkScannerService {
                 executor.submit(() -> {
                     System.out.println("Scanning IP: " + deviceIp);
                     try {
-                        SnmpRecord result = snmpMainService.getSnmpValue(deviceIp, community, "1.3.6.1.2.1.1.1.0", port, version);
-                        if (result != null) {
+                        SnmpRecord result = snmpMainService.getSnmpValue(deviceIp, community, "1.3.6.1.2.1.1.1.0", port,
+                                version);
+                        if (result != null && result.getValue() != null && result.getValue() != "Null") {
                             String name = result.getValue();
                             Device device = new Device();
                             device.setDeviceIp(deviceIp);
@@ -43,11 +44,12 @@ public class NetworkScannerService {
                             foundDevices.add(device);
                             System.out.println("Device found: " + device.getName() + " at " + device.getDeviceIp());
                         }
-                    } catch (Exception e) {}
+                    } catch (Exception e) {
+                    }
                 });
             }
         }
-        
+
         executor.shutdown();
         try {
             if (!executor.awaitTermination(3, java.util.concurrent.TimeUnit.MINUTES)) {
@@ -60,17 +62,18 @@ public class NetworkScannerService {
         return foundDevices;
     }
 
-    public List<Device> scanSubnetV3(String baseIp, String prefix, String community, int port, String version, String username, String authPass, String privPass,
-                                        String authProtocol, String privProtocol, int securityLevel) {
+    public List<Device> scanSubnetV3(String baseIp, String prefix, String community, int port, String version,
+            String username, String authPass, String privPass,
+            String authProtocol, String privProtocol, int securityLevel) {
         ExecutorService executor = Executors.newFixedThreadPool(800);
         List<Device> foundDevices = java.util.Collections.synchronizedList(new java.util.ArrayList<>());
-        
+
         String[] parts = baseIp.split("\\.");
         int prefixInt = Integer.parseInt(prefix);
-        
+
         // Calculate the number of third octets needed for the subnet
         int thirdOctetCount = (prefixInt <= 24) ? (1 << (24 - prefixInt)) : 1;
-        
+
         for (int j = 0; j < thirdOctetCount; j++) {
             int thirdOctet = Integer.parseInt(parts[2]) + j;
             for (int i = 1; i <= 254; i++) {
@@ -78,9 +81,11 @@ public class NetworkScannerService {
                 executor.submit(() -> {
                     System.out.println("Scanning IP: " + deviceIp);
                     try {
-                        SnmpRecord result = snmpMainService.getSnmpValue(deviceIp, community, "1.3.6.1.2.1.1.1.0", port, version,
-                                username, authPass, privPass, authProtocol, privProtocol, String.valueOf(securityLevel));
-                        if (result != null) {
+                        SnmpRecord result = snmpMainService.getSnmpValue(deviceIp, community, "1.3.6.1.2.1.1.1.0", port,
+                                version,
+                                username, authPass, privPass, authProtocol, privProtocol,
+                                String.valueOf(securityLevel));
+                        if (result != null && result.getValue() != null && result.getValue() != "Null") {
                             String name = result.getValue();
                             Device device = new Device();
                             device.setDeviceIp(deviceIp);
@@ -89,11 +94,12 @@ public class NetworkScannerService {
                             foundDevices.add(device);
                             System.out.println("Device found: " + device.getName() + " at " + device.getDeviceIp());
                         }
-                    } catch (Exception e) {}
+                    } catch (Exception e) {
+                    }
                 });
             }
         }
-        
+
         executor.shutdown();
         try {
             if (!executor.awaitTermination(3, java.util.concurrent.TimeUnit.MINUTES)) {
@@ -106,6 +112,3 @@ public class NetworkScannerService {
         return foundDevices;
     }
 }
-
-
-

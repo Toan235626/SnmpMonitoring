@@ -10,6 +10,7 @@ import org.snmp4j.security.AuthMD5;
 import org.snmp4j.security.AuthSHA;
 import org.snmp4j.security.PrivAES128;
 import org.snmp4j.security.PrivDES;
+import org.snmp4j.security.SecurityLevel;
 import org.snmp4j.security.SecurityModels;
 import org.snmp4j.security.SecurityProtocols;
 import org.snmp4j.security.USM;
@@ -273,10 +274,22 @@ public class SnmpWalk {
 
         USM usm = new USM(SecurityProtocols.getInstance(), new OctetString(MPv3.createLocalEngineID()), 0);
         SecurityModels.getInstance().addSecurityModel(usm);
-        snmp.getUSM().addUser(new OctetString(username),
-                new UsmUser(new OctetString(username),
-                        authProt, new OctetString(authPass),
-                        privProt, new OctetString(privPass)));
+        UsmUser user;
+        if (securityLevel == SecurityLevel.AUTH_PRIV) {
+            user = new UsmUser(new OctetString(username),
+                    authProt, new OctetString(authPass),
+                    privProt, new OctetString(privPass));
+        } else if (securityLevel == SecurityLevel.AUTH_NOPRIV) {
+            user = new UsmUser(new OctetString(username),
+                    authProt, new OctetString(authPass),
+                    null, null);
+        } else if (securityLevel == SecurityLevel.NOAUTH_NOPRIV) {
+            user = new UsmUser(new OctetString(username),
+                    null, null, null, null);
+        } else {
+            throw new IllegalArgumentException("Unsupported security level: " + securityLevel);
+        }
+        snmp.getUSM().addUser(new OctetString(username), user);
 
         UserTarget target = new UserTarget();
         target.setAddress(new UdpAddress(deviceIp + "/" + port));
