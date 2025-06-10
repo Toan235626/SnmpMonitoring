@@ -8,6 +8,7 @@ export const mibTreeStore = defineStore("mibTree", {
     mibTreeData: {},
     loadingStates: {},
     error: null,
+    searchResults: null,
   }),
   actions: {
     async setMibTreeDevices() { 
@@ -45,7 +46,6 @@ export const mibTreeStore = defineStore("mibTree", {
           port: device.port || 161,
           version: device.version || "2c",
         };
-        // Thêm các tham số SNMPv3 nếu version là '3'
         if (device.version === "3") {
           params.authUsername = device.authUsername;
           params.authPass = device.authPass;
@@ -144,6 +144,46 @@ export const mibTreeStore = defineStore("mibTree", {
         );
       } finally {
         this.loadingStates[deviceId] = false;
+      }
+    },
+    searchOid(deviceId, oid) {
+      this.error = null;
+      this.searchResults = null;
+      const tree = this.mibTreeData[deviceId];
+      if (!tree || !tree.length) {
+        this.error = "No MIB tree data available for device";
+        return;
+      }
+
+      const findNode = (nodes, targetOid, path = []) => {
+        for (const node of nodes) {
+          const currentPath = [...path, node];
+          if (node.oid === targetOid) {
+            return { node, path: currentPath };
+          }
+          if (node.children && node.children.length) {
+            const result = findNode(node.children, targetOid, currentPath);
+            if (result) return result;
+          }
+        }
+        return null;
+      };
+
+      const result = findNode(tree, oid);
+      if (result) {
+        this.searchResults = {
+          deviceId,
+          oid,
+          node: result.node,
+          path: result.path, 
+        };
+        result.path.forEach((node) => {
+          if (node.children && node.children.length) {
+            node.expanded = true;
+          }
+        });
+      } else {
+        this.error = `OID ${oid} not found in MIB tree for device ${deviceId}`;
       }
     },
   },

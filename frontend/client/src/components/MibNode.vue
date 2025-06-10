@@ -1,5 +1,5 @@
 <template>
-  <li>
+  <li ref="nodeRef">
     <div class="node-container"
       @mouseenter="showDetails = true"
       @mouseleave="showDetails = false"
@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
 export default {
   name: "MibNode",
@@ -65,6 +65,15 @@ export default {
         props.node.expanded = !props.node.expanded;
       }
     };
+
+    watch(
+      () => props.selectedOid,
+      (newOid) => {
+        if (newOid === props.node.oid && refs.nodeRef) {
+          refs.nodeRef.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }
+    );
 
     return {
       showDetails,
