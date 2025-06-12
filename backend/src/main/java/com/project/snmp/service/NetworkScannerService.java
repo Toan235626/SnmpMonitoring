@@ -85,7 +85,8 @@ public class NetworkScannerService {
                                 version,
                                 username, authPass, privPass, authProtocol, privProtocol,
                                 String.valueOf(securityLevel));
-                        if (result != null && result.getValue() != null && result.getValue() != "Null") {
+                        if (result != null && result.getValue() != null && result.getValue() != "Null"
+                                && !result.getOid().startsWith("1.3.6.1.6.3.15.1.1")) {
                             String name = result.getValue();
                             Device device = new Device();
                             device.setDeviceIp(deviceIp);
