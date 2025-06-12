@@ -13,10 +13,12 @@ public class Device {
     private String name;
     private String ipAddress;
     private String community;
-    private String oid;  // viết thường để tuân chuẩn Java
+    private String oid; // viết thường để tuân chuẩn Java
+    private String value;
 
     public Device() {
     }
+
     public Device(String name, String ipAddress) {
         this.name = name;
         this.ipAddress = ipAddress;
@@ -38,7 +40,6 @@ public class Device {
         this.name = name;
     }
 
-
     public String getCommunity() {
         return community;
     }
@@ -53,6 +54,14 @@ public class Device {
 
     public void setOid(String oid) {
         this.oid = oid;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    public String getValue(String value) {
+        return value;
     }
 
     // --- toString ---
@@ -70,8 +79,10 @@ public class Device {
     // --- equals() ---
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Device)) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof Device))
+            return false;
 
         Device device = (Device) o;
 
