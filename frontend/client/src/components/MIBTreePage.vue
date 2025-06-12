@@ -3,12 +3,14 @@
     <v-alert v-if="!devices.length" type="info">
       No devices found. Please scan devices in Devices & Network.
     </v-alert>
-    <v-tabs v-model="activeTab">
-      <v-tab v-for="device in devices" :key="device.id" :value="device.id">
-        {{ device.name }}
-        (IP: {{ device.deviceIp }})
-      </v-tab>
-    </v-tabs>
+    <v-tabs v-model="activeTab" class="tabs-wrap">
+        <v-tab v-for="device in devices" :key="device.id" :value="device.id">
+          <div class="tab-content">
+            <div class="tab-name">{{ device.name }}</div>
+            <div class="tab-ip">(IP: {{ device.deviceIp }})</div>
+          </div>
+        </v-tab>
+      </v-tabs>
     <v-progress-circular
       v-if="isLoadingForDevice"
       indeterminate
@@ -34,7 +36,7 @@
             <div class="search-bar">
               <v-text-field
                 v-model="searchOidInput"
-                label="Search OID (e.g., 1.3.6.1.2.1.1.1.0)"
+                label="Search OID (e.g., 1.3.6.1.2.1.1.1)"
                 clearable
                 @keyup.enter="searchOid"
                 class="search-input"

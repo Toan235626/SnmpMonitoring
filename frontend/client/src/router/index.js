@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import DashboardView from "@/views/DashboardView.vue";
 import DevicesNetworkView from "@/views/DevicesNetworkView.vue";
 import MIBTreeView from "@/views/MIBTreeView.vue";
+import SearchOIDView from "@/views/SearchOIDView.vue";
 
 const routes = [
   {
@@ -22,6 +23,11 @@ const routes = [
     path: "/mib-tree",
     name: "MIB Tree",
     component: MIBTreeView,
+  },
+  {
+    path: "/search-oid",
+    name: "Search OID",
+    component: SearchOIDView,
   },
 ];
 

@@ -40,7 +40,7 @@
         <v-card-title>Scan Devices</v-card-title>
         <v-card-text>
           <v-form ref="form">
-            <v-text-field
+            <!-- <v-text-field
               v-model="scanForm.baseIp"
               label="Base IP (e.g., 192.168.5)"
               :rules="[(v) => !!v || 'Base IP is required']"
@@ -49,7 +49,7 @@
               v-model="scanForm.prefix"
               label="IP Prefix (e.g., 24)"
               :rules="[(v) => !!v || 'IP Prefix is required']"
-            />
+            /> -->
             <v-text-field
               v-model="scanForm.community"
               label="Community String"

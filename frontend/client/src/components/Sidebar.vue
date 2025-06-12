@@ -11,6 +11,7 @@
       :class="{ highlight: highlightMibTree }"
       @click="resetMibTreeHighlight"
     >MIB Tree</router-link>
+    <router-link to="/search-oid">Search for OID </router-link>
   </div>
 </template>
 

@@ -21,14 +21,14 @@
         variant="outlined"
         class="search-input"
       />
-      <v-select
+      <!-- <v-select
         v-model="version"
         label="SNMP Version"
         :items="['1', '2c', '3']"
         variant="outlined"
         class="search-input"
         @update:modelValue="onVersionChange"
-      />
+      /> -->
       <template v-if="version === '3'">
         <v-select
           v-model="securityLevel"

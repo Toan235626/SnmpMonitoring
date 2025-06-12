@@ -12,9 +12,9 @@
           :class="node.expanded ? 'fas fa-chevron-down' : 'fas fa-chevron-right'"
         ></i>
         {{ node.name || 'Unnamed' }} ({{ node.oid || 'N/A' }})
-        <span v-if="node.value && node.category === 'scalar'" class="value">
-          : {{ node.value }}
-        </span>
+        <div v-if="node.value" class="value">
+          {{ node.value }}
+        </div>
       </span>
       <div v-if="showDetails && (node.description || node.value)" class="details">
         <p v-if="node.description"><strong>Description:</strong> {{ node.description }}</p>
@@ -160,13 +160,18 @@ ul {
   margin-left: 25px;
   padding: 5px 0;
 }
-.value {
-  color: #00ff88; 
-  font-size: 1em;
-  font-style: italic;
-  background: rgba(0, 255, 136, 0.1); 
-  padding: 2px 6px;
-  border-radius: 4px;
+  .value {
+  font-weight: 500;
+  color: #000000; 
+  background: linear-gradient(
+    135deg,
+    #ffffff,
+    #ffffff
+  ); 
+  padding: 5px 10px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease; 
 }
 .details {
   padding: 10px 15px;
