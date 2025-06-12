@@ -139,7 +139,7 @@ public class SnmpGet {
 
                 SnmpRecord snmpRecord = new SnmpRecord();
                 snmpRecord.setDeviceIp(deviceIp);
-                snmpRecord.setOid(rootOid);
+                snmpRecord.setOid(response.getResponse().getVariableBindings().get(0).getOid().toString());
                 snmpRecord.setValue(vbString);
                 // snmpRecord.setCommunity(username); // Using username as community for SNMPv3
                 return snmpRecord;
