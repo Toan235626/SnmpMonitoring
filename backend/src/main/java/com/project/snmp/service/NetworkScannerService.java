@@ -53,11 +53,17 @@ public class NetworkScannerService {
                     try {
                         SnmpRecord result = snmpMainService.getSnmpValue(deviceIp, community, oid, port,
                                 version);
+                        SnmpRecord nameResult = snmpMainService.getSnmpValue(deviceIp, community, "1.3.6.1.2.1.1.1",
+                                port, version);
                         if (result != null && result.getValue() != null && result.getValue() != "Null") {
-                            String name = result.getValue();
+                            String name = nameResult.getValue();
+                            String value = result.getValue();
                             Device device = new Device();
-                            device.setDeviceIp(deviceIp);
+                            if (!oid.equals("1.3.6.1.2.1.1.1")) {
+                                device.setValue(value);
+                            }
                             device.setName(name);
+                            device.setDeviceIp(deviceIp);
                             device.setCommunity(community);
                             foundDevices.add(device);
                             System.out.println("Device found: " + device.getName() + " at " + device.getDeviceIp());
