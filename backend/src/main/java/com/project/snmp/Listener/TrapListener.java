@@ -1,68 +1,90 @@
-// package com.project.snmp.listener;
+package com.project.snmp.SnmpTrapListener;
 
-// import com.project.snmp.model.Trap;
-// import com.project.snmp.service.NetworkScannerService;
-// import com.project.snmp.service.TrapService;
+import com.project.snmp.model.Trap;
+import com.project.snmp.service.TrapService;
 
-// import org.snmp4j.*;
-// import org.snmp4j.smi.*;
-// import org.snmp4j.transport.DefaultUdpTransportMapping;
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.stereotype.Component;
+import org.snmp4j.*;
+import org.snmp4j.smi.*;
+import org.snmp4j.transport.DefaultUdpTransportMapping;
+import org.snmp4j.mp.MessageProcessingModel;
+import org.snmp4j.PDUv1;
 
-// import javax.annotation.PostConstruct;
-// import javax.annotation.PreDestroy;
-// import java.io.IOException;
-// import java.util.List;
-// import java.util.concurrent.ExecutorService;
-// import java.util.concurrent.Executors;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-// @Component
-// public class SnmpTrapListener {
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 
-// @Autowired
-// private TrapService trapService;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-// @Autowired
-// private NetworkScannerService networkScannerService;
+@Component
+public class SnmpTrapListener implements CommandResponder {
 
-// private ExecutorService executor = Executors.newSingleThreadExecutor();
+    @Autowired
+    private TrapService trapService;
 
-// private Snmp snmp;
+    private Snmp snmp;
 
-// @PostConstruct
-// public void init() throws IOException {
-// TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping(new
-// UdpAddress("0.0.0.0/162"));
-// snmp = new Snmp(transport);
+    @PostConstruct
+    public void start() throws IOException {
+        TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping(new UdpAddress("0.0.0.0/162"));
+        snmp = new Snmp(transport);
+        snmp.addCommandResponder(this);
+        transport.listen();
+        System.out.println("SNMP Trap Listener started on UDP port 162");
+    }
 
-// snmp.addCommandResponder(event -> {
-// PDU pdu = event.getPDU();
-// if (pdu != null) {
-// Trap trap = new Trap(pdu.toString(), pdu.getVariableBindings());
+    @Override
+    public void processPdu(CommandResponderEvent event) {
+        PDU pdu = event.getPDU();
+        if (pdu == null) return;
 
-// // Gọi service xử lý trap
-// trapService.processTrap(trap);
+        int model = event.getMessageProcessingModel();
+        String versionStr;
 
-// // Chạy scanSubnet trong thread riêng để không chặn trap listener
-// executor.submit(() -> {
-// System.out.println("Starting subnet scan in separate thread...");
-// networkScannerService.scanSubnet("192.168.1", "public", 161);
-// System.out.println("Subnet scan complete.");
-// });
-// }
-// });
+        List<VariableBinding> varBinds;
+        String rawPdu;
 
-// transport.listen();
-// System.out.println("SNMP Trap Listener started...");
-// }
+        if (model == MessageProcessingModel.MPv1 && pdu instanceof PDUv1) {
+            // SNMPv1 trap
+            PDUv1 pduV1 = (PDUv1) pdu;
+            versionStr = "v1";
 
-// @PreDestroy
-// public void shutdown() throws IOException {
-// if (snmp != null) {
-// snmp.close();
-// }
-// executor.shutdown();
-// System.out.println("SNMP Trap Listener stopped.");
-// }
-// }
+            varBinds = new ArrayList<>(pduV1.getVariableBindings());
+
+            rawPdu = String.format("SNMPv1 Trap: agentAddress=%s, genericTrap=%d, specificTrap=%d, timestamp=%d",
+                    pduV1.getAgentAddress(), pduV1.getGenericTrap(), pduV1.getSpecificTrap(), pduV1.getTimestamp());
+
+        } else if (model == MessageProcessingModel.MPv2c) {
+            versionStr = "v2c";
+            varBinds = new ArrayList<>(pdu.getVariableBindings());
+            rawPdu = pdu.toString();
+
+        } else if (model == MessageProcessingModel.MPv3) {
+            versionStr = "v3";
+            varBinds = new ArrayList<>(pdu.getVariableBindings());
+            rawPdu = pdu.toString();
+
+        } else {
+            versionStr = "unknown";
+            varBinds = new ArrayList<>(pdu.getVariableBindings());
+            rawPdu = pdu.toString();
+        }
+
+        Trap trap = new Trap(rawPdu, varBinds, versionStr);
+
+        trapService.processTrap(trap);
+
+        System.out.println("Received SNMP Trap, version: " + versionStr + ", variables: " + varBinds.size());
+    }
+
+    @PreDestroy
+    public void stop() throws IOException {
+        if (snmp != null) {
+            snmp.close();
+            System.out.println("SNMP Trap Listener stopped.");
+        }
+    }
+}
