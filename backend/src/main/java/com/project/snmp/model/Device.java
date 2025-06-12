@@ -60,7 +60,7 @@ public class Device {
         this.value = value;
     }
 
-    public String getValue(String value) {
+    public String getValue() {
         return value;
     }
 

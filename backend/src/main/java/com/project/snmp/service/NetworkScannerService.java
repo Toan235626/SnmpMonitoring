@@ -59,9 +59,7 @@ public class NetworkScannerService {
                             String name = nameResult.getValue();
                             String value = result.getValue();
                             Device device = new Device();
-                            if (!oid.equals("1.3.6.1.2.1.1.1")) {
-                                device.setValue(value);
-                            }
+                            device.setValue(value);
                             device.setName(name);
                             device.setDeviceIp(deviceIp);
                             device.setCommunity(community);
