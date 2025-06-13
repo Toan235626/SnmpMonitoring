@@ -13,7 +13,7 @@ public class Device {
     private String name;
     private String ipAddress;
     private String community;
-    private String oid; // viết thường để tuân chuẩn Java
+    private String oid;
     private String oid_value;
 
     public Device() {

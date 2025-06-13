@@ -19,12 +19,10 @@ public class TreeMerger {
         mergedRoot.put("name", "DEVICE-MIB");
         mergedRoot.put("oid", "");
 
-        // Thêm standard list
         if (standardList.isArray()) {
             mergedChildren.addAll((ArrayNode) standardList);
         }
 
-        // Thêm vendor (dạng array hoặc object)
         if (vendorListOrNode.isArray()) {
             mergedChildren.addAll((ArrayNode) vendorListOrNode);
         } else if (vendorListOrNode.isObject() && vendorListOrNode.has("oid")) {
@@ -35,10 +33,6 @@ public class TreeMerger {
         return mergedRoot;
     }
 
-
-
-
-    // Gán giá trị value cho từng OID trong cây
     public static void mergeValues(JsonNode node, Map<String, String> oidValueMap) {
         if (node.has("oid")) {
             String oid = node.get("oid").asText();
@@ -54,7 +48,6 @@ public class TreeMerger {
         }
     }
 
-    // Lọc bỏ các node không có value và không có con nào có value
     public static JsonNode filterByValue(JsonNode node) {
         boolean hasValue = node.has("value") && !node.get("value").asText().isEmpty();
         ArrayNode children = (ArrayNode) node.get("children");
@@ -89,17 +82,19 @@ public class TreeMerger {
         return wrapped;
     }
 
-
     public static JsonNode wrapUnderEnterprise(JsonNode vendorNode) {
-        if (!vendorNode.has("oid")) return vendorNode;
+        if (!vendorNode.has("oid"))
+            return vendorNode;
 
         String oid = vendorNode.get("oid").asText();
-        if (!oid.startsWith("1.3.6.1.4.1.")) return vendorNode;
+        if (!oid.startsWith("1.3.6.1.4.1."))
+            return vendorNode;
 
         String[] parts = oid.split("\\.");
-        if (parts.length < 8) return vendorNode; // không đủ sâu để cần gói
+        if (parts.length < 8)
+            return vendorNode;
 
-        String enterpriseOid = String.join(".", Arrays.copyOfRange(parts, 0, 7)); // → 1.3.6.1.4.1
+        String enterpriseOid = String.join(".", Arrays.copyOfRange(parts, 0, 7));
 
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode wrapped = mapper.createObjectNode();

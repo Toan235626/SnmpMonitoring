@@ -1,4 +1,5 @@
 package com.project.snmp.service;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,8 @@ public class SnmpMainService {
     @Autowired
     private SnmpWalk snmpWalk;
 
-    public SnmpRecord getSnmpValue(String deviceIp,String community, String oid,int port,
-                                   String version, String... v3params) throws Exception {
+    public SnmpRecord getSnmpValue(String deviceIp, String community, String oid, int port,
+            String version, String... v3params) throws Exception {
         SnmpRecord record;
 
         if ("3".equals(version)) {
@@ -30,7 +31,6 @@ public class SnmpMainService {
             String authProtocol = v3params[3];
             String privProtocol = v3params[4];
             int securityLevel = Integer.parseInt(v3params[5]);
-            // System.out.println("Hello SNMP GET: " + deviceIp + " " + username + " " + authPass + " " + privPass + " " + authProtocol + " " + privProtocol + " " + securityLevel);
             record = snmpGet.getAsRecordv3(deviceIp, username, authPass, privPass,
                     authProtocol, privProtocol, securityLevel, oid, port);
         } else {
@@ -39,7 +39,8 @@ public class SnmpMainService {
 
         String value = record.getValue();
         System.out.println("SNMP GET: " + record.getOid() + " - " + value);
-        if (value == null || value.isEmpty() || value.equals("noSuchObject") || value.equals("Null") || value.equals("noSuchInstance")) {
+        if (value == null || value.isEmpty() || value.equals("noSuchObject") || value.equals("Null")
+                || value.equals("noSuchInstance")) {
             System.out.println("SNMP GET: " + record.getOid() + " - " + value + " → Fallback to .0");
             if ("3".equals(version)) {
                 String username = v3params[0];
@@ -58,7 +59,7 @@ public class SnmpMainService {
     }
 
     public SnmpRecord getSnmpNextValue(String deviceIp, String community, String oid, int port,
-                                       String version, String... v3params) throws Exception {
+            String version, String... v3params) throws Exception {
         SnmpRecord getNextResult;
 
         if ("3".equals(version)) {
@@ -95,7 +96,7 @@ public class SnmpMainService {
     }
 
     public SnmpRecord[] getSnmpBulkValue(String deviceIp, String community, String oid, int port,
-                                        String version, String... v3params) throws Exception {
+            String version, String... v3params) throws Exception {
         if ("3".equals(version)) {
             String username = v3params[0];
             String authPass = v3params[1];
@@ -111,7 +112,7 @@ public class SnmpMainService {
     }
 
     public SnmpRecord[] getSnmpWalkValue(String deviceIp, String community, String rootOid, int port,
-                                         String version, String... v3params) throws Exception {
+            String version, String... v3params) throws Exception {
         switch (version) {
             case "1":
                 return snmpWalk.walkV1Records(deviceIp, community, rootOid, port);

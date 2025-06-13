@@ -7,7 +7,7 @@ import java.util.List;
 public class Trap {
     private String rawPdu;
     private List<VariableBinding> variables;
-    private String snmpVersion; // "v1", "v2c", "v3" hoặc "unknown"
+    private String snmpVersion;
 
     public Trap(String rawPdu, List<VariableBinding> variables, String snmpVersion) {
         this.rawPdu = rawPdu;

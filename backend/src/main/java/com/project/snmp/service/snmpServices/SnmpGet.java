@@ -75,10 +75,6 @@ public class SnmpGet {
     public SnmpRecord getAsRecordv3(String deviceIp, String username, String authPass, String privPass,
             String authProtocol, String privProtocol, int securityLevel,
             String rootOid, int port) throws Exception {
-        // System.out.println("SNMPv3 GET: " + deviceIp + " " + username + " " +
-        // authPass + " " + privPass
-        // + " " + authProtocol + " " + privProtocol + " " + securityLevel + " " +
-        // rootOid + " " + port);
         TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping();
         transport.listen();
 
@@ -141,7 +137,6 @@ public class SnmpGet {
                 snmpRecord.setDeviceIp(deviceIp);
                 snmpRecord.setOid(response.getResponse().getVariableBindings().get(0).getOid().toString());
                 snmpRecord.setValue(vbString);
-                // snmpRecord.setCommunity(username); // Using username as community for SNMPv3
                 return snmpRecord;
             } else {
                 throw new RuntimeException("SNMP GET request timed out or failed.");

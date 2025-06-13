@@ -24,7 +24,6 @@ public class TrapService {
         trapList.add(trap);
         System.out.println("Trap added to list. Total traps: " + trapList.size());
         System.out.println(trapList);
-        // Mở rộng lưu DB hoặc xử lý nghiệp vụ khác nếu cần
     }
 
     public List<Trap> getAllTraps() {

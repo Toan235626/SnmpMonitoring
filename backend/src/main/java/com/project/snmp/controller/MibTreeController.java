@@ -33,12 +33,6 @@ public class MibTreeController {
             @RequestParam(value = "privProtocol", required = false, defaultValue = "") String privProtocol,
             @RequestParam(value = "securityLevel", required = false, defaultValue = "1") String securityLevel)
             throws Exception {
-        // if (version.equals("3") && (securityLevel.equals("3")) && (authUsername ==
-        // null || authPass == null
-        // || privPass == null || authProtocol == null || privProtocol == null)) {
-        // throw new IllegalArgumentException("SNMPv3 level 3 requires all
-        // authentication parameters to be provided.");
-        // }
         if (version.equals("3")) {
             // Handle SNMPv3 parameters
             int securityLevelInt = Integer.parseInt(securityLevel);

@@ -39,20 +39,19 @@ public class SnmpTrapListener implements CommandResponder {
     @Override
     public void processPdu(CommandResponderEvent event) {
         PDU pdu = event.getPDU();
-        if (pdu == null) return;
+        if (pdu == null)
+            return;
 
         int model = event.getMessageProcessingModel();
         String versionStr;
         List<VariableBinding> varBinds;
         String rawPdu;
 
-        // Log thông tin chi tiết
         System.out.println("Processing PDU...");
         System.out.println("Model: " + model);
         System.out.println("PDU: " + pdu.toString());
 
         if (model == MessageProcessingModel.MPv1 && pdu instanceof PDUv1) {
-            // SNMPv1 trap
             PDUv1 pduV1 = (PDUv1) pdu;
             versionStr = "v1";
             varBinds = new ArrayList<>(pduV1.getVariableBindings());
@@ -75,17 +74,14 @@ public class SnmpTrapListener implements CommandResponder {
             rawPdu = pdu.toString();
         }
 
-        // Log thông tin các VariableBinding
         System.out.println("Variable Bindings:");
         for (VariableBinding vb : varBinds) {
             System.out.println(" - " + vb.toString());
         }
 
-        // Tạo và lưu trap
         Trap trap = new Trap(rawPdu, varBinds, versionStr);
         trapService.processTrap(trap);
 
-        // In ra log thông tin trap
         System.out.println("Received SNMP Trap:");
         System.out.println(trap.toString());
     }

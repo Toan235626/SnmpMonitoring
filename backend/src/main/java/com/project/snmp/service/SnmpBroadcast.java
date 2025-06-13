@@ -23,7 +23,6 @@ public class SnmpBroadcast {
         int prefixInt = Integer.parseInt(prefix);
         int thirdOctetBase = Integer.parseInt(parts[2]);
 
-        // Tính số lượng subnet con trong /24
         int subnetCount = (prefixInt <= 24) ? (1 << (24 - prefixInt)) : 1;
 
         for (int j = 0; j < subnetCount; j++) {
@@ -45,7 +44,7 @@ public class SnmpBroadcast {
 
         DatagramSocket socket = new DatagramSocket();
         socket.setBroadcast(true);
-        socket.setSoTimeout(1000); // 1 giây
+        socket.setSoTimeout(1000);
 
         DatagramPacket packet = new DatagramPacket(
                 request, request.length,
@@ -71,7 +70,6 @@ public class SnmpBroadcast {
         return responses;
     }
 
-    // Tạo gói SNMPv2c GET thủ công (BER encode cơ bản)
     public static byte[] createSnmpV2cGetPacket(String community, String oidStr) throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         System.out.println(oidStr);
@@ -92,15 +90,12 @@ public class SnmpBroadcast {
         varBindSeq.write(varBindContent.length);
         varBindSeq.write(varBindContent); // VarBind
 
-        // VarBindList = SEQUENCE OF VarBind
         byte[] vbList = varBindSeq.toByteArray();
         ByteArrayOutputStream vbListSeq = new ByteArrayOutputStream();
         vbListSeq.write(0x30);
         vbListSeq.write(vbList.length);
-        vbListSeq.write(vbList); // VarBindList
+        vbListSeq.write(vbList);
 
-        // PDU = [0xA0] + SEQUENCE { request-id, error-status, error-index, varBindList
-        // }
         ByteArrayOutputStream pdu = new ByteArrayOutputStream();
         pdu.write(0x02);
         pdu.write(1);
@@ -137,7 +132,6 @@ public class SnmpBroadcast {
         return message.toByteArray();
     }
 
-    // Encode OID: "1.3.6.1.2.1.1.1.0" → bytes
     public static byte[] encodeOID(String oidStr) {
         String[] parts = oidStr.split("\\.");
         int[] oid = Arrays.stream(parts).mapToInt(Integer::parseInt).toArray();
@@ -231,7 +225,6 @@ public class SnmpBroadcast {
         }
     }
 
-    // Helper: tính độ dài của field BER nếu byte đầu là length
     private static int getLengthFieldSize(int lenByte) {
         if ((lenByte & 0x80) == 0)
             return 1;

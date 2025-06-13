@@ -16,67 +16,60 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
-
 @Service
 public class MibTreeService {
     @Autowired
     private SnmpMainService snmpMainService;
 
     public JsonNode buildMergedTreeV12(String ip, String community, int port, String version) throws Exception {
-        String sysObjectID = snmpMainService.getSnmpValue(ip,community, "1.3.6.1.2.1.1.2.0", port, version).getValue();
-        String sysDescr = snmpMainService.getSnmpValue(ip,community, "1.3.6.1.2.1.1.1.0", port, version).getValue();
-
+        String sysObjectID = snmpMainService.getSnmpValue(ip, community, "1.3.6.1.2.1.1.2.0", port, version).getValue();
+        String sysDescr = snmpMainService.getSnmpValue(ip, community, "1.3.6.1.2.1.1.1.0", port, version).getValue();
 
         String vendor = VendorResolver.resolve(sysObjectID, sysDescr);
 
         System.out.println("Vendor: " + vendor);
 
-        SnmpRecord[] snmpRecords = snmpMainService.getSnmpWalkValue(ip,community,"1.3.6.1",port, version); // OID → value
+        SnmpRecord[] snmpRecords = snmpMainService.getSnmpWalkValue(ip, community, "1.3.6.1", port, version);
         Map<String, String> oidValues = new java.util.HashMap<>();
         for (SnmpRecord record : snmpRecords) {
             oidValues.put(record.getOid(), record.getValue());
         }
 
-
-        ArrayNode standardList = loadStandardTree(); 
+        ArrayNode standardList = loadStandardTree();
         JsonNode vendorData = loadVendorMibTree(vendor);
 
-        // vendorData có thể là ArrayNode hoặc ObjectNode
         JsonNode mergedTree = TreeMerger.mergeTwoTrees(standardList, vendorData);
         TreeMerger.mergeValues(mergedTree, oidValues);
-        // return mergedTree;
         return TreeMerger.filterByValue(mergedTree);
-
 
     }
 
-    public JsonNode buildMergedTreeV3(String ip, String community, int port, String username, String authPass, String privPass,
-                                        String authProtocol, String privProtocol, int securityLevel) throws Exception {
+    public JsonNode buildMergedTreeV3(String ip, String community, int port, String username, String authPass,
+            String privPass,
+            String authProtocol, String privProtocol, int securityLevel) throws Exception {
         String securityLevelStr = String.valueOf(securityLevel);
-        String sysObjectID = snmpMainService.getSnmpValue(ip,community, "1.3.6.1.2.1.1.2.0", port, "3", username, authPass, privPass, authProtocol, privProtocol,securityLevelStr).getValue();
-        String sysDescr = snmpMainService.getSnmpValue(ip,community, "1.3.6.1.2.1.1.1.0", port, "3",username, authPass, privPass, authProtocol, privProtocol,securityLevelStr).getValue();
-
+        String sysObjectID = snmpMainService.getSnmpValue(ip, community, "1.3.6.1.2.1.1.2.0", port, "3", username,
+                authPass, privPass, authProtocol, privProtocol, securityLevelStr).getValue();
+        String sysDescr = snmpMainService.getSnmpValue(ip, community, "1.3.6.1.2.1.1.1.0", port, "3", username,
+                authPass, privPass, authProtocol, privProtocol, securityLevelStr).getValue();
 
         String vendor = VendorResolver.resolve(sysObjectID, sysDescr);
 
         System.out.println("Vendor: " + vendor);
 
-        SnmpRecord[] snmpRecords = snmpMainService.getSnmpWalkValue(ip,community,"1.3.6.1",port, "3", username, authPass, privPass, authProtocol, privProtocol,securityLevelStr); // OID → value
+        SnmpRecord[] snmpRecords = snmpMainService.getSnmpWalkValue(ip, community, "1.3.6.1", port, "3", username,
+                authPass, privPass, authProtocol, privProtocol, securityLevelStr);
         Map<String, String> oidValues = new java.util.HashMap<>();
         for (SnmpRecord record : snmpRecords) {
             oidValues.put(record.getOid(), record.getValue());
         }
 
-
-        ArrayNode standardList = loadStandardTree(); 
+        ArrayNode standardList = loadStandardTree();
         JsonNode vendorData = loadVendorMibTree(vendor);
 
-        // vendorData có thể là ArrayNode hoặc ObjectNode
         JsonNode mergedTree = TreeMerger.mergeTwoTrees(standardList, vendorData);
         TreeMerger.mergeValues(mergedTree, oidValues);
-        // return mergedTree;
         return TreeMerger.filterByValue(mergedTree);
-
 
     }
 
@@ -95,7 +88,6 @@ public class MibTreeService {
         return (ArrayNode) node;
     }
 
-
     private JsonNode loadVendorMibTree(String vendor) throws IOException {
         String path = String.format("mibs/vendor/%s_tree.json", vendor);
         InputStream is = getClass().getClassLoader().getResourceAsStream(path);
@@ -107,8 +99,8 @@ public class MibTreeService {
         if (data.isArray()) {
             return TreeMerger.wrapArrayUnderEnterprise((ArrayNode) data);
         } else {
-            return TreeMerger.wrapUnderEnterprise(data); // Object dạng thường
+            return TreeMerger.wrapUnderEnterprise(data);
         }
     }
-    
+
 }
