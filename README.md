@@ -44,7 +44,7 @@ docker-compose up --build
 > Dành cho người đã có sẵn Java trên máy (không cần mở nhiều terminal)
 
 ```bash
-cd snmp-monitoring
+cd SnmpMonitoring
 javac Main.java
 java Main
 ```
@@ -54,15 +54,16 @@ java Main
     -   chạy `frontend/client/` bằng `npm run dev`
 
 ### ✅ Cách 3: Chạy thủ công
-
+```bash
+cd SnmpMonitoring
+```
 #### 🧩 Backend
 
 Yêu cầu: Java 17+, Maven
 
 ```bash
 cd backend
-./mvnw spring-boot:run     # Linux/macOS
-mvnw.cmd spring-boot:run   # Windows
+mvn spring-boot:run     
 ```
 
 API chạy tại: http://localhost:8086/api
