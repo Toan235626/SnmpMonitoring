@@ -6,6 +6,7 @@ import org.snmp4j.Snmp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +25,7 @@ public class SnmpController {
     @Autowired
     private SnmpMainService snmpMainService;
 
+    @CrossOrigin(origins = "*")
     @PostMapping("/get")
     public SnmpRecord[] getSnmpData(
             @RequestParam("deviceIp") String deviceIp,
@@ -59,6 +61,7 @@ public class SnmpController {
         }
     }
 
+    @CrossOrigin(origins = "*")
     @PostMapping("/getnext")
     public SnmpRecord[] getSnmpNextData(
             @RequestParam("deviceIp") String deviceIp,
@@ -93,6 +96,7 @@ public class SnmpController {
         }
     }
 
+    @CrossOrigin(origins = "*")
     @PostMapping("/walk")
     public SnmpRecord[] walkSnmpData(
             @RequestParam("deviceIp") String deviceIp,
@@ -124,6 +128,7 @@ public class SnmpController {
         }
     }
 
+    @CrossOrigin(origins = "*")
     @PostMapping("/bulk")
     public SnmpRecord[] bulkSnmpData(
             @RequestParam("deviceIp") String deviceIp,
