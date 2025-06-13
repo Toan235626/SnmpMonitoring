@@ -2,14 +2,17 @@ version: '3.8'
 
 services:
     backend:
-        build: 
+        build:
             context: ./backend
-        ports:
-            - '8086:8086'
+        network_mode: host
+        environment:
+            - SERVER_PORT=8086
+        # ports:
+        #     - '8086:8086'
         container_name: snmp-backend
 
     frontend:
-        build: 
+        build:
             context: ./frontend/client
             args:
                 VITE_API_BASE_URL: 'http://localhost:8086/api'
