@@ -1,32 +1,52 @@
 package com.project.snmp.model;
 
-import java.util.List;
 import org.snmp4j.smi.VariableBinding;
 
+import java.util.List;
+
 public class Trap {
-    private String pduString;
-    private List<VariableBinding> variableBindings;
+    private String rawPdu;
+    private List<VariableBinding> variables;
+    private String snmpVersion; // "v1", "v2c", "v3" hoặc "unknown"
 
-    public Trap(String pduString, List<VariableBinding> variableBindings) {
-        this.pduString = pduString;
-        this.variableBindings = variableBindings;
+    public Trap(String rawPdu, List<VariableBinding> variables, String snmpVersion) {
+        this.rawPdu = rawPdu;
+        this.variables = variables;
+        this.snmpVersion = snmpVersion;
     }
 
-    public String getPduString() {
-        return pduString;
+    // Getter và Setter
+
+    public String getRawPdu() {
+        return rawPdu;
     }
 
-    public List<VariableBinding> getVariableBindings() {
-        return variableBindings;
+    public void setRawPdu(String rawPdu) {
+        this.rawPdu = rawPdu;
+    }
+
+    public List<VariableBinding> getVariables() {
+        return variables;
+    }
+
+    public void setVariables(List<VariableBinding> variables) {
+        this.variables = variables;
+    }
+
+    public String getSnmpVersion() {
+        return snmpVersion;
+    }
+
+    public void setSnmpVersion(String snmpVersion) {
+        this.snmpVersion = snmpVersion;
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Trap received: ").append(pduString).append("\n");
-        for (VariableBinding vb : variableBindings) {
-            sb.append("OID: ").append(vb.getOid()).append(", Value: ").append(vb.getVariable()).append("\n");
-        }
-        return sb.toString();
+        return "Trap{" +
+                "snmpVersion='" + snmpVersion + '\'' +
+                ", rawPdu='" + rawPdu + '\'' +
+                ", variables=" + variables +
+                '}';
     }
 }

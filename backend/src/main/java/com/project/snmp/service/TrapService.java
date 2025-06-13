@@ -10,17 +10,26 @@ import java.util.List;
 @Service
 public class TrapService {
 
-    // Lưu trữ trap nhận được trong bộ nhớ (demo)
     private final List<Trap> trapList = Collections.synchronizedList(new ArrayList<>());
 
     public void processTrap(Trap trap) {
+        if (trap == null) {
+            System.out.println("Received null trap, skipping.");
+            return;
+        }
+
         System.out.println("Processing trap:");
         System.out.println(trap.toString());
+        
         trapList.add(trap);
-        // TODO: Có thể lưu DB hoặc xử lý nghiệp vụ khác
+        System.out.println("Trap added to list. Total traps: " + trapList.size());
+        
+        // Mở rộng lưu DB hoặc xử lý nghiệp vụ khác nếu cần
     }
 
     public List<Trap> getAllTraps() {
-        return new ArrayList<>(trapList);
+        List<Trap> trapsCopy = new ArrayList<>(trapList);
+        System.out.println("Retrieving all traps. Total traps: " + trapsCopy.size());
+        return trapsCopy;
     }
 }
