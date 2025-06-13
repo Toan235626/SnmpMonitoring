@@ -1,32 +1,32 @@
 # 🛰️ SNMP Monitoring Web Application
 
-Hệ thống giám sát thiết bị mạng thông qua giao thức SNMP, gồm:
+A web-based system for monitoring network devices using SNMP, including:
 
--   ✅ Backend: Spring Boot (SNMP4J, REST API)
--   ✅ Frontend: Vue.js 3 + Vite + Vuetify
--   ✅ Giao tiếp qua API RESTful
--   ✅ Hỗ trợ SNMPv1, v2c, v3
+- ✅ Backend: Spring Boot (SNMP4J, REST API)
+- ✅ Frontend: Vue.js 3 + Vite + Vuetify
+- ✅ Communication via RESTful APIs
+- ✅ Support for SNMPv1, v2c, and v3
 
 ---
 
-## 📦 Cấu trúc thư mục
+## 📦 Project Structure
 
 ```
 .
 ├── backend/              # Spring Boot (SNMP API)
 ├── frontend/client/      # Vue 3 + Vuetify (UI)
-├── docker-compose.yml    # Chạy cả frontend/backend bằng Docker
+├── docker-compose.yml    # Launches both frontend and backend
 ├── Main.java
 └── README.md
 ```
 
 ---
 
-## 🚀 Cách chạy
+## 🚀 How to Run
 
-### ✅ Cách 1: Dùng Docker (khuyên dùng)
+### ✅ Option 1: Using Docker (recommended)
 
-> Không cần cài Java, Maven hay Node
+> No need to install Java, Maven, or Node.js
 
 ```bash
 git clone https://github.com/Toan235626/SnmpMonitoring.git
@@ -34,14 +34,14 @@ cd SnmpMonitoring
 docker-compose up --build
 ```
 
--   Backend: http://localhost:8086/api
--   Frontend: http://localhost:5173
+- Backend: http://localhost:8086/api  
+- Frontend: http://localhost:5173
 
 ---
 
-### ✅ Cách 2: Chạy bằng file `Main.java` (gộp cả frontend + backend)
+### ✅ Option 2: Run using `Main.java` (automatically starts both frontend and backend)
 
-> Dành cho người đã có sẵn Java trên máy (không cần mở nhiều terminal)
+> For users who already have Java installed (no need to open multiple terminals)
 
 ```bash
 cd SnmpMonitoring
@@ -49,28 +49,32 @@ javac Main.java
 java Main
 ```
 
--   File `Main.java` sẽ tự động:
-    -   chạy `backend/` bằng Maven wrapper (`mvnw` hoặc `mvn`)
-    -   chạy `frontend/client/` bằng `npm run dev`
+- The `Main.java` file will automatically:
+  - Start `backend/` using Maven Wrapper (`mvnw` or `mvn`)
+  - Start `frontend/client/` using `npm run dev`
 
-### ✅ Cách 3: Chạy thủ công
+---
+
+### ✅ Option 3: Run manually
+
 ```bash
 cd SnmpMonitoring
 ```
+
 #### 🧩 Backend
 
-Yêu cầu: Java 17+, Maven
+**Requirements:** Java 17+, Maven
 
 ```bash
 cd backend
-mvn spring-boot:run     
+mvn spring-boot:run
 ```
 
-API chạy tại: http://localhost:8086/api
+API available at: http://localhost:8086/api
 
 #### 🎨 Frontend
 
-Yêu cầu: Node.js v18+
+**Requirements:** Node.js v18+
 
 ```bash
 cd frontend/client
@@ -78,38 +82,38 @@ npm install
 npm run dev
 ```
 
-App chạy tại: http://localhost:5173
+App available at: http://localhost:5173
 
 ---
 
-## 🛠 Tính năng
+## 🛠 Features
 
--   🔍 SNMP Walk, GetNext, GetBulk
--   📊 MIB Tree & Trap Viewer
--   🔐 Hỗ trợ bảo mật SNMPv3
--   🌐 UI hiện đại với Vue + Vuetify
--   📁 Hỗ trợ phân loại theo vendor
-
----
-
-## 📚 Công nghệ sử dụng
-
-| Layer    | Tech                   |
-| -------- | ---------------------- |
-| Frontend | Vue.js, Vuetify, Vite  |
-| Backend  | Spring Boot, SNMP4J    |
-| Database | H2 (in-memory)         |
-| SNMP     | SNMPv1, v2c, v3        |
-| DevOps   | Docker, Docker Compose |
+- 🔍 SNMP Walk, GetNext, and GetBulk operations
+- 📊 MIB Tree & Trap Viewer
+- 🔐 SNMPv3 authentication support
+- 🌐 Modern UI with Vue + Vuetify
+- 📁 Vendor-based MIB classification
 
 ---
 
-## 📌 Tác giả
+## 📚 Technologies Used
 
--   **Tên:** [Nguyễn Khánh Toàn, Dương Ngô Hoàng Vũ, Chu Văn An]
--   **GitHub:** [github.com/Toan235626]
--   **Liên hệ:** [Toan.NK235626@sis.hust.edu.vn]
+| Layer     | Technologies               |
+|-----------|----------------------------|
+| Frontend  | Vue.js, Vuetify, Vite      |
+| Backend   | Spring Boot, SNMP4J        |
+| Database  | H2 (in-memory)             |
+| SNMP      | SNMPv1, v2c, v3            |
+| DevOps    | Docker, Docker Compose     |
 
 ---
 
-> ⭐ Hãy star dự án nếu bạn thấy hữu ích!
+## 📌 Authors
+
+- **Names:** Nguyễn Khánh Toàn, Dương Ngô Hoàng Vũ, Chu Văn An  
+- **GitHub:** [github.com/Toan235626](https://github.com/Toan235626)  
+- **Contact:** [Toan.NK235626@sis.hust.edu.vn](mailto:Toan.NK235626@sis.hust.edu.vn)
+
+---
+
+> ⭐ Star this project if you found it helpful!
