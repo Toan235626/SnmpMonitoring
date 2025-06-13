@@ -46,6 +46,7 @@ public class DeviceScanController {
         System.out.println("[✓] DeviceScanController loaded");
     }
 
+    @CrossOrigin(origins = "*")
     @PostMapping("/scan-subnet")
     public List<Device> scanSelectedSubnet(
             @RequestParam(value = "mode", required = false, defaultValue = "broadcast") String mode,
@@ -89,7 +90,8 @@ public class DeviceScanController {
             throw new IllegalArgumentException("Unsupported SNMP version: " + version);
         }
     }
-    
+
+    @CrossOrigin(origins = "*")
     @PostMapping("/networks")
     public List<HashMap<String, String>> getLocalSubnets() {
         List<HashMap<String, String>> subnets = new ArrayList<>();
