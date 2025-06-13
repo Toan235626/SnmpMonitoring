@@ -29,8 +29,8 @@ Hệ thống giám sát thiết bị mạng thông qua giao thức SNMP, gồm:
 > Không cần cài Java, Maven hay Node
 
 ```bash
-git clone https://github.com/yourname/snmp-monitoring.git
-cd snmp-monitoring
+git clone https://github.com/Toan235626/SnmpMonitoring.git
+cd SnmpMonitoring
 docker-compose up --build
 ```
 
