@@ -126,7 +126,6 @@
 </template>
 
 <script>
-// import axios from "axios";
 import axios from "@/axios.js";
 
 export default {
@@ -177,7 +176,7 @@ export default {
         this.devices = []; 
         this.searched = false; 
         this.selectedNetwork = "";
-        const response = await axios.post(import.meta.env.VITE_API_BASE_URL + "/device-scan/networks", null, {
+        const response = await axios.post("/device-scan/networks", null, {
           params: {
             community: this.community,
             port: this.port,
@@ -231,7 +230,7 @@ export default {
           }
         }
 
-        const response = await axios.post(import.meta.env.VITE_API_BASE_URL + "/device-scan/scan-subnet", null, {
+        const response = await axios.post("/device-scan/scan-subnet", null, {
           params,
         });
         this.devices = response.data;

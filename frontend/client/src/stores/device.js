@@ -1,6 +1,5 @@
 import { defineStore } from "pinia";
-// import axios from "axios";
-import axios from "@/axios.js";
+import axiosInstance from "@/axios.js";
 import { networkStore } from "./network";
 
 export const deviceStore = defineStore("device", {
@@ -84,7 +83,7 @@ export const deviceStore = defineStore("device", {
 
         switch (action) {
           case "get":
-            endpoint = import.meta.env.VITE_API_BASE_URL + "/snmp/get";
+            endpoint = "/snmp/get";
             processResponse = (response) => {
               if (!response.data || response.data.length === 0) {
                 this.error = "No SNMP data returned.";
@@ -111,7 +110,7 @@ export const deviceStore = defineStore("device", {
             };
             break;
           case "getNext":
-            endpoint = import.meta.env.VITE_API_BASE_URL + "/snmp/getnext";
+            endpoint =  "/snmp/getnext";
             const currentResults = this.results[deviceId] || [];
             requestParams.oid =
               currentResults.length > 0
@@ -143,7 +142,7 @@ export const deviceStore = defineStore("device", {
             };
             break;
           case "getBulk":
-            endpoint = import.meta.env.VITE_API_BASE_URL + "/snmp/bulk";
+            endpoint ="/snmp/bulk";
             processResponse = (response) => {
               if (!response.data || response.data.length === 0) {
                 this.error = "No SNMP data returned.";
@@ -170,7 +169,7 @@ export const deviceStore = defineStore("device", {
             };
             break;
           case "walk":
-            endpoint = import.meta.env.VITE_API_BASE_URL + "/snmp/walk";
+            endpoint = "/snmp/walk";
             processResponse = (response) => {
               if (!response.data || response.data.length === 0) {
                 this.error = "No SNMP data returned.";
@@ -195,7 +194,7 @@ export const deviceStore = defineStore("device", {
           requestParams
         );
 
-        const response = await axios.post(endpoint, null, {
+        const response = await axiosInstance.post(endpoint, null, {
           params: requestParams,
         });
 
