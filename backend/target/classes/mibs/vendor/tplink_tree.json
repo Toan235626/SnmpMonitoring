@@ -1,0 +1,2232 @@
+{
+    "name": "tplink",
+    "oid": "1.3.6.1.4.1.11863",
+    "description": "",
+    "syntax": "",
+    "access": "",
+    "type": "",
+    "children": [
+        {
+            "name": "switch",
+            "oid": "1.3.6.1.4.1.11863.1",
+            "description": "",
+            "syntax": "",
+            "access": "",
+            "type": "",
+            "children": [],
+            "value": ""
+        },
+        {
+            "name": "router",
+            "oid": "1.3.6.1.4.1.11863.2",
+            "description": "",
+            "syntax": "",
+            "access": "",
+            "type": "",
+            "children": [],
+            "value": ""
+        },
+        {
+            "name": "wireless",
+            "oid": "1.3.6.1.4.1.11863.3",
+            "description": "",
+            "syntax": "",
+            "access": "",
+            "type": "",
+            "children": [],
+            "value": ""
+        },
+        {
+            "name": "adsl",
+            "oid": "1.3.6.1.4.1.11863.4",
+            "description": "",
+            "syntax": "",
+            "access": "",
+            "type": "",
+            "children": [],
+            "value": ""
+        },
+        {
+            "name": "tplinkProducts",
+            "oid": "1.3.6.1.4.1.11863.5",
+            "description": "tplinkProducts is the root OBJECT IDENTIFIER from which sysObjectID values are assigned. Actual values are defined in TPLINK-PRODUCTS-MIB.",
+            "syntax": "",
+            "access": "",
+            "type": "",
+            "children": [],
+            "value": ""
+        },
+        {
+            "name": "tplinkMgmt",
+            "oid": "1.3.6.1.4.1.11863.6",
+            "description": "tplinkMgmt is the main subtree for new mib development.",
+            "syntax": "",
+            "access": "",
+            "type": "",
+            "children": [
+                {
+                    "name": "tplinkSysInfoMIB",
+                    "oid": "1.3.6.1.4.1.11863.6.1",
+                    "description": "This MIB module contain a collection of managed objects that get infomation of the system.",
+                    "syntax": "",
+                    "access": "",
+                    "type": "",
+                    "children": [
+                        {
+                            "name": "tplinkSysInfoMIBObjects",
+                            "oid": "1.3.6.1.4.1.11863.6.1.1",
+                            "description": "",
+                            "syntax": "",
+                            "access": "",
+                            "type": "",
+                            "children": [
+                                {
+                                    "name": "tpSysInfoDescription",
+                                    "oid": "1.3.6.1.4.1.11863.6.1.1.1",
+                                    "description": "A textual description of the entity. This value should include the full name and version identification of the system's hardware type, software operating-system, and networking software. It is current that this only contain printable ASCII characters.",
+                                    "syntax": "octet string",
+                                    "access": "read-only",
+                                    "type": "scalar",
+                                    "children": [],
+                                    "value": ""
+                                },
+                                {
+                                    "name": "tpSysInfoHostName",
+                                    "oid": "1.3.6.1.4.1.11863.6.1.1.2",
+                                    "description": "An administratively-assigned name for this managed node. By convention, this is the node's fully-qualified domain name.range:17 byte.",
+                                    "syntax": "octet string",
+                                    "access": "read-write",
+                                    "type": "scalar",
+                                    "children": [],
+                                    "value": ""
+                                },
+                                {
+                                    "name": "tpSysInfoLocation",
+                                    "oid": "1.3.6.1.4.1.11863.6.1.1.3",
+                                    "description": "The physical location of this node (e.g., `telephone closet, 3rd floor'),range:32 byte.",
+                                    "syntax": "octet string",
+                                    "access": "read-write",
+                                    "type": "scalar",
+                                    "children": [],
+                                    "value": ""
+                                },
+                                {
+                                    "name": "tpSysInfoContact",
+                                    "oid": "1.3.6.1.4.1.11863.6.1.1.4",
+                                    "description": "The textual identification of the contact person for this managed node, together with information on how to contact this person.range:32 byte.",
+                                    "syntax": "octet string",
+                                    "access": "read-write",
+                                    "type": "scalar",
+                                    "children": [],
+                                    "value": ""
+                                },
+                                {
+                                    "name": "tpSysInfoHwVersion",
+                                    "oid": "1.3.6.1.4.1.11863.6.1.1.5",
+                                    "description": "The hardWare version of the product.",
+                                    "syntax": "octet string",
+                                    "access": "read-only",
+                                    "type": "scalar",
+                                    "children": [],
+                                    "value": ""
+                                },
+                                {
+                                    "name": "tpSysInfoSwVersion",
+                                    "oid": "1.3.6.1.4.1.11863.6.1.1.6",
+                                    "description": "The softWare version of the product.",
+                                    "syntax": "octet string",
+                                    "access": "read-only",
+                                    "type": "scalar",
+                                    "children": [],
+                                    "value": ""
+                                },
+                                {
+                                    "name": "tpSysInfoMacAddr",
+                                    "oid": "1.3.6.1.4.1.11863.6.1.1.7",
+                                    "description": "The MAC address of the product.",
+                                    "syntax": "octet string",
+                                    "access": "read-only",
+                                    "type": "scalar",
+                                    "children": [],
+                                    "value": ""
+                                },
+                                {
+                                    "name": "tpSysInfoUpTime",
+                                    "oid": "1.3.6.1.4.1.11863.6.1.1.8",
+                                    "description": "The time (in hundredths of a second) since the network management portion of the system was last re-initialized.",
+                                    "syntax": "timestamp",
+                                    "access": "read-only",
+                                    "type": "scalar",
+                                    "children": [],
+                                    "value": ""
+                                },
+                                {
+                                    "name": "tpSysInfoSerialPort",
+                                    "oid": "1.3.6.1.4.1.11863.6.1.1.9",
+                                    "description": "config the baud rate of the system Enumeration: 'b-9600': 0, 'b-38400': 2, 'b-115200': 4, 'b-57600': 3, 'b-19200': 1.",
+                                    "syntax": "integer",
+                                    "access": "read-write",
+                                    "type": "scalar",
+                                    "children": [],
+                                    "value": ""
+                                }
+                            ],
+                            "value": ""
+                        },
+                        {
+                            "name": "tplinkSysInfoNotifications",
+                            "oid": "1.3.6.1.4.1.11863.6.1.2",
+                            "description": "",
+                            "syntax": "",
+                            "access": "",
+                            "type": "",
+                            "children": [],
+                            "value": ""
+                        }
+                    ],
+                    "value": ""
+                },
+                {
+                    "name": "tplinkPortSecurityMIB",
+                    "oid": "1.3.6.1.4.1.11863.6.12",
+                    "description": "The config of the port security.",
+                    "syntax": "",
+                    "access": "",
+                    "type": "",
+                    "children": [
+                        {
+                            "name": "tplinkPortSecurityMIBObjects",
+                            "oid": "1.3.6.1.4.1.11863.6.12.1",
+                            "description": "",
+                            "syntax": "",
+                            "access": "",
+                            "type": "",
+                            "children": [
+                                {
+                                    "name": "tpPortSecurityTable",
+                                    "oid": "1.3.6.1.4.1.11863.6.12.1.1",
+                                    "description": "A table that contains security information about every port. Port Security is to protect the switch from the malicious MAC address attack by limiting the maximum number of MAC addresses that can be learned on the port. The port with Port Security feature enabled will learn the MAC address dynamically. When the learned MAC address number reaches the maximum, the port will stop learning. Thereafter, the other devices with the MAC address unlearned can not access to the network via this port.",
+                                    "syntax": "",
+                                    "access": "no-access",
+                                    "type": "table",
+                                    "children": [
+                                        {
+                                            "name": "tpPortSecurityEntry",
+                                            "oid": "1.3.6.1.4.1.11863.6.12.1.1.1",
+                                            "description": "A list security information for each port of the device.",
+                                            "syntax": "",
+                                            "access": "no-access",
+                                            "type": "row",
+                                            "children": [
+                                                {
+                                                    "name": "tpPortSecurityPortIndex",
+                                                    "oid": "1.3.6.1.4.1.11863.6.12.1.1.1.1",
+                                                    "description": "This object indicates the port number.",
+                                                    "syntax": "displaystring",
+                                                    "access": "read-only",
+                                                    "type": "column",
+                                                    "children": [],
+                                                    "value": ""
+                                                },
+                                                {
+                                                    "name": "tpPortSecurityMaxNum",
+                                                    "oid": "1.3.6.1.4.1.11863.6.12.1.1.1.2",
+                                                    "description": "This object indicates the maximum number of MAC addresses that can be learned on the port.",
+                                                    "syntax": "integer",
+                                                    "access": "read-write",
+                                                    "type": "column",
+                                                    "children": [],
+                                                    "value": ""
+                                                },
+                                                {
+                                                    "name": "tpPortSecurityLearnNum",
+                                                    "oid": "1.3.6.1.4.1.11863.6.12.1.1.1.3",
+                                                    "description": "This object indicates the number of MAC addresses that have been learned on the port.",
+                                                    "syntax": "integer",
+                                                    "access": "read-only",
+                                                    "type": "column",
+                                                    "children": [],
+                                                    "value": ""
+                                                },
+                                                {
+                                                    "name": "tpPortSecurityLearnMode",
+                                                    "oid": "1.3.6.1.4.1.11863.6.12.1.1.1.4",
+                                                    "description": "This object indicates the learn mode of the port. dynamic: When dynamic mode is selected, the learned MAC address will be deleted automatically after the aging time. static: When static mode is selected, the learned MAC address will be out of the influence of the aging time and can only be deleted manually. The learned entries will be cleared after the switch is rebooted. permanent: When permanent mode is selected, the learned MAC address will be out of the influence of the aging time and can only be deleted manually. The learned entries will be saved even the switch is rebooted.  Enumeration: 'static': 1, 'permanent': 2, 'dynamic': 0.",
+                                                    "syntax": "integer",
+                                                    "access": "read-write",
+                                                    "type": "column",
+                                                    "children": [],
+                                                    "value": ""
+                                                },
+                                                {
+                                                    "name": "tpPortSecurityPortStatus",
+                                                    "oid": "1.3.6.1.4.1.11863.6.12.1.1.1.5",
+                                                    "description": "This object indicates the security feature of the port. Enumeration: 'forward': 1, 'drop': 2, 'disable': 0.",
+                                                    "syntax": "integer",
+                                                    "access": "read-write",
+                                                    "type": "column",
+                                                    "children": [],
+                                                    "value": ""
+                                                }
+                                            ],
+                                            "value": ""
+                                        }
+                                    ],
+                                    "value": ""
+                                }
+                            ],
+                            "value": ""
+                        },
+                        {
+                            "name": "tplinkPortSecurityNotifications",
+                            "oid": "1.3.6.1.4.1.11863.6.12.2",
+                            "description": "",
+                            "syntax": "",
+                            "access": "",
+                            "type": "",
+                            "children": [],
+                            "value": ""
+                        }
+                    ],
+                    "value": ""
+                },
+                {
+                    "name": "tplinkDot1qVlanMIB",
+                    "oid": "1.3.6.1.4.1.11863.6.14",
+                    "description": "VLAN (Virtual Local Area Network) technology is developed for the switch to divide the LAN into multiple logical LANs flexibly. Hosts in the same VLAN can communicate with each other, regardless of their physical locations. VLAN can enhance performance by conserving bandwidth, and improve security by limiting traffic to specific domains.",
+                    "syntax": "",
+                    "access": "",
+                    "type": "",
+                    "children": [
+                        {
+                            "name": "tplinkDot1qVlanMIBObjects",
+                            "oid": "1.3.6.1.4.1.11863.6.14.1",
+                            "description": "",
+                            "syntax": "",
+                            "access": "",
+                            "type": "",
+                            "children": [
+                                {
+                                    "name": "vlanPortConfig",
+                                    "oid": "1.3.6.1.4.1.11863.6.14.1.1",
+                                    "description": "",
+                                    "syntax": "",
+                                    "access": "",
+                                    "type": "",
+                                    "children": [
+                                        {
+                                            "name": "vlanPortConfigTable",
+                                            "oid": "1.3.6.1.4.1.11863.6.14.1.1.1",
+                                            "description": "The switch provides three Link Types for the ports. Usually, the ACCESS port is to connect to the terminal hosts, such as PC and Server; the TRUNK port is to connect to the switch; the GENERAL port can connect to the terminal hosts or the switch also.",
+                                            "syntax": "",
+                                            "access": "no-access",
+                                            "type": "table",
+                                            "children": [
+                                                {
+                                                    "name": "vlanPortConifgEntry",
+                                                    "oid": "1.3.6.1.4.1.11863.6.14.1.1.1.1",
+                                                    "description": "An entry contains of the information of a port parameter.",
+                                                    "syntax": "",
+                                                    "access": "no-access",
+                                                    "type": "row",
+                                                    "children": [
+                                                        {
+                                                            "name": "vlanPortNumber",
+                                                            "oid": "1.3.6.1.4.1.11863.6.14.1.1.1.1.1",
+                                                            "description": "The port id.",
+                                                            "syntax": "octet string",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "vlanPortType",
+                                                            "oid": "1.3.6.1.4.1.11863.6.14.1.1.1.1.2",
+                                                            "description": "0.ACCESS:The ACCESS port can be added in a single VLAN,and the egress rule of the port is UNTAG. The PVID is same as the current VLAN ID. If the current VLAN is deleted,the PVID will be set to 1 by default. 1.TRUNK:The TRUNK port can be added in multiple VLANs, and the egress rule of the port is TAG. The PVID can be set as the VID number of any VLAN the port belongs to. 2.GENERAL:The GENERAL port can be added in multiple VLANs and set various egress rules according to the different VLANs. The default egress rule is UNTAG. The PVID can be set as the VID number of any VLAN the port belongs to. Enumeration: 'access': 0, 'general': 2, 'trunk': 1.",
+                                                            "syntax": "integer",
+                                                            "access": "read-write",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "vlanPortPvid",
+                                                            "oid": "1.3.6.1.4.1.11863.6.14.1.1.1.1.3",
+                                                            "description": "Enter the PVID number of the port, 1-4094",
+                                                            "syntax": "integer",
+                                                            "access": "read-write",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "vlanPortLag",
+                                                            "oid": "1.3.6.1.4.1.11863.6.14.1.1.1.1.4",
+                                                            "description": "Displays the LAG to which the port belongs.",
+                                                            "syntax": "displaystring",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        }
+                                                    ],
+                                                    "value": ""
+                                                }
+                                            ],
+                                            "value": ""
+                                        }
+                                    ],
+                                    "value": ""
+                                },
+                                {
+                                    "name": "vlanConfig",
+                                    "oid": "1.3.6.1.4.1.11863.6.14.1.2",
+                                    "description": "",
+                                    "syntax": "",
+                                    "access": "",
+                                    "type": "",
+                                    "children": [
+                                        {
+                                            "name": "vlanConfigTable",
+                                            "oid": "1.3.6.1.4.1.11863.6.14.1.2.1",
+                                            "description": "Here you can view and modify the VLAN Table.",
+                                            "syntax": "",
+                                            "access": "no-access",
+                                            "type": "table",
+                                            "children": [
+                                                {
+                                                    "name": "vlanConfigEntry",
+                                                    "oid": "1.3.6.1.4.1.11863.6.14.1.2.1.1",
+                                                    "description": "An entry contains of the information of a vlan.",
+                                                    "syntax": "",
+                                                    "access": "no-access",
+                                                    "type": "row",
+                                                    "children": [
+                                                        {
+                                                            "name": "dot1qVlanId",
+                                                            "oid": "1.3.6.1.4.1.11863.6.14.1.2.1.1.1",
+                                                            "description": "Enter the ID number of VLAN,2-4094.",
+                                                            "syntax": "integer",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "dot1qVlanDescription",
+                                                            "oid": "1.3.6.1.4.1.11863.6.14.1.2.1.1.2",
+                                                            "description": "Give a description to the VLAN for identification,1-16 characters",
+                                                            "syntax": "octet string",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "vlanTagPortMemberAdd",
+                                                            "oid": "1.3.6.1.4.1.11863.6.14.1.2.1.1.3",
+                                                            "description": "Enter the desired port to be a tag member of VLAN,The format of input port number shoud be like '1, 3, 4-7, 11'. tag:All packets forwarded by the port are tagged. The packets contain VLAN information.",
+                                                            "syntax": "octet string",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "vlanUntagPortMemberAdd",
+                                                            "oid": "1.3.6.1.4.1.11863.6.14.1.2.1.1.4",
+                                                            "description": "Enter the desired port to be a untag member of VLAN,The format of input port number shoud be like '1, 3, 4-7, 11'. untag:Packets forwarded by the port are untagged.",
+                                                            "syntax": "octet string",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "vlanPortMemberRemove",
+                                                            "oid": "1.3.6.1.4.1.11863.6.14.1.2.1.1.5",
+                                                            "description": "Remove port member of vlan,The format of input port number shoud be like '1, 3, 4-7, 11'.",
+                                                            "syntax": "octet string",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "dot1qVlanStatus",
+                                                            "oid": "1.3.6.1.4.1.11863.6.14.1.2.1.1.6",
+                                                            "description": "the following two values are states: these values may be read or written active(1), the following three values are actions: these values may be written, but are never read createAndGo(4), destroy(6)",
+                                                            "syntax": "tprowstatus",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        }
+                                                    ],
+                                                    "value": ""
+                                                }
+                                            ],
+                                            "value": ""
+                                        }
+                                    ],
+                                    "value": ""
+                                }
+                            ],
+                            "value": ""
+                        },
+                        {
+                            "name": "tplinkDot1qVlanNotifications",
+                            "oid": "1.3.6.1.4.1.11863.6.14.2",
+                            "description": "",
+                            "syntax": "",
+                            "access": "",
+                            "type": "",
+                            "children": [
+                                {
+                                    "name": "vlanTableCreate",
+                                    "oid": "1.3.6.1.4.1.11863.6.14.2.1",
+                                    "description": "",
+                                    "syntax": "",
+                                    "access": "",
+                                    "type": "",
+                                    "children": [],
+                                    "value": ""
+                                }
+                            ],
+                            "value": ""
+                        }
+                    ],
+                    "value": ""
+                },
+                {
+                    "name": "tplinkMacVlanMIB",
+                    "oid": "1.3.6.1.4.1.11863.6.15",
+                    "description": "Implementation of the macvlan is mandatory for the swtich.",
+                    "syntax": "",
+                    "access": "",
+                    "type": "",
+                    "children": [
+                        {
+                            "name": "tplinkMacVlanMIBObjects",
+                            "oid": "1.3.6.1.4.1.11863.6.15.1",
+                            "description": "",
+                            "syntax": "",
+                            "access": "",
+                            "type": "",
+                            "children": [
+                                {
+                                    "name": "macVlanConfig",
+                                    "oid": "1.3.6.1.4.1.11863.6.15.1.1",
+                                    "description": "",
+                                    "syntax": "",
+                                    "access": "",
+                                    "type": "",
+                                    "children": [
+                                        {
+                                            "name": "macVlanConfigTable",
+                                            "oid": "1.3.6.1.4.1.11863.6.15.1.1.1",
+                                            "description": "MAC VLAN (Virtual Local Area Network) is the way to classify the VLANs based on MAC Address. A MAC address is relative to a single VLAN ID. The untagged packets and the priority-tagged packets coming from the MAC address will be tagged with this VLAN ID.",
+                                            "syntax": "",
+                                            "access": "no-access",
+                                            "type": "table",
+                                            "children": [
+                                                {
+                                                    "name": "macVlanEntry",
+                                                    "oid": "1.3.6.1.4.1.11863.6.15.1.1.1.1",
+                                                    "description": "An entry contains of the information of a mac vlan.",
+                                                    "syntax": "",
+                                                    "access": "no-access",
+                                                    "type": "row",
+                                                    "children": [
+                                                        {
+                                                            "name": "macAddr",
+                                                            "oid": "1.3.6.1.4.1.11863.6.15.1.1.1.1.1",
+                                                            "description": "Enter the MAC address.",
+                                                            "syntax": "macaddress",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "macDescription",
+                                                            "oid": "1.3.6.1.4.1.11863.6.15.1.1.1.1.2",
+                                                            "description": "Give a description to the MAC address for identification, 1-8 characters.",
+                                                            "syntax": "octet string",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "macVlanId",
+                                                            "oid": "1.3.6.1.4.1.11863.6.15.1.1.1.1.3",
+                                                            "description": "Enter the ID number of the MAC VLAN. This VLAN should be one of the 802.1Q VLANs the ingress port belongs to, 1-4094",
+                                                            "syntax": "integer",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "macVlanStatus",
+                                                            "oid": "1.3.6.1.4.1.11863.6.15.1.1.1.1.4",
+                                                            "description": "the following two values are states: these values may be read or written active(1), the following three values are actions: these values may be written, but are never read createAndGo(4), destroy(6)",
+                                                            "syntax": "tprowstatus",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        }
+                                                    ],
+                                                    "value": ""
+                                                }
+                                            ],
+                                            "value": ""
+                                        }
+                                    ],
+                                    "value": ""
+                                },
+                                {
+                                    "name": "macVlanPort",
+                                    "oid": "1.3.6.1.4.1.11863.6.15.1.2",
+                                    "description": "",
+                                    "syntax": "",
+                                    "access": "",
+                                    "type": "",
+                                    "children": [
+                                        {
+                                            "name": "macVlanPortTable",
+                                            "oid": "1.3.6.1.4.1.11863.6.15.1.2.1",
+                                            "description": "Here you can enable the port for the MAC VLAN feature. Only the port is enabled, can the configured MAC VLAN take effect.",
+                                            "syntax": "",
+                                            "access": "no-access",
+                                            "type": "table",
+                                            "children": [
+                                                {
+                                                    "name": "macVlanPortEntry",
+                                                    "oid": "1.3.6.1.4.1.11863.6.15.1.2.1.1",
+                                                    "description": "An entry contains of the information of a port.",
+                                                    "syntax": "",
+                                                    "access": "no-access",
+                                                    "type": "row",
+                                                    "children": [
+                                                        {
+                                                            "name": "macVlanPortNumber",
+                                                            "oid": "1.3.6.1.4.1.11863.6.15.1.2.1.1.1",
+                                                            "description": "The port id.",
+                                                            "syntax": "octet string",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "macVlanPortEnable",
+                                                            "oid": "1.3.6.1.4.1.11863.6.15.1.2.1.1.2",
+                                                            "description": "Select your desired port for MAC VLAN feature. All the ports are disabled by default 0. Disable 1. Enable Enumeration: 'enable': 1, 'disable': 0.",
+                                                            "syntax": "integer",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "macVlanPortLag",
+                                                            "oid": "1.3.6.1.4.1.11863.6.15.1.2.1.1.3",
+                                                            "description": "Displays the LAG to which the port belongs",
+                                                            "syntax": "octet string",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        }
+                                                    ],
+                                                    "value": ""
+                                                }
+                                            ],
+                                            "value": ""
+                                        }
+                                    ],
+                                    "value": ""
+                                }
+                            ],
+                            "value": ""
+                        },
+                        {
+                            "name": "tplinkMacVlanNotifications",
+                            "oid": "1.3.6.1.4.1.11863.6.15.2",
+                            "description": "",
+                            "syntax": "",
+                            "access": "",
+                            "type": "",
+                            "children": [],
+                            "value": ""
+                        }
+                    ],
+                    "value": ""
+                },
+                {
+                    "name": "tplinkQinqVlanMIB",
+                    "oid": "1.3.6.1.4.1.11863.6.17",
+                    "description": "VLAN-VPN (Virtual Private Network) function, the implement of a simple and flexible Layer 2 VPN technology, allows the packets with VLAN tags of private networks to be encapsulated with VLAN tags of public networks at the network access terminal of the Internet Service Provider. And these packets will be transmitted with double-tag across the public networks.",
+                    "syntax": "",
+                    "access": "",
+                    "type": "",
+                    "children": [
+                        {
+                            "name": "tplinkQinqVlanMIBObjects",
+                            "oid": "1.3.6.1.4.1.11863.6.17.1",
+                            "description": "",
+                            "syntax": "",
+                            "access": "",
+                            "type": "",
+                            "children": [
+                                {
+                                    "name": "vpnConfigVpnMode",
+                                    "oid": "1.3.6.1.4.1.11863.6.17.1.1",
+                                    "description": "Allows you to Enable/Disable the VLAN-VPN function. Enumeration: 'enable': 1, 'disable': 0.",
+                                    "syntax": "integer",
+                                    "access": "read-write",
+                                    "type": "scalar",
+                                    "children": [],
+                                    "value": ""
+                                },
+                                {
+                                    "name": "vpnConfigTpid",
+                                    "oid": "1.3.6.1.4.1.11863.6.17.1.2",
+                                    "description": "Enter the global TPID (Tag protocol identifier).",
+                                    "syntax": "octet string",
+                                    "access": "read-write",
+                                    "type": "scalar",
+                                    "children": [],
+                                    "value": ""
+                                },
+                                {
+                                    "name": "vpnConfigUplinkPortTable",
+                                    "oid": "1.3.6.1.4.1.11863.6.17.1.3",
+                                    "description": "A list of upLink port.",
+                                    "syntax": "",
+                                    "access": "no-access",
+                                    "type": "table",
+                                    "children": [
+                                        {
+                                            "name": "vpnConfigUplinkPortEntry",
+                                            "oid": "1.3.6.1.4.1.11863.6.17.1.3.1",
+                                            "description": "An entry contains of the port for uplink.",
+                                            "syntax": "",
+                                            "access": "no-access",
+                                            "type": "row",
+                                            "children": [
+                                                {
+                                                    "name": "vpnConfigUplinkPortEnable",
+                                                    "oid": "1.3.6.1.4.1.11863.6.17.1.3.1.1",
+                                                    "description": "Select the desired port as the VPN Up-link port. Enumeration: 'enable': 1, 'disable': 0.",
+                                                    "syntax": "integer",
+                                                    "access": "read-write",
+                                                    "type": "column",
+                                                    "children": [],
+                                                    "value": ""
+                                                }
+                                            ],
+                                            "value": ""
+                                        }
+                                    ],
+                                    "value": ""
+                                },
+                                {
+                                    "name": "vpnConfigPort",
+                                    "oid": "1.3.6.1.4.1.11863.6.17.1.4",
+                                    "description": "",
+                                    "syntax": "",
+                                    "access": "",
+                                    "type": "",
+                                    "children": [
+                                        {
+                                            "name": "vpnConfigPortEnableTable",
+                                            "oid": "1.3.6.1.4.1.11863.6.17.1.4.1",
+                                            "description": "A list of port status.",
+                                            "syntax": "",
+                                            "access": "no-access",
+                                            "type": "table",
+                                            "children": [
+                                                {
+                                                    "name": "vpnConfigPortEnableEntry",
+                                                    "oid": "1.3.6.1.4.1.11863.6.17.1.4.1.1",
+                                                    "description": "An entry contains of the port status.",
+                                                    "syntax": "",
+                                                    "access": "no-access",
+                                                    "type": "row",
+                                                    "children": [
+                                                        {
+                                                            "name": "vpnConfigPortEnable",
+                                                            "oid": "1.3.6.1.4.1.11863.6.17.1.4.1.1.1",
+                                                            "description": "Enable VLAN VPN of the select port. Enumeration: 'enable': 1, 'disable': 0.",
+                                                            "syntax": "integer",
+                                                            "access": "read-write",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        }
+                                                    ],
+                                                    "value": ""
+                                                }
+                                            ],
+                                            "value": ""
+                                        }
+                                    ],
+                                    "value": ""
+                                },
+                                {
+                                    "name": "vpnConfigVlanMapping",
+                                    "oid": "1.3.6.1.4.1.11863.6.17.1.5",
+                                    "description": "",
+                                    "syntax": "",
+                                    "access": "",
+                                    "type": "",
+                                    "children": [
+                                        {
+                                            "name": "vpnConfigVlanMappingMode",
+                                            "oid": "1.3.6.1.4.1.11863.6.17.1.5.1",
+                                            "description": "Allows you to Enable/Disable the VLAN mapping function. Enumeration: 'enable': 1, 'disable': 0.",
+                                            "syntax": "integer",
+                                            "access": "read-write",
+                                            "type": "scalar",
+                                            "children": [],
+                                            "value": ""
+                                        },
+                                        {
+                                            "name": "vpnConfigVlanMappingTable",
+                                            "oid": "1.3.6.1.4.1.11863.6.17.1.5.2",
+                                            "description": "A list of vlan Mapping.",
+                                            "syntax": "",
+                                            "access": "no-access",
+                                            "type": "table",
+                                            "children": [
+                                                {
+                                                    "name": "vpnConfigVlanMappingEntry",
+                                                    "oid": "1.3.6.1.4.1.11863.6.17.1.5.2.1",
+                                                    "description": "An entry contains of the port for user auth .",
+                                                    "syntax": "",
+                                                    "access": "no-access",
+                                                    "type": "row",
+                                                    "children": [
+                                                        {
+                                                            "name": "vpnConfigVlanMappingPort",
+                                                            "oid": "1.3.6.1.4.1.11863.6.17.1.5.2.1.1",
+                                                            "description": "",
+                                                            "syntax": "octet string",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "vpnConfigVlanMappingCVlan",
+                                                            "oid": "1.3.6.1.4.1.11863.6.17.1.5.2.1.2",
+                                                            "description": "Enter the ID number of the Customer VLAN.",
+                                                            "syntax": "integer",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "vpnConfigVlanMappingSPVlan",
+                                                            "oid": "1.3.6.1.4.1.11863.6.17.1.5.2.1.3",
+                                                            "description": "Enter the ID number of the Service Provider VLAN.",
+                                                            "syntax": "integer",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "vpnConfigVlanMappingDesc",
+                                                            "oid": "1.3.6.1.4.1.11863.6.17.1.5.2.1.4",
+                                                            "description": "Give a description to the VLAN Mapping entry or leave it blank.",
+                                                            "syntax": "octet string",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "vpnConfigVlanMappingStatus",
+                                                            "oid": "1.3.6.1.4.1.11863.6.17.1.5.2.1.5",
+                                                            "description": "the following values are states: these values may be used as follow: active(1),if the entry is being used. createAndGo(4),not being used destroy(6),destory the entry.",
+                                                            "syntax": "tprowstatus",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        }
+                                                    ],
+                                                    "value": ""
+                                                }
+                                            ],
+                                            "value": ""
+                                        }
+                                    ],
+                                    "value": ""
+                                }
+                            ],
+                            "value": ""
+                        },
+                        {
+                            "name": "tplinkQinqVlanMIBNotifications",
+                            "oid": "1.3.6.1.4.1.11863.6.17.2",
+                            "description": "",
+                            "syntax": "",
+                            "access": "",
+                            "type": "",
+                            "children": [],
+                            "value": ""
+                        }
+                    ],
+                    "value": ""
+                },
+                {
+                    "name": "tplinkPrivateVlanMIB",
+                    "oid": "1.3.6.1.4.1.11863.6.18",
+                    "description": "Implementation of the privlan is mandatory for the swtich.",
+                    "syntax": "",
+                    "access": "",
+                    "type": "",
+                    "children": [
+                        {
+                            "name": "tplinkPrivateVlanMIBObjects",
+                            "oid": "1.3.6.1.4.1.11863.6.18.1",
+                            "description": "",
+                            "syntax": "",
+                            "access": "",
+                            "type": "",
+                            "children": [
+                                {
+                                    "name": "privateVlanTable",
+                                    "oid": "1.3.6.1.4.1.11863.6.18.1.1",
+                                    "description": "A list of private VLAN control entries.",
+                                    "syntax": "",
+                                    "access": "no-access",
+                                    "type": "table",
+                                    "children": [
+                                        {
+                                            "name": "privateVlanEntry",
+                                            "oid": "1.3.6.1.4.1.11863.6.18.1.1.1",
+                                            "description": "PVLAN (Private Virtual Local Area Network) technology is developed for saving VLANs of uplink devices and decrease broadcast message . Private VLAN can enhance performance by conserving bandwidth, and improve security by decreasing broadcast .",
+                                            "syntax": "",
+                                            "access": "no-access",
+                                            "type": "row",
+                                            "children": [
+                                                {
+                                                    "name": "secondaryVlan",
+                                                    "oid": "1.3.6.1.4.1.11863.6.18.1.1.1.1",
+                                                    "description": "The ID number of the Secondary VLAN.",
+                                                    "syntax": "integer",
+                                                    "access": "read-only",
+                                                    "type": "column",
+                                                    "children": [],
+                                                    "value": ""
+                                                },
+                                                {
+                                                    "name": "primaryVlan",
+                                                    "oid": "1.3.6.1.4.1.11863.6.18.1.1.1.2",
+                                                    "description": "The ID number of the Primary VLAN.",
+                                                    "syntax": "integer",
+                                                    "access": "read-only",
+                                                    "type": "column",
+                                                    "children": [],
+                                                    "value": ""
+                                                },
+                                                {
+                                                    "name": "privateVlanPort",
+                                                    "oid": "1.3.6.1.4.1.11863.6.18.1.1.1.3",
+                                                    "description": "Displays the Port number of the Private VLAN.",
+                                                    "syntax": "octet string",
+                                                    "access": "read-only",
+                                                    "type": "column",
+                                                    "children": [],
+                                                    "value": ""
+                                                },
+                                                {
+                                                    "name": "privateVlanType",
+                                                    "oid": "1.3.6.1.4.1.11863.6.18.1.1.1.4",
+                                                    "description": "The Port Type for the port. 1. promiscuous 2. host Enumeration: 'isolated': 2, 'community': 1.",
+                                                    "syntax": "integer",
+                                                    "access": "read-only",
+                                                    "type": "column",
+                                                    "children": [],
+                                                    "value": ""
+                                                },
+                                                {
+                                                    "name": "privateVlanStatus",
+                                                    "oid": "1.3.6.1.4.1.11863.6.18.1.1.1.5",
+                                                    "description": "the following two values are states: these values may be read or written active(1), notInService(2), the following value is a state: this value may be read, but not written notReady(3), the following three values are actions: these values may be written, but are never read createAndGo(4), createAndWait(5), destroy(6)",
+                                                    "syntax": "tprowstatus",
+                                                    "access": "read-only",
+                                                    "type": "column",
+                                                    "children": [],
+                                                    "value": ""
+                                                }
+                                            ],
+                                            "value": ""
+                                        }
+                                    ],
+                                    "value": ""
+                                },
+                                {
+                                    "name": "privateVlanPortTable",
+                                    "oid": "1.3.6.1.4.1.11863.6.18.1.2",
+                                    "description": "A list of vlan port type control entries.",
+                                    "syntax": "",
+                                    "access": "no-access",
+                                    "type": "table",
+                                    "children": [
+                                        {
+                                            "name": "privateVlanPortEntry",
+                                            "oid": "1.3.6.1.4.1.11863.6.18.1.2.1",
+                                            "description": "The PVLAN provides two Port Types for the ports, Promiscuous and Host. Usually, the Promiscuous port is used to connect to uplink devices while the Host port is used to connect to the he terminal hosts, such as PC and Server.",
+                                            "syntax": "",
+                                            "access": "no-access",
+                                            "type": "row",
+                                            "children": [
+                                                {
+                                                    "name": "portNum",
+                                                    "oid": "1.3.6.1.4.1.11863.6.18.1.2.1.1",
+                                                    "description": "The port id.",
+                                                    "syntax": "octet string",
+                                                    "access": "read-only",
+                                                    "type": "column",
+                                                    "children": [],
+                                                    "value": ""
+                                                },
+                                                {
+                                                    "name": "portType",
+                                                    "oid": "1.3.6.1.4.1.11863.6.18.1.2.1.2",
+                                                    "description": "The Port Type for the port. 1. promiscuous 2. host Enumeration: 'promiscuous': 1, 'host': 2.",
+                                                    "syntax": "integer",
+                                                    "access": "read-only",
+                                                    "type": "column",
+                                                    "children": [],
+                                                    "value": ""
+                                                },
+                                                {
+                                                    "name": "portConfigPrimaryVlan",
+                                                    "oid": "1.3.6.1.4.1.11863.6.18.1.2.1.3",
+                                                    "description": "Specify the Primary VLAN the port belongs to.",
+                                                    "syntax": "integer",
+                                                    "access": "read-only",
+                                                    "type": "column",
+                                                    "children": [],
+                                                    "value": ""
+                                                },
+                                                {
+                                                    "name": "portConfigsecondaryVlan",
+                                                    "oid": "1.3.6.1.4.1.11863.6.18.1.2.1.4",
+                                                    "description": "Specify the Secondary VLAN the port belongs to.",
+                                                    "syntax": "integer",
+                                                    "access": "read-only",
+                                                    "type": "column",
+                                                    "children": [],
+                                                    "value": ""
+                                                },
+                                                {
+                                                    "name": "vlanPortStatus",
+                                                    "oid": "1.3.6.1.4.1.11863.6.18.1.2.1.5",
+                                                    "description": "the following two values are states: these values may be read or written active(1), notInService(2), the following value is a state: this value may be read, but not written notReady(3), the following three values are actions: these values may be written, but are never read createAndGo(4), createAndWait(5), destroy(6)",
+                                                    "syntax": "tprowstatus",
+                                                    "access": "read-only",
+                                                    "type": "column",
+                                                    "children": [],
+                                                    "value": ""
+                                                }
+                                            ],
+                                            "value": ""
+                                        }
+                                    ],
+                                    "value": ""
+                                }
+                            ],
+                            "value": ""
+                        },
+                        {
+                            "name": "tplinkPrivateVlanMIBNotifications",
+                            "oid": "1.3.6.1.4.1.11863.6.18.2",
+                            "description": "",
+                            "syntax": "",
+                            "access": "",
+                            "type": "",
+                            "children": [],
+                            "value": ""
+                        }
+                    ],
+                    "value": ""
+                },
+                {
+                    "name": "tplinkQosMIB",
+                    "oid": "1.3.6.1.4.1.11863.6.22",
+                    "description": "Private MIB for system time configuration.",
+                    "syntax": "",
+                    "access": "",
+                    "type": "",
+                    "children": [
+                        {
+                            "name": "tplinkQosMIBObjects",
+                            "oid": "1.3.6.1.4.1.11863.6.22.1",
+                            "description": "",
+                            "syntax": "",
+                            "access": "",
+                            "type": "",
+                            "children": [
+                                {
+                                    "name": "tplinkQosBasicConfig",
+                                    "oid": "1.3.6.1.4.1.11863.6.22.1.1",
+                                    "description": "",
+                                    "syntax": "",
+                                    "access": "",
+                                    "type": "",
+                                    "children": [
+                                        {
+                                            "name": "tpQosBasicConfigTable",
+                                            "oid": "1.3.6.1.4.1.11863.6.22.1.1.1",
+                                            "description": "A list of qos basic config entries. Here you can configure the port priority.",
+                                            "syntax": "",
+                                            "access": "no-access",
+                                            "type": "table",
+                                            "children": [
+                                                {
+                                                    "name": "tpQosBasicConfigEntry",
+                                                    "oid": "1.3.6.1.4.1.11863.6.22.1.1.1.1",
+                                                    "description": "An entry contains of the information of qos basic config.",
+                                                    "syntax": "",
+                                                    "access": "no-access",
+                                                    "type": "row",
+                                                    "children": [
+                                                        {
+                                                            "name": "tpQosBasicConfigPort",
+                                                            "oid": "1.3.6.1.4.1.11863.6.22.1.1.1.1.1",
+                                                            "description": "The physical port number of the switch. ",
+                                                            "syntax": "displaystring",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "tpQosBasicConfigPri",
+                                                            "oid": "1.3.6.1.4.1.11863.6.22.1.1.1.1.2",
+                                                            "description": "0. Cos0 1. Cos1 2. Cos2 3. Cos3 4. Cos4 5. Cos5 6. Cos6 7. Cos7 Specify the priority for the port. Enumeration: 'cos7': 7, 'cos6': 6, 'cos5': 5, 'cos4': 4, 'cos3': 3, 'cos2': 2, 'cos1': 1, 'cos0': 0.",
+                                                            "syntax": "integer",
+                                                            "access": "read-write",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "tpQosBasicConfigLag",
+                                                            "oid": "1.3.6.1.4.1.11863.6.22.1.1.1.1.3",
+                                                            "description": "The LAG number which the port belongs to. ",
+                                                            "syntax": "octet string",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        }
+                                                    ],
+                                                    "value": ""
+                                                }
+                                            ],
+                                            "value": ""
+                                        }
+                                    ],
+                                    "value": ""
+                                },
+                                {
+                                    "name": "tplinkQosScheduler",
+                                    "oid": "1.3.6.1.4.1.11863.6.22.1.2",
+                                    "description": "",
+                                    "syntax": "",
+                                    "access": "",
+                                    "type": "",
+                                    "children": [
+                                        {
+                                            "name": "tpQosSchedulerConfig",
+                                            "oid": "1.3.6.1.4.1.11863.6.22.1.2.1",
+                                            "description": "Here you can select the schedule mode for the switch. 0. SP-Mode: Strict-Priority Mode. In this mode, the queue with higher priority will occupy the whole bandwidth. Packets in the queue with lower priority are sent only when the queue with higher priority is empty. 1. WRR-Mode: Weight Round Robin Mode. In this mode, packets in all the queues are sent in order based on the weight value for each queue. You can also config the TC queues' weight with values 1-127. 2. SP+WRR-Mode: Strict-Priority + Weight Round Robin Mode. In this mode, this switch provides two scheduling groups, SP group and WRR group. Queues in SP group and WRR group are scheduled strictly based on strict-priority mode while the queues inside WRR group follow the WRR mode. In SP+WRR mode, the largest TC queue is in the SP group and the others belong to the WRR group and You can also config the TC queues' weight with values 0-127, value 0 means this TC queue is in SP group. In this way, when scheduling queues, the switch allows TC queues in SP group to occupy the whole bandwidth following the SP mode and the other TC queues in the WRR group will take up the bandwidth according to their ratio. 3. Equ-Mode: Equal-Mode. In this mode, all the queues occupy the bandwidth equally. Enumeration: 'wrr-mode': 1, 'sp-wrr-mode': 2, 'sp-mode': 0, 'equ-mode': 3.",
+                                            "syntax": "integer",
+                                            "access": "read-write",
+                                            "type": "scalar",
+                                            "children": [],
+                                            "value": ""
+                                        },
+                                        {
+                                            "name": "tpQosSchedulerWeightTable",
+                                            "oid": "1.3.6.1.4.1.11863.6.22.1.2.2",
+                                            "description": "A table of the information of qos scheduler queue weight.",
+                                            "syntax": "",
+                                            "access": "no-access",
+                                            "type": "table",
+                                            "children": [
+                                                {
+                                                    "name": "tpQosSchedulerWeightEntry",
+                                                    "oid": "1.3.6.1.4.1.11863.6.22.1.2.2.1",
+                                                    "description": "An entry contains of the information of qos scheduler queue weight config.",
+                                                    "syntax": "",
+                                                    "access": "no-access",
+                                                    "type": "row",
+                                                    "children": [
+                                                        {
+                                                            "name": "tpQosSchedulerTc",
+                                                            "oid": "1.3.6.1.4.1.11863.6.22.1.2.2.1.1",
+                                                            "description": "Indicates the priority level the packets go egress. The priority levels are labeled as TC. Enumeration: 'tc6': 6, 'tc7': 7, 'tc4': 4, 'tc5': 5, 'tc2': 2, 'tc3': 3, 'tc0': 0, 'tc1': 1.",
+                                                            "syntax": "integer",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "tpQosSchedulerWeight",
+                                                            "oid": "1.3.6.1.4.1.11863.6.22.1.2.2.1.2",
+                                                            "description": "Indecates the egress queue weight value. The value ranges from 0 to 127.",
+                                                            "syntax": "integer",
+                                                            "access": "read-write",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        }
+                                                    ],
+                                                    "value": ""
+                                                }
+                                            ],
+                                            "value": ""
+                                        }
+                                    ],
+                                    "value": ""
+                                },
+                                {
+                                    "name": "tplinkQos8021p",
+                                    "oid": "1.3.6.1.4.1.11863.6.22.1.3",
+                                    "description": "",
+                                    "syntax": "",
+                                    "access": "",
+                                    "type": "",
+                                    "children": [
+                                        {
+                                            "name": "tpQos8021pTable",
+                                            "oid": "1.3.6.1.4.1.11863.6.22.1.3.2",
+                                            "description": "A list of qos 8021p entries. Here you can configure 802.1P Priority.",
+                                            "syntax": "",
+                                            "access": "no-access",
+                                            "type": "table",
+                                            "children": [
+                                                {
+                                                    "name": "tpQos8021pEntry",
+                                                    "oid": "1.3.6.1.4.1.11863.6.22.1.3.2.1",
+                                                    "description": "An entry contains of the information of qos 8021p.",
+                                                    "syntax": "",
+                                                    "access": "no-access",
+                                                    "type": "row",
+                                                    "children": [
+                                                        {
+                                                            "name": "tpQos8021pPriTag",
+                                                            "oid": "1.3.6.1.4.1.11863.6.22.1.3.2.1.1",
+                                                            "description": "Indicates the precedence level defined by IEEE802.1P. ",
+                                                            "syntax": "integer",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "tpQos8021pPriLevel",
+                                                            "oid": "1.3.6.1.4.1.11863.6.22.1.3.2.1.2",
+                                                            "description": "Indicates the priority level the packets with tag are mapped to. The priority levels are labeled as TC. Enumeration: 'tc6': 6, 'tc7': 7, 'tc4': 4, 'tc5': 5, 'tc2': 2, 'tc3': 3, 'tc0': 0, 'tc1': 1.",
+                                                            "syntax": "integer",
+                                                            "access": "read-write",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        }
+                                                    ],
+                                                    "value": ""
+                                                }
+                                            ],
+                                            "value": ""
+                                        }
+                                    ],
+                                    "value": ""
+                                },
+                                {
+                                    "name": "tplinkQosDSCP",
+                                    "oid": "1.3.6.1.4.1.11863.6.22.1.4",
+                                    "description": "",
+                                    "syntax": "",
+                                    "access": "",
+                                    "type": "",
+                                    "children": [
+                                        {
+                                            "name": "tpQosDSCPEnable",
+                                            "oid": "1.3.6.1.4.1.11863.6.22.1.4.1",
+                                            "description": "0. disable 1. enable Here you can enable or disable DSCP Priority. Enumeration: 'enable': 1, 'disable': 0.",
+                                            "syntax": "integer",
+                                            "access": "read-write",
+                                            "type": "scalar",
+                                            "children": [],
+                                            "value": ""
+                                        },
+                                        {
+                                            "name": "tpQosDSCPTable",
+                                            "oid": "1.3.6.1.4.1.11863.6.22.1.4.2",
+                                            "description": "A list of qos DSCP entries. Here you can configure DSCP Priority.",
+                                            "syntax": "",
+                                            "access": "no-access",
+                                            "type": "table",
+                                            "children": [
+                                                {
+                                                    "name": "tpQosDSCPEntry",
+                                                    "oid": "1.3.6.1.4.1.11863.6.22.1.4.2.1",
+                                                    "description": "An entry contains of the information of qos DSCP.",
+                                                    "syntax": "",
+                                                    "access": "no-access",
+                                                    "type": "row",
+                                                    "children": [
+                                                        {
+                                                            "name": "tpQosDSCPPriTag",
+                                                            "oid": "1.3.6.1.4.1.11863.6.22.1.4.2.1.1",
+                                                            "description": "Indicates the priority determined by the DS region of IP datagram. It ranges from 0 to 63. ",
+                                                            "syntax": "integer",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "tpQosDSCPPriLevel",
+                                                            "oid": "1.3.6.1.4.1.11863.6.22.1.4.2.1.2",
+                                                            "description": "Indicates the priority level the packets with tag are mapped to. The priority levels are labeled as cos0 - cos7. Enumeration: 'cos7': 7, 'cos6': 6, 'cos5': 5, 'cos4': 4, 'cos3': 3, 'cos2': 2, 'cos1': 1, 'cos0': 0.",
+                                                            "syntax": "integer",
+                                                            "access": "read-write",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        }
+                                                    ],
+                                                    "value": ""
+                                                }
+                                            ],
+                                            "value": ""
+                                        }
+                                    ],
+                                    "value": ""
+                                }
+                            ],
+                            "value": ""
+                        },
+                        {
+                            "name": "tplinkQosNotifications",
+                            "oid": "1.3.6.1.4.1.11863.6.22.2",
+                            "description": "",
+                            "syntax": "",
+                            "access": "",
+                            "type": "",
+                            "children": [],
+                            "value": ""
+                        }
+                    ],
+                    "value": ""
+                },
+                {
+                    "name": "tpSnmpNotificationHostGroups",
+                    "oid": "1.3.6.1.4.1.11863.6.32",
+                    "description": "",
+                    "syntax": "",
+                    "access": "",
+                    "type": "",
+                    "children": [
+                        {
+                            "name": "tpSnmpNotification",
+                            "oid": "1.3.6.1.4.1.11863.6.32.1",
+                            "description": "",
+                            "syntax": "",
+                            "access": "",
+                            "type": "",
+                            "children": [
+                                {
+                                    "name": "tpSnmpNotificationHost",
+                                    "oid": "1.3.6.1.4.1.11863.6.32.1.1",
+                                    "description": "",
+                                    "syntax": "",
+                                    "access": "",
+                                    "type": "",
+                                    "children": [
+                                        {
+                                            "name": "tpSnmpNotificationHostTable",
+                                            "oid": "1.3.6.1.4.1.11863.6.32.1.1.1",
+                                            "description": "A list of SNMP notification host control entries.",
+                                            "syntax": "",
+                                            "access": "no-access",
+                                            "type": "table",
+                                            "children": [
+                                                {
+                                                    "name": "tpSnmpNotificationHostEntry",
+                                                    "oid": "1.3.6.1.4.1.11863.6.32.1.1.1.1",
+                                                    "description": " With the Notification function enabled, the switch can initiatively report to the management station about the important events that occur on the Views, which allows the management station to monitor and process the events in time.",
+                                                    "syntax": "",
+                                                    "access": "no-access",
+                                                    "type": "row",
+                                                    "children": [
+                                                        {
+                                                            "name": "tpSnmpNotificationHostIpAddr",
+                                                            "oid": "1.3.6.1.4.1.11863.6.32.1.1.1.1.1",
+                                                            "description": "IP Address of the management Host.",
+                                                            "syntax": "ipaddress",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "tpSnmpNotificationHostUserName",
+                                                            "oid": "1.3.6.1.4.1.11863.6.32.1.1.1.1.2",
+                                                            "description": "The User name of the management station.",
+                                                            "syntax": "octet string",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "tpSnmpNotificationHostUDPPort",
+                                                            "oid": "1.3.6.1.4.1.11863.6.32.1.1.1.1.3",
+                                                            "description": " The number of the UDP port used to send notifications. The UDP port functions with the IP address for the notification sending. The default is 162. ",
+                                                            "syntax": "integer",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "tpSnmpNotificationHostSecMode",
+                                                            "oid": "1.3.6.1.4.1.11863.6.32.1.1.1.1.4",
+                                                            "description": "The Security Model of the management station. v1(1),SNMPv1 is defined for the notify. v2c(2),SNMPv2c is defined for the notify. v3(3),SNMPv3 is defined for the notify. Enumeration: 'v2c': 2, 'v1': 1, 'v3': 3.",
+                                                            "syntax": "integer",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "tpSnmpNotificationHostSecLev",
+                                                            "oid": "1.3.6.1.4.1.11863.6.32.1.1.1.1.5",
+                                                            "description": "The Security Level for the SNMP v3 User. noAuthNoPriv(1),No authentication and no privacy security level are used. authNoPriv(2),Only the authentication security level is used. authPriv(3),Both the authentication and the privacy security levels are used. Enumeration: 'noAuthNoPriv': 1, 'authPriv': 3, 'authNoPriv': 2.",
+                                                            "syntax": "integer",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "tpSnmpNotificationHostNtfyType",
+                                                            "oid": "1.3.6.1.4.1.11863.6.32.1.1.1.1.6",
+                                                            "description": "The type for the notifications. trap(1),Indicates traps are sent. inform(2),Indicates informs are sent. The Inform type has a higher security than the Trap type. Enumeration: 'inform': 2, 'trap': 1.",
+                                                            "syntax": "integer",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "tpSnmpNotificationHostRetry",
+                                                            "oid": "1.3.6.1.4.1.11863.6.32.1.1.1.1.7",
+                                                            "description": " Specify the amount of times the switch resends an inform request. The switch will resend the inform request if it doesn't get the response from the management station during the Timeout interval, and it will terminate resending the inform request if the resending times reach the specified Retry times. Its value range is 1-255.",
+                                                            "syntax": "integer",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "tpSnmpNotificationHostTimeout",
+                                                            "oid": "1.3.6.1.4.1.11863.6.32.1.1.1.1.8",
+                                                            "description": " Specify the maximum time for the switch to wait for the response from the management station before resending a request. Its value range is 1-3600.",
+                                                            "syntax": "integer",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "tpSnmpNotificationHostRowStatus",
+                                                            "oid": "1.3.6.1.4.1.11863.6.32.1.1.1.1.9",
+                                                            "description": "The status column has three defined values: - `active(1)', which indicates that the conceptual row is available for using by the managed device; - `createAndGo(4)', which is supplied by a management station wishing to create a new instance of a conceptual row and to have its status automatically set to active, making it available for using by the managed device; - `destroy(6)', which is supplied by a management station wishing to delete all of the instances associated with an existing conceptual row.",
+                                                            "syntax": "tprowstatus",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        }
+                                                    ],
+                                                    "value": ""
+                                                }
+                                            ],
+                                            "value": ""
+                                        },
+                                        {
+                                            "name": "tpSnmpNotificationHostV6Table",
+                                            "oid": "1.3.6.1.4.1.11863.6.32.1.1.2",
+                                            "description": "A list of SNMP notification host control entries, supports IPV6.",
+                                            "syntax": "",
+                                            "access": "no-access",
+                                            "type": "table",
+                                            "children": [
+                                                {
+                                                    "name": "tpSnmpNotificationHostV6Entry",
+                                                    "oid": "1.3.6.1.4.1.11863.6.32.1.1.2.1",
+                                                    "description": " With the Notification function enabled, the switch can initiatively report to the management station about the important events that occur on the Views, which allows the management station to monitor and process the events in time.",
+                                                    "syntax": "",
+                                                    "access": "no-access",
+                                                    "type": "row",
+                                                    "children": [
+                                                        {
+                                                            "name": "tpSnmpNotificationHostV6Index",
+                                                            "oid": "1.3.6.1.4.1.11863.6.32.1.1.2.1.1",
+                                                            "description": "The index to the conceptual row of the table. Negative numbers are not allowed. There are objects defined that point to conceptual rows of this table with this index value. Zero is used to denote that no corresponding row exists. Index values are assigned by the agent, and should not be reused but should continue to increase in value.",
+                                                            "syntax": "integer",
+                                                            "access": "no-access",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "tpSnmpNotificationHostV6IpMode",
+                                                            "oid": "1.3.6.1.4.1.11863.6.32.1.1.2.1.2",
+                                                            "description": "The type of IP address.Type is IPv4 or IPv6",
+                                                            "syntax": "inetaddresstype",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "tpSnmpNotificationHostV6IpAddr",
+                                                            "oid": "1.3.6.1.4.1.11863.6.32.1.1.2.1.3",
+                                                            "description": "IP Address of the management Host. Just input like a string.",
+                                                            "syntax": "inetaddress",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "tpSnmpNotificationHostV6UserName",
+                                                            "oid": "1.3.6.1.4.1.11863.6.32.1.1.2.1.4",
+                                                            "description": "The User name of the management station.",
+                                                            "syntax": "octet string",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "tpSnmpNotificationHostV6UDPPort",
+                                                            "oid": "1.3.6.1.4.1.11863.6.32.1.1.2.1.5",
+                                                            "description": " The number of the UDP port used to send notifications. The UDP port functions with the IP address for the notification sending. The default is 162. ",
+                                                            "syntax": "integer",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "tpSnmpNotificationHostV6SecMode",
+                                                            "oid": "1.3.6.1.4.1.11863.6.32.1.1.2.1.6",
+                                                            "description": "The Security Model of the management station. v1(1),SNMPv1 is defined for the notify. v2c(2),SNMPv2c is defined for the notify. v3(3),SNMPv3 is defined for the notify. Enumeration: 'v2c': 2, 'v1': 1, 'v3': 3.",
+                                                            "syntax": "integer",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "tpSnmpNotificationHostV6SecLev",
+                                                            "oid": "1.3.6.1.4.1.11863.6.32.1.1.2.1.7",
+                                                            "description": "The Security Level for the SNMP v3 User. noAuthNoPriv(1),No authentication and no privacy security level are used. authNoPriv(2),Only the authentication security level is used. authPriv(3),Both the authentication and the privacy security levels are used. Enumeration: 'noAuthNoPriv': 1, 'authPriv': 3, 'authNoPriv': 2.",
+                                                            "syntax": "integer",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "tpSnmpNotificationHostV6NtfyType",
+                                                            "oid": "1.3.6.1.4.1.11863.6.32.1.1.2.1.8",
+                                                            "description": "The type for the notifications. trap(1),Indicates traps are sent. inform(2),Indicates informs are sent. The Inform type has a higher security than the Trap type. Enumeration: 'inform': 2, 'trap': 1.",
+                                                            "syntax": "integer",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "tpSnmpNotificationHostV6Retry",
+                                                            "oid": "1.3.6.1.4.1.11863.6.32.1.1.2.1.9",
+                                                            "description": " Specify the amount of times the switch resends an inform request. The switch will resend the inform request if it doesn't get the response from the management station during the Timeout interval, and it will terminate resending the inform request if the resending times reach the specified Retry times. Its value range is 1-255.",
+                                                            "syntax": "integer",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "tpSnmpNotificationHostV6Timeout",
+                                                            "oid": "1.3.6.1.4.1.11863.6.32.1.1.2.1.10",
+                                                            "description": " Specify the maximum time for the switch to wait for the response from the management station before resending a request. Its value range is 1-3600.",
+                                                            "syntax": "integer",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "tpSnmpNotificationHostV6RowStatus",
+                                                            "oid": "1.3.6.1.4.1.11863.6.32.1.1.2.1.11",
+                                                            "description": "The status column has three defined values: - `active(1)', which indicates that the conceptual row is available for using by the managed device; - `createAndGo(4)', which is supplied by a management station wishing to create a new instance of a conceptual row and to have its status automatically set to active, making it available for using by the managed device; - `destroy(6)', which is supplied by a management station wishing to delete all of the instances associated with an existing conceptual row.",
+                                                            "syntax": "tprowstatus",
+                                                            "access": "read-only",
+                                                            "type": "column",
+                                                            "children": [],
+                                                            "value": ""
+                                                        }
+                                                    ],
+                                                    "value": ""
+                                                }
+                                            ],
+                                            "value": ""
+                                        }
+                                    ],
+                                    "value": ""
+                                }
+                            ],
+                            "value": ""
+                        }
+                    ],
+                    "value": ""
+                },
+                {
+                    "name": "tplinkPowerOverEthernetMIB",
+                    "oid": "1.3.6.1.4.1.11863.6.56",
+                    "description": "",
+                    "syntax": "",
+                    "access": "",
+                    "type": "",
+                    "children": [
+                        {
+                            "name": "tplinkPoeMIBObjects",
+                            "oid": "1.3.6.1.4.1.11863.6.56.1",
+                            "description": "",
+                            "syntax": "",
+                            "access": "",
+                            "type": "",
+                            "children": [
+                                {
+                                    "name": "tpPoeConfig",
+                                    "oid": "1.3.6.1.4.1.11863.6.56.1.1",
+                                    "description": "",
+                                    "syntax": "",
+                                    "access": "",
+                                    "type": "",
+                                    "children": [
+                                        {
+                                            "name": "tpPoeGlobal",
+                                            "oid": "1.3.6.1.4.1.11863.6.56.1.1.1",
+                                            "description": "",
+                                            "syntax": "",
+                                            "access": "",
+                                            "type": "",
+                                            "children": [
+                                                {
+                                                    "name": "tpSystemPowerLimit",
+                                                    "oid": "1.3.6.1.4.1.11863.6.56.1.1.1.1",
+                                                    "description": "",
+                                                    "syntax": "",
+                                                    "access": "",
+                                                    "type": "",
+                                                    "children": [],
+                                                    "value": ""
+                                                },
+                                                {
+                                                    "name": "tpPowerDisconnectMethod",
+                                                    "oid": "1.3.6.1.4.1.11863.6.56.1.1.1.2",
+                                                    "description": "",
+                                                    "syntax": "",
+                                                    "access": "",
+                                                    "type": "",
+                                                    "children": [],
+                                                    "value": ""
+                                                },
+                                                {
+                                                    "name": "tpSystemPowerConsumption",
+                                                    "oid": "1.3.6.1.4.1.11863.6.56.1.1.1.3",
+                                                    "description": "",
+                                                    "syntax": "",
+                                                    "access": "",
+                                                    "type": "",
+                                                    "children": [],
+                                                    "value": ""
+                                                },
+                                                {
+                                                    "name": "tpSystemPowerRemain",
+                                                    "oid": "1.3.6.1.4.1.11863.6.56.1.1.1.4",
+                                                    "description": "",
+                                                    "syntax": "",
+                                                    "access": "",
+                                                    "type": "",
+                                                    "children": [],
+                                                    "value": ""
+                                                }
+                                            ],
+                                            "value": ""
+                                        },
+                                        {
+                                            "name": "tpPoePort",
+                                            "oid": "1.3.6.1.4.1.11863.6.56.1.1.2",
+                                            "description": "",
+                                            "syntax": "",
+                                            "access": "",
+                                            "type": "",
+                                            "children": [
+                                                {
+                                                    "name": "tpPoePortConfigTable",
+                                                    "oid": "1.3.6.1.4.1.11863.6.56.1.1.2.1",
+                                                    "description": "",
+                                                    "syntax": "",
+                                                    "access": "",
+                                                    "type": "",
+                                                    "children": [
+                                                        {
+                                                            "name": "tpPoePortConfigEntry",
+                                                            "oid": "1.3.6.1.4.1.11863.6.56.1.1.2.1.1",
+                                                            "description": "",
+                                                            "syntax": "",
+                                                            "access": "",
+                                                            "type": "",
+                                                            "children": [
+                                                                {
+                                                                    "name": "tpPoePortIndex",
+                                                                    "oid": "1.3.6.1.4.1.11863.6.56.1.1.2.1.1.1",
+                                                                    "description": "",
+                                                                    "syntax": "",
+                                                                    "access": "",
+                                                                    "type": "",
+                                                                    "children": [],
+                                                                    "value": ""
+                                                                },
+                                                                {
+                                                                    "name": "tpPoePortStatus",
+                                                                    "oid": "1.3.6.1.4.1.11863.6.56.1.1.2.1.1.2",
+                                                                    "description": "",
+                                                                    "syntax": "",
+                                                                    "access": "",
+                                                                    "type": "",
+                                                                    "children": [],
+                                                                    "value": ""
+                                                                },
+                                                                {
+                                                                    "name": "tpPoePriority",
+                                                                    "oid": "1.3.6.1.4.1.11863.6.56.1.1.2.1.1.3",
+                                                                    "description": "",
+                                                                    "syntax": "",
+                                                                    "access": "",
+                                                                    "type": "",
+                                                                    "children": [],
+                                                                    "value": ""
+                                                                },
+                                                                {
+                                                                    "name": "tpPoePowerLimit",
+                                                                    "oid": "1.3.6.1.4.1.11863.6.56.1.1.2.1.1.4",
+                                                                    "description": "",
+                                                                    "syntax": "",
+                                                                    "access": "",
+                                                                    "type": "",
+                                                                    "children": [],
+                                                                    "value": ""
+                                                                },
+                                                                {
+                                                                    "name": "tpPoePortTimeRangeName",
+                                                                    "oid": "1.3.6.1.4.1.11863.6.56.1.1.2.1.1.5",
+                                                                    "description": "",
+                                                                    "syntax": "",
+                                                                    "access": "",
+                                                                    "type": "",
+                                                                    "children": [],
+                                                                    "value": ""
+                                                                },
+                                                                {
+                                                                    "name": "tpPoePortProfileName",
+                                                                    "oid": "1.3.6.1.4.1.11863.6.56.1.1.2.1.1.6",
+                                                                    "description": "",
+                                                                    "syntax": "",
+                                                                    "access": "",
+                                                                    "type": "",
+                                                                    "children": [],
+                                                                    "value": ""
+                                                                },
+                                                                {
+                                                                    "name": "tpPoePower",
+                                                                    "oid": "1.3.6.1.4.1.11863.6.56.1.1.2.1.1.7",
+                                                                    "description": "",
+                                                                    "syntax": "",
+                                                                    "access": "",
+                                                                    "type": "",
+                                                                    "children": [],
+                                                                    "value": ""
+                                                                },
+                                                                {
+                                                                    "name": "tpPoeCurrent",
+                                                                    "oid": "1.3.6.1.4.1.11863.6.56.1.1.2.1.1.8",
+                                                                    "description": "",
+                                                                    "syntax": "",
+                                                                    "access": "",
+                                                                    "type": "",
+                                                                    "children": [],
+                                                                    "value": ""
+                                                                },
+                                                                {
+                                                                    "name": "tpPoeVoltage",
+                                                                    "oid": "1.3.6.1.4.1.11863.6.56.1.1.2.1.1.9",
+                                                                    "description": "",
+                                                                    "syntax": "",
+                                                                    "access": "",
+                                                                    "type": "",
+                                                                    "children": [],
+                                                                    "value": ""
+                                                                },
+                                                                {
+                                                                    "name": "tpPoeClass",
+                                                                    "oid": "1.3.6.1.4.1.11863.6.56.1.1.2.1.1.10",
+                                                                    "description": "",
+                                                                    "syntax": "",
+                                                                    "access": "",
+                                                                    "type": "",
+                                                                    "children": [],
+                                                                    "value": ""
+                                                                },
+                                                                {
+                                                                    "name": "tpPoePowerStatus",
+                                                                    "oid": "1.3.6.1.4.1.11863.6.56.1.1.2.1.1.11",
+                                                                    "description": "",
+                                                                    "syntax": "",
+                                                                    "access": "",
+                                                                    "type": "",
+                                                                    "children": [],
+                                                                    "value": ""
+                                                                }
+                                                            ],
+                                                            "value": ""
+                                                        }
+                                                    ],
+                                                    "value": ""
+                                                }
+                                            ],
+                                            "value": ""
+                                        }
+                                    ],
+                                    "value": ""
+                                },
+                                {
+                                    "name": "tpPoeProfile",
+                                    "oid": "1.3.6.1.4.1.11863.6.56.1.2",
+                                    "description": "",
+                                    "syntax": "",
+                                    "access": "",
+                                    "type": "",
+                                    "children": [
+                                        {
+                                            "name": "tpPoeProfileTable",
+                                            "oid": "1.3.6.1.4.1.11863.6.56.1.2.1",
+                                            "description": "",
+                                            "syntax": "",
+                                            "access": "",
+                                            "type": "",
+                                            "children": [
+                                                {
+                                                    "name": "tpPoeProfileEntry",
+                                                    "oid": "1.3.6.1.4.1.11863.6.56.1.2.1.1",
+                                                    "description": "",
+                                                    "syntax": "",
+                                                    "access": "",
+                                                    "type": "",
+                                                    "children": [
+                                                        {
+                                                            "name": "tpPoeProfileIndex",
+                                                            "oid": "1.3.6.1.4.1.11863.6.56.1.2.1.1.1",
+                                                            "description": "",
+                                                            "syntax": "",
+                                                            "access": "",
+                                                            "type": "",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "tpPoeProfileName",
+                                                            "oid": "1.3.6.1.4.1.11863.6.56.1.2.1.1.2",
+                                                            "description": "",
+                                                            "syntax": "",
+                                                            "access": "",
+                                                            "type": "",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "tpPoeProfilePortStatus",
+                                                            "oid": "1.3.6.1.4.1.11863.6.56.1.2.1.1.3",
+                                                            "description": "",
+                                                            "syntax": "",
+                                                            "access": "",
+                                                            "type": "",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "tpPoeProfilePriority",
+                                                            "oid": "1.3.6.1.4.1.11863.6.56.1.2.1.1.4",
+                                                            "description": "",
+                                                            "syntax": "",
+                                                            "access": "",
+                                                            "type": "",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "tpPoeProfilePowerLimit",
+                                                            "oid": "1.3.6.1.4.1.11863.6.56.1.2.1.1.5",
+                                                            "description": "",
+                                                            "syntax": "",
+                                                            "access": "",
+                                                            "type": "",
+                                                            "children": [],
+                                                            "value": ""
+                                                        },
+                                                        {
+                                                            "name": "tpPoeProfileStatus",
+                                                            "oid": "1.3.6.1.4.1.11863.6.56.1.2.1.1.6",
+                                                            "description": "",
+                                                            "syntax": "",
+                                                            "access": "",
+                                                            "type": "",
+                                                            "children": [],
+                                                            "value": ""
+                                                        }
+                                                    ],
+                                                    "value": ""
+                                                }
+                                            ],
+                                            "value": ""
+                                        }
+                                    ],
+                                    "value": ""
+                                },
+                                {
+                                    "name": "tpPoeRecovery",
+                                    "oid": "1.3.6.1.4.1.11863.6.56.1.3",
+                                    "description": "",
+                                    "syntax": "",
+                                    "access": "",
+                                    "type": "",
+                                    "children": [
+                                        {
+                                            "name": "tpPoeRecoveryGlobal",
+                                            "oid": "1.3.6.1.4.1.11863.6.56.1.3.1",
+                                            "description": "",
+                                            "syntax": "",
+                                            "access": "",
+                                            "type": "",
+                                            "children": [
+                                                {
+                                                    "name": "tpPoeRecoveryGlobalStatus",
+                                                    "oid": "1.3.6.1.4.1.11863.6.56.1.3.1.1",
+                                                    "description": "",
+                                                    "syntax": "",
+                                                    "access": "",
+                                                    "type": "",
+                                                    "children": [],
+                                                    "value": ""
+                                                }
+                                            ],
+                                            "value": ""
+                                        },
+                                        {
+                                            "name": "tpPoeRecoveryPort",
+                                            "oid": "1.3.6.1.4.1.11863.6.56.1.3.2",
+                                            "description": "",
+                                            "syntax": "",
+                                            "access": "",
+                                            "type": "",
+                                            "children": [
+                                                {
+                                                    "name": "tpPoeRecoveryPortTable",
+                                                    "oid": "1.3.6.1.4.1.11863.6.56.1.3.2.1",
+                                                    "description": "",
+                                                    "syntax": "",
+                                                    "access": "",
+                                                    "type": "",
+                                                    "children": [
+                                                        {
+                                                            "name": "tpPoeRecoveryPortEntry",
+                                                            "oid": "1.3.6.1.4.1.11863.6.56.1.3.2.1.1",
+                                                            "description": "",
+                                                            "syntax": "",
+                                                            "access": "",
+                                                            "type": "",
+                                                            "children": [
+                                                                {
+                                                                    "name": "tpPoeRecoveryIp",
+                                                                    "oid": "1.3.6.1.4.1.11863.6.56.1.3.2.1.1.2",
+                                                                    "description": "",
+                                                                    "syntax": "",
+                                                                    "access": "",
+                                                                    "type": "",
+                                                                    "children": [],
+                                                                    "value": ""
+                                                                },
+                                                                {
+                                                                    "name": "tpPoeRecoveryStartup",
+                                                                    "oid": "1.3.6.1.4.1.11863.6.56.1.3.2.1.1.3",
+                                                                    "description": "",
+                                                                    "syntax": "",
+                                                                    "access": "",
+                                                                    "type": "",
+                                                                    "children": [],
+                                                                    "value": ""
+                                                                },
+                                                                {
+                                                                    "name": "tpPoeRecoveryInterval",
+                                                                    "oid": "1.3.6.1.4.1.11863.6.56.1.3.2.1.1.4",
+                                                                    "description": "",
+                                                                    "syntax": "",
+                                                                    "access": "",
+                                                                    "type": "",
+                                                                    "children": [],
+                                                                    "value": ""
+                                                                },
+                                                                {
+                                                                    "name": "tpPoeRecoveryRetry",
+                                                                    "oid": "1.3.6.1.4.1.11863.6.56.1.3.2.1.1.5",
+                                                                    "description": "",
+                                                                    "syntax": "",
+                                                                    "access": "",
+                                                                    "type": "",
+                                                                    "children": [],
+                                                                    "value": ""
+                                                                },
+                                                                {
+                                                                    "name": "tpPoeRecoveryBreak",
+                                                                    "oid": "1.3.6.1.4.1.11863.6.56.1.3.2.1.1.6",
+                                                                    "description": "",
+                                                                    "syntax": "",
+                                                                    "access": "",
+                                                                    "type": "",
+                                                                    "children": [],
+                                                                    "value": ""
+                                                                },
+                                                                {
+                                                                    "name": "tpPoeRecoveryStatus",
+                                                                    "oid": "1.3.6.1.4.1.11863.6.56.1.3.2.1.1.7",
+                                                                    "description": "",
+                                                                    "syntax": "",
+                                                                    "access": "",
+                                                                    "type": "",
+                                                                    "children": [],
+                                                                    "value": ""
+                                                                },
+                                                                {
+                                                                    "name": "tpPoeRecoveryFailure",
+                                                                    "oid": "1.3.6.1.4.1.11863.6.56.1.3.2.1.1.8",
+                                                                    "description": "",
+                                                                    "syntax": "",
+                                                                    "access": "",
+                                                                    "type": "",
+                                                                    "children": [],
+                                                                    "value": ""
+                                                                },
+                                                                {
+                                                                    "name": "tpPoeRecoveryRestart",
+                                                                    "oid": "1.3.6.1.4.1.11863.6.56.1.3.2.1.1.9",
+                                                                    "description": "",
+                                                                    "syntax": "",
+                                                                    "access": "",
+                                                                    "type": "",
+                                                                    "children": [],
+                                                                    "value": ""
+                                                                },
+                                                                {
+                                                                    "name": "tpPoeRecoveryTotal",
+                                                                    "oid": "1.3.6.1.4.1.11863.6.56.1.3.2.1.1.10",
+                                                                    "description": "",
+                                                                    "syntax": "",
+                                                                    "access": "",
+                                                                    "type": "",
+                                                                    "children": [],
+                                                                    "value": ""
+                                                                }
+                                                            ],
+                                                            "value": ""
+                                                        }
+                                                    ],
+                                                    "value": ""
+                                                }
+                                            ],
+                                            "value": ""
+                                        }
+                                    ],
+                                    "value": ""
+                                },
+                                {
+                                    "name": "tpPoeExtend",
+                                    "oid": "1.3.6.1.4.1.11863.6.56.1.4",
+                                    "description": "",
+                                    "syntax": "",
+                                    "access": "",
+                                    "type": "",
+                                    "children": [
+                                        {
+                                            "name": "tpPoeExtendPort",
+                                            "oid": "1.3.6.1.4.1.11863.6.56.1.4.1",
+                                            "description": "",
+                                            "syntax": "",
+                                            "access": "",
+                                            "type": "",
+                                            "children": [
+                                                {
+                                                    "name": "tpPoeExtendPortTable",
+                                                    "oid": "1.3.6.1.4.1.11863.6.56.1.4.1.1",
+                                                    "description": "",
+                                                    "syntax": "",
+                                                    "access": "",
+                                                    "type": "",
+                                                    "children": [
+                                                        {
+                                                            "name": "tpPoeExtendPortEntry",
+                                                            "oid": "1.3.6.1.4.1.11863.6.56.1.4.1.1.1",
+                                                            "description": "",
+                                                            "syntax": "",
+                                                            "access": "",
+                                                            "type": "",
+                                                            "children": [
+                                                                {
+                                                                    "name": "tpPoeExtendStatus",
+                                                                    "oid": "1.3.6.1.4.1.11863.6.56.1.4.1.1.1.2",
+                                                                    "description": "",
+                                                                    "syntax": "",
+                                                                    "access": "",
+                                                                    "type": "",
+                                                                    "children": [],
+                                                                    "value": ""
+                                                                }
+                                                            ],
+                                                            "value": ""
+                                                        }
+                                                    ],
+                                                    "value": ""
+                                                }
+                                            ],
+                                            "value": ""
+                                        }
+                                    ],
+                                    "value": ""
+                                }
+                            ],
+                            "value": ""
+                        },
+                        {
+                            "name": "tplinkPoeNotifications",
+                            "oid": "1.3.6.1.4.1.11863.6.56.2",
+                            "description": "",
+                            "syntax": "",
+                            "access": "",
+                            "type": "",
+                            "children": [
+                                {
+                                    "name": "tpPoePortPowerChange",
+                                    "oid": "1.3.6.1.4.1.11863.6.56.2.1",
+                                    "description": "",
+                                    "syntax": "",
+                                    "access": "",
+                                    "type": "",
+                                    "children": [],
+                                    "value": ""
+                                },
+                                {
+                                    "name": "tpPoePortPowerOverLoading",
+                                    "oid": "1.3.6.1.4.1.11863.6.56.2.2",
+                                    "description": "",
+                                    "syntax": "",
+                                    "access": "",
+                                    "type": "",
+                                    "children": [],
+                                    "value": ""
+                                },
+                                {
+                                    "name": "tpPoePortShortCircuit",
+                                    "oid": "1.3.6.1.4.1.11863.6.56.2.3",
+                                    "description": "",
+                                    "syntax": "",
+                                    "access": "",
+                                    "type": "",
+                                    "children": [],
+                                    "value": ""
+                                },
+                                {
+                                    "name": "tpPoePortPowerOver30Watts",
+                                    "oid": "1.3.6.1.4.1.11863.6.56.2.4",
+                                    "description": "",
+                                    "syntax": "",
+                                    "access": "",
+                                    "type": "",
+                                    "children": [],
+                                    "value": ""
+                                },
+                                {
+                                    "name": "tpPoePortPowerDeny",
+                                    "oid": "1.3.6.1.4.1.11863.6.56.2.5",
+                                    "description": "",
+                                    "syntax": "",
+                                    "access": "",
+                                    "type": "",
+                                    "children": [],
+                                    "value": ""
+                                },
+                                {
+                                    "name": "tpPoeThermalShutdown",
+                                    "oid": "1.3.6.1.4.1.11863.6.56.2.6",
+                                    "description": "",
+                                    "syntax": "",
+                                    "access": "",
+                                    "type": "",
+                                    "children": [],
+                                    "value": ""
+                                },
+                                {
+                                    "name": "tpPoeOverMaxPowerBudget",
+                                    "oid": "1.3.6.1.4.1.11863.6.56.2.7",
+                                    "description": "",
+                                    "syntax": "",
+                                    "access": "",
+                                    "type": "",
+                                    "children": [],
+                                    "value": ""
+                                }
+                            ],
+                            "value": ""
+                        }
+                    ],
+                    "value": ""
+                }
+            ],
+            "value": ""
+        }
+    ],
+    "value": ""
+}
