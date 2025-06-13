@@ -252,8 +252,7 @@ public class SnmpWalk {
                     }
                 }
             }
-            // System.out.println("Smart walk (v2c + fallback) completed with " +
-            // results.size() + " OIDs");
+
         } finally {
             snmp.close();
             transport.close();
@@ -353,7 +352,6 @@ public class SnmpWalk {
                     break;
             }
 
-            // fallback GETNEXT từ 1.3.6.1.4.1 nếu cần
             if ("1.3.6.1.4.1".startsWith(rootOid) && !seenOids.contains("1.3.6.1.4.1")) {
                 System.out.println("→ Fallback walk from 1.3.6.1.4.1");
 
@@ -411,16 +409,4 @@ public class SnmpWalk {
         return record;
     }
 
-    // public static void main(String[] args) {
-    // SnmpWalk snmpWalk = new SnmpWalk();
-    // try {
-    // SnmpRecord[] records = snmpWalk.walkAsRecords("127.0.0.1", "public", "1.3.6",
-    // 161);
-    // for (SnmpRecord snmpRecord : records) {
-    // System.out.println(snmpRecord.getOid() + " = " + snmpRecord.getValue());
-    // }
-    // } catch (IOException e) {
-    // e.printStackTrace();
-    // }
-    // }
 }

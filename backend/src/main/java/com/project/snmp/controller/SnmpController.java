@@ -38,12 +38,6 @@ public class SnmpController {
             @RequestParam(value = "privProtocol", required = false, defaultValue = "") String privProtocol,
             @RequestParam(value = "securityLevel", required = false, defaultValue = "1") String securityLevel) {
 
-        // if (version.equals("3") && (securityLevel.equals("3")) && (authUsername ==
-        // null || authPass == null || privPass == null || authProtocol == null ||
-        // privProtocol == null)) {
-        // throw new IllegalArgumentException("SNMPv3 requires all authentication
-        // parameters to be provided.");
-        // }
         System.out.println("deviceIP: " + deviceIp);
         try {
             if (version.equals("2c") || version.equals("1")) {
@@ -79,12 +73,6 @@ public class SnmpController {
             @RequestParam(value = "privProtocol", required = false, defaultValue = "") String privProtocol,
             @RequestParam(value = "securityLevel", required = false, defaultValue = "1") String securityLevel) {
 
-        // if (version.equals("3") && (securityLevel.equals("3")) && (authUsername ==
-        // null || authPass == null
-        // || privPass == null || authProtocol == null || privProtocol == null)) {
-        // throw new IllegalArgumentException("SNMPv3 requires all authentication
-        // parameters to be provided.");
-        // }
         System.out.println("deviceIP: " + deviceIp);
         try {
             SnmpRecord[] records = new SnmpRecord[1];
@@ -119,12 +107,6 @@ public class SnmpController {
             @RequestParam(value = "privProtocol", required = false, defaultValue = "") String privProtocol,
             @RequestParam(value = "securityLevel", required = false, defaultValue = "1") String securityLevel) {
 
-        // if (version.equals("3") && (securityLevel.equals("3")) && (authUsername ==
-        // null || authPass == null
-        // || privPass == null || authProtocol == null || privProtocol == null)) {
-        // throw new IllegalArgumentException("SNMPv3 requires all authentication
-        // parameters to be provided.");
-        // }
         try {
             if (version.equals("2c") || version.equals("1")) {
                 SnmpRecord[] records = snmpMainService.getSnmpWalkValue(deviceIp, community, oid, port, version);
@@ -156,12 +138,6 @@ public class SnmpController {
             @RequestParam(value = "privProtocol", required = false, defaultValue = "") String privProtocol,
             @RequestParam(value = "securityLevel", required = false, defaultValue = "1") String securityLevel) {
 
-        // if (version.equals("3") && (securityLevel.equals("3")) && (authUsername ==
-        // null || authPass == null
-        // || privPass == null || authProtocol == null || privProtocol == null)) {
-        // throw new IllegalArgumentException("SNMPv3 requires all authentication
-        // parameters to be provided.");
-        // }
         try {
             if (version.equals("2c") || version.equals("1")) {
                 SnmpRecord[] records = snmpMainService.getSnmpBulkValue(deviceIp, community, oid, port, version);

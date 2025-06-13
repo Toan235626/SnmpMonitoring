@@ -47,12 +47,12 @@ public class DeviceScanController {
 
     @PostMapping("/scan-subnet")
     public List<Device> scanSelectedSubnet(
-            @RequestParam(value = "mode", required = false, defaultValue = "broadcast") String mode,
+            @RequestParam(value = "mode", required = false, defaultValue = "unicast") String mode,
             @RequestParam("baseIp") String baseIp,
             @RequestParam(value = "community", required = false, defaultValue = "public") String community,
             @RequestParam(value = "prefix", required = false, defaultValue = "24") String prefix,
             @RequestParam(value = "port", required = false, defaultValue = "161") int port,
-            @RequestParam("version") String version,
+            @RequestParam(value = "version", required = false, defaultValue = "2c") String version,
             @RequestParam(value = "authUsername", required = false) String authUsername,
             @RequestParam(value = "authPass", required = false, defaultValue = "") String authPass,
             @RequestParam(value = "privPass", required = false, defaultValue = "") String privPass,

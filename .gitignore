@@ -24,3 +24,7 @@ replay_pid*
 
 #Test
 StartupRunner.java
+
+# Ignore IDE folders
+.idea/
+.vscode/

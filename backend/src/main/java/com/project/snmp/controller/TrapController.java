@@ -15,7 +15,7 @@ public class TrapController {
     @Autowired
     private TrapService trapService;
 
-    @GetMapping
+    @PostMapping
     public List<Trap> getAllTraps() {
         return trapService.getAllTraps();
     }

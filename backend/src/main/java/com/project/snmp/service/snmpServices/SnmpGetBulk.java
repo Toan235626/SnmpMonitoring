@@ -51,7 +51,6 @@ public class SnmpGetBulk {
             List<SnmpRecord> snmpRecordsList = new ArrayList<>();
 
             for (VariableBinding vb : responsePDU.getVariableBindings()) {
-                // System.out.println("OID: " + vb.getOid() + ", Value: " + vb.getVariable());
                 if (vb.getVariable().toString() != null && vb.getVariable().toString() != ""
                         && !vb.getVariable().isException()) {
                     SnmpRecord snmpRecord = new SnmpRecord();
@@ -128,14 +127,13 @@ public class SnmpGetBulk {
             List<SnmpRecord> snmpRecordsList = new ArrayList<>();
 
             for (VariableBinding vb : responsePDU.getVariableBindings()) {
-                // System.out.println("OID: " + vb.getOid() + ", Value: " + vb.getVariable());
                 if (vb.getVariable().toString() != null && vb.getVariable().toString() != ""
                         && !vb.getVariable().isException()) {
                     SnmpRecord snmpRecord = new SnmpRecord();
                     snmpRecord.setDeviceIp(deviceIp);
                     snmpRecord.setOid(vb.getOid().toString());
                     snmpRecord.setValue(vb.getVariable().toString());
-                    snmpRecord.setCommunity(username); // Using username as community for SNMPv3
+                    snmpRecord.setCommunity(username);
                     snmpRecordsList.add(snmpRecord);
                 }
             }
@@ -145,16 +143,4 @@ public class SnmpGetBulk {
         }
     }
 
-    // public static void main(String[] args) {
-    // SnmpGetBulk snmpGetBulk = new SnmpGetBulk();
-    // try {
-    // JSONArray result = snmpGetBulk.getBulkAsJson("127.0.0.1", "public",
-    // "1.3.6.1.2.1.1.1.0", 0, 10);
-    // for (Object jsonObject : result) {
-    // System.out.println(jsonObject.toString());
-    // }
-    // } catch (Exception e) {
-    // e.printStackTrace();
-    // }
-    // }
 }
