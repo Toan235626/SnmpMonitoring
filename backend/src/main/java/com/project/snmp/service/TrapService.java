@@ -20,16 +20,15 @@ public class TrapService {
 
         System.out.println("Processing trap:");
         System.out.println(trap.toString());
-        
+
         trapList.add(trap);
         System.out.println("Trap added to list. Total traps: " + trapList.size());
-        
+        System.out.println(trapList);
         // Mở rộng lưu DB hoặc xử lý nghiệp vụ khác nếu cần
     }
 
     public List<Trap> getAllTraps() {
-        List<Trap> trapsCopy = new ArrayList<>(trapList);
-        System.out.println("Retrieving all traps. Total traps: " + trapsCopy.size());
-        return trapsCopy;
+        System.out.println("Retrieving all traps. Total traps: " + trapList.size());
+        return trapList;
     }
 }
