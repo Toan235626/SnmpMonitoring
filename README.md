@@ -29,8 +29,8 @@ Hệ thống giám sát thiết bị mạng thông qua giao thức SNMP, gồm:
 > Không cần cài Java, Maven hay Node
 
 ```bash
-git clone https://github.com/yourname/snmp-monitoring.git
-cd snmp-monitoring
+git clone https://github.com/Toan235626/SnmpMonitoring.git
+cd SnmpMonitoring
 docker-compose up --build
 ```
 
@@ -44,7 +44,7 @@ docker-compose up --build
 > Dành cho người đã có sẵn Java trên máy (không cần mở nhiều terminal)
 
 ```bash
-cd snmp-monitoring
+cd SnmpMonitoring
 javac Main.java
 java Main
 ```
@@ -54,15 +54,16 @@ java Main
     -   chạy `frontend/client/` bằng `npm run dev`
 
 ### ✅ Cách 3: Chạy thủ công
-
+```bash
+cd SnmpMonitoring
+```
 #### 🧩 Backend
 
 Yêu cầu: Java 17+, Maven
 
 ```bash
 cd backend
-./mvnw spring-boot:run     # Linux/macOS
-mvnw.cmd spring-boot:run   # Windows
+mvn spring-boot:run     
 ```
 
 API chạy tại: http://localhost:8086/api
