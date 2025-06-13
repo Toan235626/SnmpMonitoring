@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import axiosInstance from "@/axios.js";
+import axios from "@/axios.js";
 import { networkStore } from "./network";
 
 export const mibTreeStore = defineStore("mibTree", {
@@ -55,7 +55,7 @@ export const mibTreeStore = defineStore("mibTree", {
           params.securityLevel = device.securityLevel || "3";
         }
     
-        const response = await axiosInstance.post("/mib-tree", null, { params });
+        const response = await axios.post("/mib-tree", null, { params });
         this.mibTreeData[deviceId] = response.data;
       } catch (err) {
         this.error =
@@ -129,7 +129,7 @@ export const mibTreeStore = defineStore("mibTree", {
           throw new Error("Invalid action");
         }
     
-        const response = await axiosInstance.post(endpoint, null, {
+        const response = await axios.post(endpoint, null, {
           params: requestParams,
         });
     

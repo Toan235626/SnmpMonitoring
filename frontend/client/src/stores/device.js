@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import axiosInstance from "@/axios.js";
+import axios from "@/axios.js";
 import { networkStore } from "./network";
 
 export const deviceStore = defineStore("device", {
@@ -194,7 +194,7 @@ export const deviceStore = defineStore("device", {
           requestParams
         );
 
-        const response = await axiosInstance.post(endpoint, null, {
+        const response = await axios.post(endpoint, null, {
           params: requestParams,
         });
 
