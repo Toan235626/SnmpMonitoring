@@ -10,5 +10,5 @@ services:
     frontend:
         build: ./frontend/client
         ports:
-            - '3000:80' # Cổng ngoài: cổng nginx bên trong
+            - '3000:80'
         container_name: snmp-frontend
