@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
-import axios from "axios";
+// import axios from "axios";
+import axios from "@/axios.js";
 
 export const networkStore = defineStore("network", {
   state: () => ({
@@ -14,7 +15,7 @@ export const networkStore = defineStore("network", {
       this.isLoading = true;
       this.error = null;
       try {
-        const response = await axios.post("/api/device-scan/networks");
+        const response = await axios.post(import.meta.env.VITE_API_BASE_URL + "/device-scan/networks");
         this.networks = response.data.map((item, index) => ({
           id: String(index + 1),
           name: `Network ${index + 1}`,
@@ -64,7 +65,7 @@ export const networkStore = defineStore("network", {
           params.securityLevel = securityLevel || "3";
         }
         const response = await axios.post(
-          "/api/device-scan/scan-subnet",
+          import.meta.env.VITE_API_BASE_URL + "/device-scan/scan-subnet",
           null,
           { params }
         );

@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
-import axios from "axios";
+// import axios from "axios";
+import axios from "@/axios.js";
 import { networkStore } from "./network";
 
 export const deviceStore = defineStore("device", {
@@ -83,7 +84,7 @@ export const deviceStore = defineStore("device", {
 
         switch (action) {
           case "get":
-            endpoint = "/api/snmp/get";
+            endpoint = import.meta.env.VITE_API_BASE_URL + "/snmp/get";
             processResponse = (response) => {
               if (!response.data || response.data.length === 0) {
                 this.error = "No SNMP data returned.";
@@ -110,7 +111,7 @@ export const deviceStore = defineStore("device", {
             };
             break;
           case "getNext":
-            endpoint = "/api/snmp/getnext";
+            endpoint = import.meta.env.VITE_API_BASE_URL + "/snmp/getnext";
             const currentResults = this.results[deviceId] || [];
             requestParams.oid =
               currentResults.length > 0
@@ -142,7 +143,7 @@ export const deviceStore = defineStore("device", {
             };
             break;
           case "getBulk":
-            endpoint = "/api/snmp/bulk";
+            endpoint = import.meta.env.VITE_API_BASE_URL + "/snmp/bulk";
             processResponse = (response) => {
               if (!response.data || response.data.length === 0) {
                 this.error = "No SNMP data returned.";
@@ -169,7 +170,7 @@ export const deviceStore = defineStore("device", {
             };
             break;
           case "walk":
-            endpoint = "/api/snmp/walk";
+            endpoint = import.meta.env.VITE_API_BASE_URL + "/snmp/walk";
             processResponse = (response) => {
               if (!response.data || response.data.length === 0) {
                 this.error = "No SNMP data returned.";
