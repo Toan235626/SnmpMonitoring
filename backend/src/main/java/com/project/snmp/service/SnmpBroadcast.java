@@ -44,7 +44,7 @@ public class SnmpBroadcast {
 
         DatagramSocket socket = new DatagramSocket();
         socket.setBroadcast(true);
-        socket.setSoTimeout(1000);
+        socket.setSoTimeout(200);
 
         DatagramPacket packet = new DatagramPacket(
                 request, request.length,
