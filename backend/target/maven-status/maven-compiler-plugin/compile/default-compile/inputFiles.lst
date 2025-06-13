@@ -13,6 +13,7 @@ D:\TOAN\Code\Project1\SnmpMonitoring\backend\src\main\java\com\project\snmp\Main
 D:\TOAN\Code\Project1\SnmpMonitoring\backend\src\main\java\com\project\snmp\model\SnmpRecord.java
 D:\TOAN\Code\Project1\SnmpMonitoring\backend\src\main\java\com\project\snmp\service\snmpServices\SnmpGetNext.java
 D:\TOAN\Code\Project1\SnmpMonitoring\backend\src\main\java\com\project\snmp\controller\DeviceScanController.java
+D:\TOAN\Code\Project1\SnmpMonitoring\backend\src\main\java\com\project\snmp\service\SnmpBroadcast.java
 D:\TOAN\Code\Project1\SnmpMonitoring\backend\src\main\java\com\project\snmp\service\snmpServices\SnmpWalk.java
 D:\TOAN\Code\Project1\SnmpMonitoring\backend\src\main\java\com\project\snmp\service\MibTreeService.java
 D:\TOAN\Code\Project1\SnmpMonitoring\backend\src\main\java\com\project\snmp\service\snmpServices\SnmpGetBulk.java
