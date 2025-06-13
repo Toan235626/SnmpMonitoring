@@ -14,7 +14,7 @@ public class Device {
     private String ipAddress;
     private String community;
     private String oid; // viết thường để tuân chuẩn Java
-    private String value;
+    private String oid_value;
 
     public Device() {
     }
@@ -57,11 +57,11 @@ public class Device {
     }
 
     public void setValue(String value) {
-        this.value = value;
+        this.oid_value = value;
     }
 
     public String getValue() {
-        return value;
+        return oid_value;
     }
 
     // --- toString ---

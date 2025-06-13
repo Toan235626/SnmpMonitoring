@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+    backend:
+        build: ./backend
+        ports:
+            - '8086:8086'
+        container_name: snmp-backend
+
+    frontend:
+        build: ./frontend/client
+        ports:
+            - '3000:80' # Cổng ngoài: cổng nginx bên trong
+        container_name: snmp-frontend
