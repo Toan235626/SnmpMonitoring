@@ -141,21 +141,21 @@ export default {
       prefix: "",
       community: "public",
       port: 161,
-      mode: "unicast",
+      mode: "",
       version: "",
       authUsername: "",
       authPass: "",
       privPass: "",
       authProtocol: "",
       privProtocol: "",
-      securityLevel: "3",
+      securityLevel: "",
     });
     const selectedNetwork = ref(null);
     const form = ref(null);
 
     const modeItems = [
-      { value: 'unicast', title: 'Unicast (good support for range 24)' },
-      { value: 'broadcast', title: 'Broadcast (support for larger ranges)' }
+      { value: 'unicast', title: 'UNICAST (good support for range 24)' },
+      { value: 'broadcast', title: 'BROADCAST (support for larger ranges)' }
     ];
 
     const networks = computed(() => store.networks);
