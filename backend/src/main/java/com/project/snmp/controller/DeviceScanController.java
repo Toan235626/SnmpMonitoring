@@ -49,7 +49,7 @@ public class DeviceScanController {
     @CrossOrigin(origins = "*")
     @PostMapping("/scan-subnet")
     public List<Device> scanSelectedSubnet(
-            @RequestParam(value = "mode", required = false, defaultValue = "unicast") String mode,
+            @RequestParam(value = "mode", required = false, defaultValue = "broadcast") String mode,
             @RequestParam("baseIp") String baseIp,
             @RequestParam(value = "community", required = false, defaultValue = "public") String community,
             @RequestParam(value = "prefix", required = false, defaultValue = "24") String prefix,
