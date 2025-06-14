@@ -58,7 +58,8 @@
             <v-select
               v-model="scanForm.mode"
               label="Mode"
-              :items="['unicast', 'broadcast']"
+              :items="modeItems"
+              item-title="title"          
               :rules="[(v) => !!v || 'Mode is required']"
             />
             <template v-if="scanForm.mode === 'unicast'">
@@ -140,17 +141,22 @@ export default {
       prefix: "",
       community: "public",
       port: 161,
-      mode: "",
+      mode: "unicast",
       version: "",
       authUsername: "",
       authPass: "",
       privPass: "",
       authProtocol: "",
       privProtocol: "",
-      securityLevel: "",
+      securityLevel: "3",
     });
     const selectedNetwork = ref(null);
     const form = ref(null);
+
+    const modeItems = [
+      { value: 'unicast', title: 'Unicast (good support for range 24)' },
+      { value: 'broadcast', title: 'Broadcast (support for larger ranges)' }
+    ];
 
     const networks = computed(() => store.networks);
     const isLoading = computed(() => store.isLoading);
@@ -193,14 +199,14 @@ export default {
           prefix: "",
           community: "public",
           port: 161,
-          mode: "unicast",
+          mode: "",
           version: "",
           authUsername: "",
           authPass: "",
           privPass: "",
           authProtocol: "",
           privProtocol: "",
-          securityLevel: "3",
+          securityLevel: "",
         };
       }
     };
@@ -216,6 +222,7 @@ export default {
       openScanDialog,
       handleScanDevices,
       isSnmpV3,
+      modeItems,
     };
   },
 };
