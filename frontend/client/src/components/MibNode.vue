@@ -5,7 +5,7 @@
       @mouseleave="showDetails = false"
     >
       <span
-        :class="{ 'node-selected': selectedOid === node.oid }"
+        :class="{ 'node-selected': selectedOid === node.oid, 'node-highlighted': highlightedOid === node.oid }"
         @click="handleNodeClick"
       >
         <i
@@ -29,6 +29,7 @@
         :key="child.oid"
         :node="child"
         :selected-oid="selectedOid"
+        :highlighted-oid="highlightedOid"
         @select-oid="$emit('select-oid', $event)"
       />
     </ul>
@@ -36,7 +37,8 @@
 </template>
 
 <script>
-import { ref, watch } from "vue";
+import { ref } from "vue";
+import { mibTreeStore } from "@/stores/mibtree";
 
 export default {
   name: "MibNode",
@@ -49,35 +51,37 @@ export default {
       type: String,
       default: "",
     },
+    highlightedOid: {
+      type: String,
+      default: "",
+    },
   },
   emits: ["select-oid"],
-  setup(props) {
+  setup(props, { emit }) {
     if (!Object.prototype.hasOwnProperty.call(props.node, "expanded")) {
       props.node.expanded = false;
     }
     const showDetails = ref(false);
+    const mibTree = mibTreeStore();
+    const nodeRef = ref(null);
 
     const handleNodeClick = () => {
       if (props.node.oid && props.node.category === "scalar") {
-        this.$emit("select-oid", props.node.oid);
+        emit("select-oid", props.node.oid);
       }
       if (props.node.children && props.node.children.length > 0) {
         props.node.expanded = !props.node.expanded;
       }
-    };
-
-    watch(
-      () => props.selectedOid,
-      (newOid) => {
-        if (newOid === props.node.oid && refs.nodeRef) {
-          refs.nodeRef.scrollIntoView({ behavior: "smooth", block: "center" });
-        }
+      // Reset highlight nếu click vào node đang được highlight
+      if (props.node.oid === mibTree.highlightedOid) {
+        mibTree.resetHighlight();
       }
-    );
+    };
 
     return {
       showDetails,
       handleNodeClick,
+      nodeRef,
     };
   },
 };
@@ -86,14 +90,14 @@ export default {
 <style scoped>
 .node-container {
   position: relative;
-  display: inline-block; 
+  display: inline-block;
 }
 li {
   margin: 8px 0;
-  border: none; 
+  border: none;
   position: relative;
-  padding-left: 10px; 
-  transition: all 0.3s ease; 
+  padding-left: 10px;
+  transition: all 0.3s ease;
 }
 li:before {
   content: "";
@@ -106,7 +110,7 @@ li:before {
     to bottom,
     #007bff,
     #00c4cc
-  ); 
+  );
   opacity: 0.7;
 }
 span {
@@ -121,57 +125,62 @@ span {
     135deg,
     #2c3e50,
     #34495e
-  ); 
+  );
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease; 
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; 
+  transition: all 0.3s ease;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 span:hover {
   background: linear-gradient(
     135deg,
     #3498db,
     #2980b9
-  ); 
-  transform: translateY(-2px); 
+  );
+  transform: translateY(-2px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 .node-selected {
   font-weight: 600;
-  color: #ffffff; 
+  color: #ffffff;
   background: linear-gradient(
     135deg,
     #2c3e50,
     #34495e
-  ); 
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); 
-  transform: scale(1.02); 
+  );
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  transform: scale(1.02);
+}
+.node-highlighted {
+  background: #ffeb3b !important; /* Màu vàng sáng để highlight */
+  color: #2c3e50 !important; /* Màu chữ tối để dễ đọc */
+  box-shadow: 0 0 20px rgba(255, 235, 59, 0.5) !important;
 }
 i {
   font-size: 14px;
-  color: #00c4cc; 
-  transition: transform 0.3s ease; 
+  color: #00c4cc;
+  transition: transform 0.3s ease;
 }
 span:hover i {
-  transform: rotate(90deg); 
+  transform: rotate(90deg);
 }
 ul {
   list-style: none;
   margin-left: 25px;
   padding: 5px 0;
 }
-  .value {
+.value {
   font-weight: 500;
-  color: #000000; 
+  color: #000000;
   background: linear-gradient(
     135deg,
     #ffffff,
     #ffffff
-  ); 
+  );
   padding: 5px 10px;
   border-radius: 6px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease; 
+  transition: all 0.3s ease;
 }
 .details {
   padding: 10px 15px;
@@ -179,14 +188,14 @@ ul {
     145deg,
     #ffffff,
     #e6e6e6
-  ); 
+  );
   margin: 8px 15px;
   font-size: 13px;
-  color: #2c3e50; 
+  color: #2c3e50;
   border-radius: 6px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  border-left: 4px solid #007bff; 
-  animation: fadeIn 0.3s ease-in; 
+  border-left: 4px solid #007bff;
+  animation: fadeIn 0.3s ease-in;
 }
 @keyframes fadeIn {
   from {

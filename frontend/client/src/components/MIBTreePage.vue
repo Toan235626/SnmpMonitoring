@@ -44,28 +44,6 @@
             </div>
           </div>
           <div v-if="error" class="error">{{ error }}</div>
-          <!-- <div
-            v-if="searchResults && searchResults.deviceId === device.id"
-            class="search-details"
-          >
-            <h3>Search Result for OID: {{ searchResults.oid }}</h3>
-            <p>
-              <strong>Name:</strong> {{ searchResults.node.name || "Unnamed" }}
-            </p>
-            <p>
-              <strong>Description:</strong>
-              {{ searchResults.node.description || "N/A" }}
-            </p>
-            <p>
-              <strong>Value:</strong> {{ searchResults.node.value || "N/A" }}
-            </p>
-            <p>
-              <strong>Syntax:</strong> {{ searchResults.node.syntax || "N/A" }}
-            </p>
-            <p>
-              <strong>Access:</strong> {{ searchResults.node.access || "N/A" }}
-            </p>
-          </div> -->
           <div
             v-else-if="
               mibTreeData &&
@@ -78,6 +56,7 @@
             <MibTree
               :data="mibTreeData[device.id] || []"
               :selected-oid="selectedOid"
+              :highlighted-oid="mibTree.highlightedOid"
               @select-oid="handleSelectOid"
             />
           </div>
@@ -160,7 +139,7 @@ export default {
       }
       searchOidInput.value = "";
       mibTree.searchResults = null;
-      selectedOid.value = "";
+      mibTree.resetHighlight();
     });
 
     const isLoadingForDevice = computed(
@@ -179,6 +158,7 @@ export default {
       searchOidInput,
       searchOid,
       searchResults: mibTree.searchResults,
+      mibTree,
     };
   },
 };
@@ -225,7 +205,7 @@ export default {
   align-items: center;
 }
 .search-input {
-  width: 700px; /* Giảm chiều rộng để gọn hơn */
+  width: 700px;
   height: 58px;
   background: linear-gradient(145deg, #ffffff, #e6e6e6);
   border-radius: 8px;
@@ -257,15 +237,6 @@ export default {
   border-radius: 12px;
   overflow-y: auto;
   transition: all 0.3s ease;
-}
-.search-details {
-  padding: 15px;
-  background: linear-gradient(145deg, #ffffff, #e6e6e6);
-  margin: 15px 0;
-  border-radius: 6px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  border-left: 4px solid #007bff;
-  animation: fadeIn 0.3s ease-in;
 }
 .tree-section {
   margin-top: 20px;

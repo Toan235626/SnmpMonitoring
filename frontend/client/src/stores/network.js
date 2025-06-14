@@ -31,8 +31,9 @@ export const networkStore = defineStore("network", {
       baseIp,
       prefix,
       community,
-      version,
       port,
+      mode,
+      version,
       authUsername,
       authPass,
       privPass,
@@ -49,20 +50,25 @@ export const networkStore = defineStore("network", {
           prefix,
           community,
           port: port || 161,
-          version,
+          mode,
         };
-        if (version === "3") {
-          params.authUsername = authUsername;
-          if (securityLevel === "2" || securityLevel === "3") {
-            params.authPass = authPass;
-            params.authProtocol = authProtocol;
+
+        if (mode === "unicast") {
+          params.version = version || "2c";
+          if (version === "3") {
+            params.authUsername = authUsername;
+            if (securityLevel === "2" || securityLevel === "3") {
+              params.authPass = authPass;
+              params.authProtocol = authProtocol;
+            }
+            if (securityLevel === "3") {
+              params.privPass = privPass;
+              params.privProtocol = privProtocol;
+            }
+            params.securityLevel = securityLevel || "3";
           }
-          if (securityLevel === "3") {
-            params.privPass = privPass;
-            params.privProtocol = privProtocol;
-          }
-          params.securityLevel = securityLevel || "3";
         }
+
         const response = await axios.post(
           "/device-scan/scan-subnet",
           null,
@@ -74,15 +80,15 @@ export const networkStore = defineStore("network", {
           deviceIp: device.deviceIp || `${baseIp}.${index + 1}`,
           community: community || "public",
           port: port || 161,
-          version: version || "2c",
+          version: mode === "unicast" ? (version || "2c") : undefined,
           prefix,
           networkId,
-          authUsername: version === "3" ? authUsername : undefined,
-          authPass: version === "3" && (securityLevel === "2" || securityLevel === "3") ? authPass : undefined,
-          privPass: version === "3" && securityLevel === "3" ? privPass : undefined,
-          authProtocol: version === "3" && (securityLevel === "2" || securityLevel === "3") ? authProtocol : undefined,
-          privProtocol: version === "3" && securityLevel === "3" ? privProtocol : undefined,
-          securityLevel: version === "3" ? (securityLevel || "3") : undefined,
+          authUsername: mode === "unicast" && version === "3" ? authUsername : undefined,
+          authPass: mode === "unicast" && version === "3" && (securityLevel === "2" || securityLevel === "3") ? authPass : undefined,
+          privPass: mode === "unicast" && version === "3" && securityLevel === "3" ? privPass : undefined,
+          authProtocol: mode === "unicast" && version === "3" && (securityLevel === "2" || securityLevel === "3") ? authProtocol : undefined,
+          privProtocol: mode === "unicast" && version === "3" && securityLevel === "3" ? privProtocol : undefined,
+          securityLevel: mode === "unicast" && version === "3" ? (securityLevel || "3") : undefined,
         }));
         this.scanDevicesSuccess = true;
       } catch (err) {

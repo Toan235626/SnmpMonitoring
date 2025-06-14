@@ -40,21 +40,10 @@
         <v-card-title>Scan Devices</v-card-title>
         <v-card-text>
           <v-form ref="form">
-            <!-- <v-text-field
-              v-model="scanForm.baseIp"
-              label="Base IP (e.g., 192.168.5)"
-              :rules="[(v) => !!v || 'Base IP is required']"
-            />
-            <v-text-field
-              v-model="scanForm.prefix"
-              label="IP Prefix (e.g., 24)"
-              :rules="[(v) => !!v || 'IP Prefix is required']"
-            /> -->
             <v-text-field
               v-model="scanForm.community"
               label="Community String"
-              :rules="[(v) => !isSnmpV3 || !!v || 'Community is required']"
-              v-if="!isSnmpV3"
+              :rules="[(v) => !!v || 'Community is required']"
             />
             <v-text-field
               v-model="scanForm.port"
@@ -67,55 +56,63 @@
               ]"
             />
             <v-select
-              v-model="scanForm.version"
-              label="SNMP Version"
-              :items="['1', '2c', '3']"
-              :rules="[(v) => !!v || 'Version is required']"
+              v-model="scanForm.mode"
+              label="Mode"
+              :items="['unicast', 'broadcast']"
+              :rules="[(v) => !!v || 'Mode is required']"
             />
-            <template v-if="isSnmpV3">
+            <template v-if="scanForm.mode === 'unicast'">
               <v-select
-                v-model="scanForm.securityLevel"
-                label="Security Level"
-                :items="['1', '2', '3']"
-                :rules="[(v) => !!v || 'Security Level is required']"
+                v-model="scanForm.version"
+                label="SNMP Version"
+                :items="['1', '2c', '3']"
+                :rules="[(v) => !!v || 'Version is required']"
               />
-              <v-text-field
-                v-model="scanForm.authUsername"
-                label="Auth Username"
-                :rules="[(v) => !!v || 'Auth Username is required']"
-              />
-              <template
-                v-if="
-                  scanForm.securityLevel === '2' ||
-                  scanForm.securityLevel === '3'
-                "
-              >
-                <v-text-field
-                  v-model="scanForm.authPass"
-                  label="Auth Password"
-                  type="password"
-                  :rules="[(v) => !!v || 'Auth Password is required']"
-                />
+              <template v-if="isSnmpV3">
                 <v-select
-                  v-model="scanForm.authProtocol"
-                  label="Auth Protocol"
-                  :items="['MD5', 'SHA']"
-                  :rules="[(v) => !!v || 'Auth Protocol is required']"
+                  v-model="scanForm.securityLevel"
+                  label="Security Level"
+                  :items="['1', '2', '3']"
+                  :rules="[(v) => !!v || 'Security Level is required']"
                 />
-              </template>
-              <template v-if="scanForm.securityLevel === '3'">
                 <v-text-field
-                  v-model="scanForm.privPass"
-                  label="Privacy Password"
-                  type="password"
-                  :rules="[(v) => !!v || 'Privacy Password is required']"
+                  v-model="scanForm.authUsername"
+                  label="Auth Username"
+                  :rules="[(v) => !!v || 'Auth Username is required']"
                 />
-                <v-select
-                  v-model="scanForm.privProtocol"
-                  label="Privacy Protocol"
-                  :items="['DES', 'AES']"
-                  :rules="[(v) => !!v || 'Privacy Protocol is required']"
-                />
+                <template
+                  v-if="
+                    scanForm.securityLevel === '2' ||
+                    scanForm.securityLevel === '3'
+                  "
+                >
+                  <v-text-field
+                    v-model="scanForm.authPass"
+                    label="Auth Password"
+                    type="password"
+                    :rules="[(v) => !!v || 'Auth Password is required']"
+                  />
+                  <v-select
+                    v-model="scanForm.authProtocol"
+                    label="Auth Protocol"
+                    :items="['MD5', 'SHA']"
+                    :rules="[(v) => !!v || 'Auth Protocol is required']"
+                  />
+                </template>
+                <template v-if="scanForm.securityLevel === '3'">
+                  <v-text-field
+                    v-model="scanForm.privPass"
+                    label="Privacy Password"
+                    type="password"
+                    :rules="[(v) => !!v || 'Privacy Password is required']"
+                  />
+                  <v-select
+                    v-model="scanForm.privProtocol"
+                    label="Privacy Protocol"
+                    :items="['DES', 'AES']"
+                    :rules="[(v) => !!v || 'Privacy Protocol is required']"
+                  />
+                </template>
               </template>
             </template>
           </v-form>
@@ -143,13 +140,14 @@ export default {
       prefix: "",
       community: "public",
       port: 161,
+      mode: "",
       version: "",
       authUsername: "",
       authPass: "",
       privPass: "",
       authProtocol: "",
       privProtocol: "",
-      securityLevel: "3", // Mặc định là authPriv
+      securityLevel: "",
     });
     const selectedNetwork = ref(null);
     const form = ref(null);
@@ -178,13 +176,16 @@ export default {
           prefix: scanForm.value.prefix,
           community: scanForm.value.community,
           port: Number(scanForm.value.port),
-          version: scanForm.value.version,
-          authUsername: scanForm.value.authUsername,
-          authPass: scanForm.value.authPass,
-          privPass: scanForm.value.privPass,
-          authProtocol: scanForm.value.authProtocol,
-          privProtocol: scanForm.value.privProtocol,
-          securityLevel: scanForm.value.securityLevel,
+          mode: scanForm.value.mode,
+          ...(scanForm.value.mode === "unicast" && {
+            version: scanForm.value.version,
+            authUsername: scanForm.value.authUsername,
+            authPass: scanForm.value.authPass,
+            privPass: scanForm.value.privPass,
+            authProtocol: scanForm.value.authProtocol,
+            privProtocol: scanForm.value.privProtocol,
+            securityLevel: scanForm.value.securityLevel,
+          }),
         });
         dialog.value = false;
         scanForm.value = {
@@ -192,6 +193,7 @@ export default {
           prefix: "",
           community: "public",
           port: 161,
+          mode: "unicast",
           version: "",
           authUsername: "",
           authPass: "",
@@ -208,7 +210,6 @@ export default {
       isLoading,
       error,
       handleScanNetwork,
-      scanDevices: store.scanDevices,
       dialog,
       scanForm,
       form,

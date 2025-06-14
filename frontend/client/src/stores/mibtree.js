@@ -9,6 +9,7 @@ export const mibTreeStore = defineStore("mibTree", {
     loadingStates: {},
     error: null,
     searchResults: null,
+    highlightedOid: null, 
   }),
   actions: {
     async setMibTreeDevices() { 
@@ -149,6 +150,7 @@ export const mibTreeStore = defineStore("mibTree", {
     searchOid(deviceId, oid) {
       this.error = null;
       this.searchResults = null;
+      this.highlightedOid = null; 
       const tree = this.mibTreeData[deviceId];
       if (!tree || !tree.length) {
         this.error = "No MIB tree data available for device";
@@ -177,6 +179,7 @@ export const mibTreeStore = defineStore("mibTree", {
           node: result.node,
           path: result.path, 
         };
+        this.highlightedOid = oid;
         result.path.forEach((node) => {
           if (node.children && node.children.length) {
             node.expanded = true;
@@ -185,6 +188,9 @@ export const mibTreeStore = defineStore("mibTree", {
       } else {
         this.error = `OID ${oid} not found in MIB tree for device ${deviceId}`;
       }
+    },
+    resetHighlight() {
+      this.highlightedOid = null; 
     },
   },
 });
