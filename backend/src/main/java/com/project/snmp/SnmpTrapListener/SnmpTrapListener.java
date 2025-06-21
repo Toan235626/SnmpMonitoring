@@ -17,6 +17,7 @@ import jakarta.annotation.PreDestroy;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Component
@@ -53,18 +54,20 @@ public class SnmpTrapListener implements CommandResponder {
 
         if (model == MessageProcessingModel.MPv1 && pdu instanceof PDUv1) {
             PDUv1 pduV1 = (PDUv1) pdu;
-            versionStr = "v1";
+            versionStr = "1";
             varBinds = new ArrayList<>(pduV1.getVariableBindings());
-            rawPdu = String.format("SNMPv1 Trap: agentAddress=%s, genericTrap=%d, specificTrap=%d, timestamp=%d",
+            rawPdu = String.format(
+                    "SNMPv1 Trap: agentAddress = %s, genericTrap = %d, specificTrap = %d, timestamp = %d",
                     pduV1.getAgentAddress(), pduV1.getGenericTrap(), pduV1.getSpecificTrap(), pduV1.getTimestamp());
 
         } else if (model == MessageProcessingModel.MPv2c) {
-            versionStr = "v2c";
+            versionStr = "2c";
             varBinds = new ArrayList<>(pdu.getVariableBindings());
+            System.out.println(varBinds);
             rawPdu = pdu.toString();
 
         } else if (model == MessageProcessingModel.MPv3) {
-            versionStr = "v3";
+            versionStr = "3";
             varBinds = new ArrayList<>(pdu.getVariableBindings());
             rawPdu = pdu.toString();
 
@@ -74,12 +77,16 @@ public class SnmpTrapListener implements CommandResponder {
             rawPdu = pdu.toString();
         }
 
+        List<HashMap<String, String>> listVarBinds = new ArrayList<>();
         System.out.println("Variable Bindings:");
         for (VariableBinding vb : varBinds) {
+            HashMap<String, String> map = new HashMap<>();
+            map.put(vb.getOid().toString(), vb.getVariable().toString());
+            listVarBinds.add(map);
             System.out.println(" - " + vb.toString());
         }
 
-        Trap trap = new Trap(rawPdu, varBinds, versionStr);
+        Trap trap = new Trap(rawPdu, listVarBinds, versionStr);
         trapService.processTrap(trap);
 
         System.out.println("Received SNMP Trap:");
