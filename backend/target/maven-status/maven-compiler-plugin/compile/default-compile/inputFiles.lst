@@ -4,6 +4,7 @@ D:\TOAN\Code\Project1\SnmpMonitoring\backend\src\main\java\com\project\snmp\util
 D:\TOAN\Code\Project1\SnmpMonitoring\backend\src\main\java\com\project\snmp\utils\VendorResolver.java
 D:\TOAN\Code\Project1\SnmpMonitoring\backend\src\main\java\com\project\snmp\service\snmpServices\SnmpGet.java
 D:\TOAN\Code\Project1\SnmpMonitoring\backend\src\main\java\com\project\snmp\model\Trap.java
+D:\TOAN\Code\Project1\SnmpMonitoring\backend\src\main\java\com\project\snmp\utils\OidDescription.java
 D:\TOAN\Code\Project1\SnmpMonitoring\backend\src\main\java\com\project\snmp\controller\SnmpController.java
 D:\TOAN\Code\Project1\SnmpMonitoring\backend\src\main\java\com\project\snmp\service\NetworkScannerService.java
 D:\TOAN\Code\Project1\SnmpMonitoring\backend\src\main\java\com\project\snmp\service\TrapService.java

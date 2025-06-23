@@ -32,6 +32,7 @@
                         <tr>
                             <th>OID</th>
                             <th>Value</th>
+                            <th>Info</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -39,7 +40,8 @@
                             v-for="(variable, index) in latestTrap.variables"
                             :key="index"
                         >
-                            <td>{{ Object.keys(variable)[0] }}</td>
+                            <td>{{ Object.values(variable)[1] }}</td>
+                            <td>{{ Object.values(variable)[2] }}</td>
                             <td>{{ Object.values(variable)[0] }}</td>
                         </tr>
                     </tbody>
@@ -53,10 +55,10 @@
             <table class="trap-table">
                 <thead>
                     <tr>
-                        <th>STT</th>
+                        <th>ID</th>
                         <th>Time (sysUpTime)</th>
-                        <th>Trap OID</th>
-                        <th>Content</th>
+                        <th>Authoritative OID</th>
+                        <th>Message</th>
                         <th>SNMP Version</th>
                         <th>Details</th>
                     </tr>
@@ -65,13 +67,13 @@
                     <tr v-for="(trap, index) in trapHistory" :key="index">
                         <td>{{ index + 1 }}</td>
                         <td>
-                            {{ Object.values(trap.variables[0])[0] || 'N/A' }}
+                            {{ Object.values(trap.variables[0])[2] || 'N/A' }}
                         </td>
                         <td>
-                            {{ Object.keys(trap.variables[1])[0] || 'N/A' }}
+                            {{ Object.values(trap.variables[1])[2] || 'N/A' }}
                         </td>
                         <td>
-                            {{ Object.values(trap.variables[2])[0] || 'N/A' }}
+                            {{ Object.values(trap.variables[2])[2] || 'N/A' }}
                         </td>
                         <td>{{ trap.snmpVersion }}</td>
                         <td>
@@ -99,6 +101,7 @@
                         <tr>
                             <th>OID</th>
                             <th>Value</th>
+                            <th>Info</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -106,7 +109,8 @@
                             v-for="(variable, index) in selectedTrap.variables"
                             :key="index"
                         >
-                            <td>{{ Object.keys(variable)[0] }}</td>
+                            <td>{{ Object.values(variable)[1] }}</td>
+                            <td>{{ Object.values(variable)[2] }}</td>
                             <td>{{ Object.values(variable)[0] }}</td>
                         </tr>
                     </tbody>

@@ -2,6 +2,7 @@ package com.project.snmp.SnmpTrapListener;
 
 import com.project.snmp.model.Trap;
 import com.project.snmp.service.TrapService;
+import com.project.snmp.utils.OidDescription;
 
 import org.snmp4j.*;
 import org.snmp4j.smi.*;
@@ -25,6 +26,8 @@ public class SnmpTrapListener implements CommandResponder {
 
     @Autowired
     private TrapService trapService;
+    @Autowired
+    private OidDescription oidDescription;
 
     private Snmp snmp;
 
@@ -81,7 +84,9 @@ public class SnmpTrapListener implements CommandResponder {
         System.out.println("Variable Bindings:");
         for (VariableBinding vb : varBinds) {
             HashMap<String, String> map = new HashMap<>();
-            map.put(vb.getOid().toString(), vb.getVariable().toString());
+            map.put("oid", vb.getOid().toString());
+            map.put("value", vb.getVariable().toString());
+            map.put("description", oidDescription.findDescription(vb.getOid().toString()));
             listVarBinds.add(map);
             System.out.println(" - " + vb.toString());
         }

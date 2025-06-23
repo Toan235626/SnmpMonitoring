@@ -1,6 +1,7 @@
 package com.project.snmp.service.snmpServices;
 
 import com.project.snmp.model.SnmpRecord;
+import com.project.snmp.utils.OidDescription;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,10 +23,13 @@ import org.snmp4j.security.USM;
 import org.snmp4j.security.UsmUser;
 import org.snmp4j.smi.*;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class SnmpGetBulk {
+    @Autowired
+    OidDescription oidDescription;
 
     public SnmpRecord[] getBulkv2(String deviceIp, String community, String oid, int port) throws Exception {
         TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping();
@@ -58,6 +62,7 @@ public class SnmpGetBulk {
                     snmpRecord.setOid(vb.getOid().toString());
                     snmpRecord.setValue(vb.getVariable().toString());
                     snmpRecord.setCommunity(community);
+                    snmpRecord.setDescription(oidDescription.findDescription(vb.getOid().toString()));
                     snmpRecordsList.add(snmpRecord);
                 }
             }
@@ -134,6 +139,7 @@ public class SnmpGetBulk {
                     snmpRecord.setOid(vb.getOid().toString());
                     snmpRecord.setValue(vb.getVariable().toString());
                     snmpRecord.setCommunity(username);
+                    snmpRecord.setDescription(oidDescription.findDescription(vb.getOid().toString()));
                     snmpRecordsList.add(snmpRecord);
                 }
             }

@@ -5,6 +5,7 @@ public class SnmpRecord {
     private String oid;
     private String oid_value;
     private String community;
+    private String description;
 
     // Constructors
     public SnmpRecord() {
@@ -40,6 +41,14 @@ public class SnmpRecord {
 
     public void setValue(String value) {
         this.oid_value = value;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     @Override

@@ -7,9 +7,13 @@ import org.springframework.stereotype.Service;
 
 import com.project.snmp.model.SnmpRecord;
 import com.project.snmp.service.snmpServices.*;
+import com.project.snmp.utils.OidDescription;
 
 @Service
 public class SnmpMainService {
+
+    @Autowired
+    private OidDescription oidDescription;
 
     @Autowired
     private SnmpGet snmpGet;
@@ -33,8 +37,11 @@ public class SnmpMainService {
             int securityLevel = Integer.parseInt(v3params[5]);
             record = snmpGet.getAsRecordv3(deviceIp, username, authPass, privPass,
                     authProtocol, privProtocol, securityLevel, oid, port);
+            record.setDescription(oidDescription.findDescription(oid));
+
         } else {
             record = snmpGet.getAsRecordv12(deviceIp, community, oid, port, version);
+            record.setDescription(oidDescription.findDescription(oid));
         }
 
         String value = record.getValue();
@@ -51,8 +58,12 @@ public class SnmpMainService {
                 int securityLevel = Integer.parseInt(v3params[5]);
                 record = snmpGet.getAsRecordv3(deviceIp, username, authPass, privPass,
                         authProtocol, privProtocol, securityLevel, oid + ".0", port);
+                record.setDescription(oidDescription.findDescription(oid));
+
             } else {
                 record = snmpGet.getAsRecordv12(deviceIp, community, oid + ".0", port, version);
+                record.setDescription(oidDescription.findDescription(oid));
+
             }
         }
         return record;
@@ -71,8 +82,11 @@ public class SnmpMainService {
             int securityLevel = Integer.parseInt(v3params[5]);
             getNextResult = snmpGetNext.getNextv3(deviceIp, username, authPass, privPass,
                     authProtocol, privProtocol, securityLevel, oid, port);
+            getNextResult.setDescription(oidDescription.findDescription(oid));
+
         } else {
             getNextResult = snmpGetNext.getNextv12(deviceIp, community, oid, port, version);
+            getNextResult.setDescription(oidDescription.findDescription(oid));
         }
 
         String value = getNextResult.getValue();
@@ -88,8 +102,11 @@ public class SnmpMainService {
                 int securityLevel = Integer.parseInt(v3params[5]);
                 getNextResult = snmpGetNext.getNextv3(deviceIp, username, authPass, privPass,
                         authProtocol, privProtocol, securityLevel, oid + ".0", port);
+                getNextResult.setDescription(oidDescription.findDescription(oid));
             } else {
                 getNextResult = snmpGetNext.getNextv12(deviceIp, community, oid + ".0", port, version);
+                getNextResult.setDescription(oidDescription.findDescription(oid));
+
             }
         }
         return getNextResult;
