@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import axios from "axios";
+import axios from "@/axios.js";
 import { networkStore } from "./network";
 
 export const mibTreeStore = defineStore("mibTree", {
@@ -9,6 +9,7 @@ export const mibTreeStore = defineStore("mibTree", {
     loadingStates: {},
     error: null,
     searchResults: null,
+    highlightedOid: null, 
   }),
   actions: {
     async setMibTreeDevices() { 
@@ -55,7 +56,7 @@ export const mibTreeStore = defineStore("mibTree", {
           params.securityLevel = device.securityLevel || "3";
         }
     
-        const response = await axios.post("/api/mib-tree", null, { params });
+        const response = await axios.post("/mib-tree", null, { params });
         this.mibTreeData[deviceId] = response.data;
       } catch (err) {
         this.error =
@@ -121,7 +122,7 @@ export const mibTreeStore = defineStore("mibTree", {
         let processResponse;
     
         if (action === "getMibTree") {
-          endpoint = "/api/mib-tree";
+          endpoint = "/mib-tree";
           processResponse = (response) => {
             this.mibTreeData[deviceId] = response.data;
           };
@@ -149,6 +150,7 @@ export const mibTreeStore = defineStore("mibTree", {
     searchOid(deviceId, oid) {
       this.error = null;
       this.searchResults = null;
+      this.highlightedOid = null; 
       const tree = this.mibTreeData[deviceId];
       if (!tree || !tree.length) {
         this.error = "No MIB tree data available for device";
@@ -177,6 +179,7 @@ export const mibTreeStore = defineStore("mibTree", {
           node: result.node,
           path: result.path, 
         };
+        this.highlightedOid = oid;
         result.path.forEach((node) => {
           if (node.children && node.children.length) {
             node.expanded = true;
@@ -185,6 +188,9 @@ export const mibTreeStore = defineStore("mibTree", {
       } else {
         this.error = `OID ${oid} not found in MIB tree for device ${deviceId}`;
       }
+    },
+    resetHighlight() {
+      this.highlightedOid = null; 
     },
   },
 });

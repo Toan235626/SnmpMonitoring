@@ -1,5 +1,7 @@
 package com.project.snmp.service;
 
+import java.util.concurrent.*;
+
 import java.io.ByteArrayOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -15,24 +17,37 @@ import org.springframework.stereotype.Service;
 public class SnmpBroadcast {
 
     public static List<String> sendBroadcastSnmpGet(String baseIp, String prefix, String community, int port,
-            String oid)
-            throws Exception {
+            String oid) throws Exception {
+
         List<String> allResponses = new ArrayList<>();
 
         String[] parts = baseIp.split("\\.");
         int prefixInt = Integer.parseInt(prefix);
         int thirdOctetBase = Integer.parseInt(parts[2]);
-
         int subnetCount = (prefixInt <= 24) ? (1 << (24 - prefixInt)) : 1;
+
+        ExecutorService executor = Executors.newFixedThreadPool(Math.min(20, subnetCount));
+
+        List<Future<List<String>>> futures = new ArrayList<>();
 
         for (int j = 0; j < subnetCount; j++) {
             int thirdOctet = thirdOctetBase + j;
             String broadcastIp = parts[0] + "." + parts[1] + "." + thirdOctet + ".255";
 
-            System.out.println(" Send broadcast to: " + broadcastIp);
-            allResponses.addAll(sendSingleBroadcast(broadcastIp, port, community, oid));
+            System.out.println(" Submit broadcast to: " + broadcastIp);
+            Future<List<String>> future = executor.submit(() -> sendSingleBroadcast(broadcastIp, port, community, oid));
+            futures.add(future);
         }
 
+        for (Future<List<String>> future : futures) {
+            try {
+                allResponses.addAll(future.get(2, TimeUnit.SECONDS)); // timeout nếu cần
+            } catch (TimeoutException e) {
+                System.err.println("Timeout on broadcast response");
+            }
+        }
+
+        executor.shutdown();
         return allResponses;
     }
 
@@ -59,10 +74,11 @@ public class SnmpBroadcast {
                 socket.receive(response);
 
                 String fromIp = response.getAddress().getHostAddress();
+                if (!responses.contains(fromIp)) {
+                    responses.add(fromIp);
+                }
 
-                responses.add(fromIp);
             } catch (SocketTimeoutException e) {
-                break;
             }
         }
 
@@ -72,7 +88,6 @@ public class SnmpBroadcast {
 
     public static byte[] createSnmpV2cGetPacket(String community, String oidStr) throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        System.out.println(oidStr);
 
         byte[] oid = encodeOID(oidStr);
 

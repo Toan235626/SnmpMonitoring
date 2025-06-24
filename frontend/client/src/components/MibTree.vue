@@ -7,6 +7,7 @@
         :key="item.oid"
         :node="item"
         :selected-oid="selectedOid"
+        :highlighted-oid="highlightedOid"
         @select-oid="handleSelectOid"
       />
     </ul>
@@ -24,6 +25,14 @@ export default {
     data: {
       type: [Object, Array],
       required: true,
+    },
+    selectedOid: {
+      type: String,
+      default: "",
+    },
+    highlightedOid: {
+      type: String,
+      default: "",
     },
   },
   emits: ["select-oid"],
@@ -60,14 +69,14 @@ export default {
     135deg,
     #676790,
     #2c2c54
-  ); 
-  min-height: 100vh; 
-  border-radius: 12px; 
+  );
+  min-height: 100vh;
+  border-radius: 12px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3),
-    inset 0 0 10px rgba(255, 255, 255, 0.1); 
+    inset 0 0 10px rgba(255, 255, 255, 0.1);
   position: relative;
-  overflow: hidden; 
-  font-family: "Poppins", "Segoe UI", sans-serif; 
+  overflow: hidden;
+  font-family: "Poppins", "Segoe UI", sans-serif;
 }
 .mib-tree::before {
   content: "";
@@ -80,9 +89,9 @@ export default {
     circle,
     rgba(0, 123, 255, 0.2),
     transparent 70%
-  ); 
+  );
   opacity: 0.3;
-  pointer-events: none; 
+  pointer-events: none;
 }
 ul {
   list-style: none;
@@ -92,12 +101,12 @@ ul {
 }
 li {
   margin: 10px 0;
-  padding-left: 15px; 
+  padding-left: 15px;
   position: relative;
-  transition: all 0.4s ease; 
+  transition: all 0.4s ease;
 }
 li:hover {
-  transform: translateX(5px); 
+  transform: translateX(5px);
 }
 li::before {
   content: "";
@@ -110,11 +119,11 @@ li::before {
     to bottom,
     #00ddeb,
     #ff6f61
-  ); 
+  );
   opacity: 0.8;
   border-radius: 2px;
 }
 li:last-child::before {
-  height: 50%; 
+  height: 50%;
 }
 </style>

@@ -15,6 +15,7 @@ public class TrapController {
     @Autowired
     private TrapService trapService;
 
+    @CrossOrigin(origins = "*")
     @PostMapping
     public List<Trap> getAllTraps() {
         return trapService.getAllTraps();

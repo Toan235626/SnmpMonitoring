@@ -3,6 +3,7 @@ import DashboardView from "@/views/DashboardView.vue";
 import DevicesNetworkView from "@/views/DevicesNetworkView.vue";
 import MIBTreeView from "@/views/MIBTreeView.vue";
 import SearchOIDView from "@/views/SearchOIDView.vue";
+import TrapView from "@/views/TrapView.vue";
 
 const routes = [
   {
@@ -28,6 +29,11 @@ const routes = [
     path: "/search-oid",
     name: "Search OID",
     component: SearchOIDView,
+  },
+  {
+    path: "/trap",
+    name: "trap",
+    component: TrapView,
   },
 ];
 

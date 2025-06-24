@@ -2,14 +2,15 @@ package com.project.snmp.model;
 
 import org.snmp4j.smi.VariableBinding;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class Trap {
     private String rawPdu;
-    private List<VariableBinding> variables;
+    private List<HashMap<String, String>> variables;
     private String snmpVersion;
 
-    public Trap(String rawPdu, List<VariableBinding> variables, String snmpVersion) {
+    public Trap(String rawPdu, List<HashMap<String, String>> variables, String snmpVersion) {
         this.rawPdu = rawPdu;
         this.variables = variables;
         this.snmpVersion = snmpVersion;
@@ -25,11 +26,11 @@ public class Trap {
         this.rawPdu = rawPdu;
     }
 
-    public List<VariableBinding> getVariables() {
+    public List<HashMap<String, String>> getVariables() {
         return variables;
     }
 
-    public void setVariables(List<VariableBinding> variables) {
+    public void setVariables(List<HashMap<String, String>> variables) {
         this.variables = variables;
     }
 
