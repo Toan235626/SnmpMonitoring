@@ -45,7 +45,11 @@ cd SnmpMonitoring
 chmod +x backend/mvnw
 
 # Build and run backend + frontend using Docker
+#if you use docker compose version 1
 docker-compose up --build
+#if you use docker compose version 2
+docker compose up --build
+
 ```
 
 -   Backend: http://localhost:8086/api
