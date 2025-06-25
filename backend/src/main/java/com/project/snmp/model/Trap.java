@@ -9,11 +9,13 @@ public class Trap {
     private String rawPdu;
     private List<HashMap<String, String>> variables;
     private String snmpVersion;
+    private String senderIp;
 
-    public Trap(String rawPdu, List<HashMap<String, String>> variables, String snmpVersion) {
+    public Trap(String rawPdu, List<HashMap<String, String>> variables, String snmpVersion, String senderIp) {
         this.rawPdu = rawPdu;
         this.variables = variables;
         this.snmpVersion = snmpVersion;
+        this.senderIp = senderIp;
     }
 
     // Getter và Setter
@@ -49,5 +51,13 @@ public class Trap {
                 ", rawPdu='" + rawPdu + '\'' +
                 ", variables=" + variables +
                 '}';
+    }
+
+    public String getSenderIp() {
+        return senderIp;
+    }
+
+    public void setSenderIp(String senderIp) {
+        this.senderIp = senderIp;
     }
 }

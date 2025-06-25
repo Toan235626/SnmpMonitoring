@@ -8,8 +8,6 @@ import org.snmp4j.*;
 import org.snmp4j.smi.*;
 import org.snmp4j.transport.DefaultUdpTransportMapping;
 import org.snmp4j.mp.MessageProcessingModel;
-import org.snmp4j.PDUv1;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -43,6 +41,7 @@ public class SnmpTrapListener implements CommandResponder {
     @Override
     public void processPdu(CommandResponderEvent event) {
         PDU pdu = event.getPDU();
+        String senderIp = event.getPeerAddress().toString(); // → "udp:192.168.63.100/162"
         if (pdu == null)
             return;
 
@@ -91,7 +90,7 @@ public class SnmpTrapListener implements CommandResponder {
             System.out.println(" - " + vb.toString());
         }
 
-        Trap trap = new Trap(rawPdu, listVarBinds, versionStr);
+        Trap trap = new Trap(rawPdu, listVarBinds, versionStr, senderIp.toString());
         trapService.processTrap(trap);
 
         System.out.println("Received SNMP Trap:");

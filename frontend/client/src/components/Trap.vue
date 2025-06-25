@@ -56,9 +56,9 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Time (sysUpTime)</th>
-                        <th>Authoritative OID</th>
-                        <th>Message</th>
+                        <th>sysTem Up Time</th>
+                        <th>Trap OID</th>
+                        <th>Sender's Ip</th>
                         <th>SNMP Version</th>
                         <th>Details</th>
                     </tr>
@@ -73,7 +73,7 @@
                             {{ Object.values(trap.variables[1])[2] || 'N/A' }}
                         </td>
                         <td>
-                            {{ Object.values(trap.variables[2])[2] || 'N/A' }}
+                            {{ trap.senderIp || 'N/A' }}
                         </td>
                         <td>{{ trap.snmpVersion }}</td>
                         <td>
