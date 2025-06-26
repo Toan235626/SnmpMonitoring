@@ -94,7 +94,7 @@ public class SnmpWalk {
                 currentOid = vb.getOid();
             }
             if ("1.3.6.1.4.1".startsWith(rootOid) && !seenOids.contains("1.3.6.1.4.1")) {
-                System.out.println("→ Fallback walk from 1.3.6.1.4.1");
+                // System.out.println("→ Fallback walk from 1.3.6.1.4.1");
 
                 OID currentOid1 = new OID("1.3.6.1.4.1");
                 OID enterpriseRoot = new OID("1.3.6.1.4.1");
@@ -131,7 +131,7 @@ public class SnmpWalk {
                 }
             }
 
-            System.out.println("SNMPv1 walked " + step + " steps for " + rootOid);
+            // System.out.println("SNMPv1 walked " + step + " steps for " + rootOid);
         } finally {
             snmp.close();
             transport.close();
@@ -216,7 +216,7 @@ public class SnmpWalk {
             }
 
             if ("1.3.6.1.4.1".startsWith(rootOid) && !seenOids.contains("1.3.6.1.4.1")) {
-                System.out.println("→ Fallback walk from 1.3.6.1.4.1");
+                // System.out.println("→ Fallback walk from 1.3.6.1.4.1");
 
                 OID currentOid1 = new OID("1.3.6.1.4.1");
                 OID enterpriseRoot = new OID("1.3.6.1.4.1");
@@ -353,7 +353,7 @@ public class SnmpWalk {
             }
 
             if ("1.3.6.1.4.1".startsWith(rootOid) && !seenOids.contains("1.3.6.1.4.1")) {
-                System.out.println("→ Fallback walk from 1.3.6.1.4.1");
+                // System.out.println("→ Fallback walk from 1.3.6.1.4.1");
 
                 OID currentOid1 = new OID("1.3.6.1.4.1");
                 OID enterpriseRoot = new OID("1.3.6.1.4.1");
@@ -389,7 +389,7 @@ public class SnmpWalk {
                     }
                 }
             }
-            System.out.println("SNMPv3 smart walk done: " + results.size() + " OIDs");
+            // System.out.println("SNMPv3 smart walk done: " + results.size() + " OIDs");
         } finally {
             snmp.close();
             transport.close();

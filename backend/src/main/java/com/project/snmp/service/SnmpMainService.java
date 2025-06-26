@@ -45,10 +45,11 @@ public class SnmpMainService {
         }
 
         String value = record.getValue();
-        System.out.println("SNMP GET: " + record.getOid() + " - " + value);
+        // System.out.println("SNMP GET: " + record.getOid() + " - " + value);
         if (value == null || value.isEmpty() || value.equals("noSuchObject") || value.equals("Null")
                 || value.equals("noSuchInstance")) {
-            System.out.println("SNMP GET: " + record.getOid() + " - " + value + " → Fallback to .0");
+            // System.out.println("SNMP GET: " + record.getOid() + " - " + value + " →
+            // Fallback to .0");
             if ("3".equals(version)) {
                 String username = v3params[0];
                 String authPass = v3params[1];
@@ -90,9 +91,11 @@ public class SnmpMainService {
         }
 
         String value = getNextResult.getValue();
-        System.out.println("SNMP GETNEXT: " + getNextResult.getOid() + " - " + value);
+        // System.out.println("SNMP GETNEXT: " + getNextResult.getOid() + " - " +
+        // value);
         if (value == null || value.isEmpty() || value.equals("noSuchObject") || value.equals("Null")) {
-            System.out.println("SNMP GETNEXT: " + getNextResult.getOid() + " - " + value + " → Fallback to .0");
+            // System.out.println("SNMP GETNEXT: " + getNextResult.getOid() + " - " + value
+            // + " → Fallback to .0");
             if ("3".equals(version)) {
                 String username = v3params[0];
                 String authPass = v3params[1];

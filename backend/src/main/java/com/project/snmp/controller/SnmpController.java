@@ -40,7 +40,7 @@ public class SnmpController {
             @RequestParam(value = "privProtocol", required = false, defaultValue = "") String privProtocol,
             @RequestParam(value = "securityLevel", required = false, defaultValue = "1") String securityLevel) {
 
-        System.out.println("deviceIP: " + deviceIp);
+        // System.out.println("deviceIP: " + deviceIp);
         try {
             if (version.equals("2c") || version.equals("1")) {
                 SnmpRecord[] records = new SnmpRecord[1];
@@ -76,7 +76,7 @@ public class SnmpController {
             @RequestParam(value = "privProtocol", required = false, defaultValue = "") String privProtocol,
             @RequestParam(value = "securityLevel", required = false, defaultValue = "1") String securityLevel) {
 
-        System.out.println("deviceIP: " + deviceIp);
+        // System.out.println("deviceIP: " + deviceIp);
         try {
             SnmpRecord[] records = new SnmpRecord[1];
             if (version.equals("2c")) {

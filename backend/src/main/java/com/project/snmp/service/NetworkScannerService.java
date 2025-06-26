@@ -49,7 +49,7 @@ public class NetworkScannerService {
             for (int i = 1; i <= 254; i++) {
                 final String deviceIp = parts[0] + "." + parts[1] + "." + thirdOctet + "." + i;
                 executor.submit(() -> {
-                    System.out.println("Scanning IP: " + deviceIp);
+                    // System.out.println("Scanning IP: " + deviceIp);
                     try {
                         SnmpRecord result = snmpMainService.getSnmpValue(deviceIp, community, oid, port,
                                 version);
@@ -64,7 +64,8 @@ public class NetworkScannerService {
                             device.setDeviceIp(deviceIp);
                             device.setCommunity(community);
                             foundDevices.add(device);
-                            System.out.println("Device found: " + device.getName() + " at " + device.getDeviceIp());
+                            // System.out.println("Device found: " + device.getName() + " at " +
+                            // device.getDeviceIp());
                         }
                     } catch (Exception e) {
                     }
@@ -101,7 +102,7 @@ public class NetworkScannerService {
             for (int i = 1; i <= 254; i++) {
                 final String deviceIp = parts[0] + "." + parts[1] + "." + thirdOctet + "." + i;
                 executor.submit(() -> {
-                    System.out.println("Scanning IP: " + deviceIp);
+                    // System.out.println("Scanning IP: " + deviceIp);
                     try {
                         SnmpRecord result = snmpMainService.getSnmpValue(deviceIp, community, oid, port,
                                 version,

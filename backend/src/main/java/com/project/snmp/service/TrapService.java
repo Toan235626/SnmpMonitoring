@@ -14,20 +14,20 @@ public class TrapService {
 
     public void processTrap(Trap trap) {
         if (trap == null) {
-            System.out.println("Received null trap, skipping.");
+            // System.out.println("Received null trap, skipping.");
             return;
         }
 
-        System.out.println("Processing trap:");
-        System.out.println(trap.toString());
+        // System.out.println("Processing trap:");
+        // System.out.println(trap.toString());
 
         trapList.add(trap);
-        System.out.println("Trap added to list. Total traps: " + trapList.size());
-        System.out.println(trapList);
+        // System.out.println("Trap added to list. Total traps: " + trapList.size());
+        // System.out.println(trapList);
     }
 
     public List<Trap> getAllTraps() {
-        System.out.println("Retrieving all traps. Total traps: " + trapList.size());
+        // System.out.println("Retrieving all traps. Total traps: " + trapList.size());
         return trapList;
     }
 }

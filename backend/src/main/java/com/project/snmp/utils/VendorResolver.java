@@ -11,8 +11,8 @@ public class VendorResolver {
         sysObjectId = sysObjectId.trim();
         sysDescr = sysDescr.toLowerCase();
 
-        System.out.println("sysObjectID = " + sysObjectId);
-        System.out.println("sysDescr = " + sysDescr);
+        // System.out.println("sysObjectID = " + sysObjectId);
+        // System.out.println("sysDescr = " + sysDescr);
 
         if (sysObjectId.startsWith("1.3.6.1.4.1.9"))
             return "cisco";

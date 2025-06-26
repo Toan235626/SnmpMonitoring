@@ -55,8 +55,9 @@ public class SnmpGetNext {
         TransportMapping<UdpAddress> transport = new DefaultUdpTransportMapping();
         transport.listen();
 
-        System.out.println(username + " " + authPass + " " + privPass + " " + authProtocol + " " + privProtocol + " "
-                + securityLevel);
+        // System.out.println(username + " " + authPass + " " + privPass + " " +
+        // authProtocol + " " + privProtocol + " "
+        // + securityLevel);
 
         OID authProto = null;
         if ("SHA".equalsIgnoreCase(authProtocol))
@@ -110,7 +111,7 @@ public class SnmpGetNext {
             if (vbString.startsWith("[") && vbString.endsWith("]")) {
                 vbString = vbString.substring(1, vbString.length() - 1);
             }
-            System.out.println(vbString);
+            // System.out.println(vbString);
             SnmpRecord snmpRecord = new SnmpRecord();
             snmpRecord.setDeviceIp(deviceIp);
             snmpRecord.setOid(response.getResponse().get(0).getOid().toString());

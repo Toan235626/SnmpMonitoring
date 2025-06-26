@@ -34,7 +34,7 @@ public class SnmpBroadcast {
             int thirdOctet = thirdOctetBase + j;
             String broadcastIp = parts[0] + "." + parts[1] + "." + thirdOctet + ".255";
 
-            System.out.println(" Submit broadcast to: " + broadcastIp);
+            // System.out.println(" Submit broadcast to: " + broadcastIp);
             Future<List<String>> future = executor.submit(() -> sendSingleBroadcast(broadcastIp, port, community, oid));
             futures.add(future);
         }

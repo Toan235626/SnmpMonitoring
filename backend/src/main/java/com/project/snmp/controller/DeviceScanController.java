@@ -43,7 +43,7 @@ public class DeviceScanController {
 
     @PostConstruct
     public void debug() {
-        System.out.println("[✓] DeviceScanController loaded");
+        // System.out.println("[✓] DeviceScanController loaded");
     }
 
     @CrossOrigin(origins = "*")
@@ -121,7 +121,7 @@ public class DeviceScanController {
                     boolean alreadyAdded = subnets.stream().anyMatch(map -> map.get("baseIp").equals(baseIp));
                     if (!alreadyAdded) {
                         subnets.add(netInfo);
-                        System.out.println("Found subnet: " + baseIp);
+                        // System.out.println("Found subnet: " + baseIp);
                     }
                 }
             }

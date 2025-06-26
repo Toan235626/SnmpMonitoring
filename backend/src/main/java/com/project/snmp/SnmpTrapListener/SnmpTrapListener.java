@@ -35,7 +35,7 @@ public class SnmpTrapListener implements CommandResponder {
         snmp = new Snmp(transport);
         snmp.addCommandResponder(this);
         transport.listen();
-        System.out.println("SNMP Trap Listener started on UDP port 162");
+        // System.out.println("SNMP Trap Listener started on UDP port 162");
     }
 
     @Override
@@ -50,9 +50,9 @@ public class SnmpTrapListener implements CommandResponder {
         List<VariableBinding> varBinds;
         String rawPdu;
 
-        System.out.println("Processing PDU...");
-        System.out.println("Model: " + model);
-        System.out.println("PDU: " + pdu.toString());
+        // System.out.println("Processing PDU...");
+        // System.out.println("Model: " + model);
+        // System.out.println("PDU: " + pdu.toString());
 
         if (model == MessageProcessingModel.MPv1 && pdu instanceof PDUv1) {
             PDUv1 pduV1 = (PDUv1) pdu;
@@ -65,7 +65,7 @@ public class SnmpTrapListener implements CommandResponder {
         } else if (model == MessageProcessingModel.MPv2c) {
             versionStr = "2c";
             varBinds = new ArrayList<>(pdu.getVariableBindings());
-            System.out.println(varBinds);
+            // System.out.println(varBinds);
             rawPdu = pdu.toString();
 
         } else if (model == MessageProcessingModel.MPv3) {
@@ -87,21 +87,21 @@ public class SnmpTrapListener implements CommandResponder {
             map.put("value", vb.getVariable().toString());
             map.put("description", oidDescription.findDescription(vb.getOid().toString()));
             listVarBinds.add(map);
-            System.out.println(" - " + vb.toString());
+            // System.out.println(" - " + vb.toString());
         }
 
         Trap trap = new Trap(rawPdu, listVarBinds, versionStr, senderIp.toString());
         trapService.processTrap(trap);
 
-        System.out.println("Received SNMP Trap:");
-        System.out.println(trap.toString());
+        // System.out.println("Received SNMP Trap:");
+        // System.out.println(trap.toString());
     }
 
     @PreDestroy
     public void stop() throws IOException {
         if (snmp != null) {
             snmp.close();
-            System.out.println("SNMP Trap Listener stopped.");
+            // System.out.println("SNMP Trap Listener stopped.");
         }
     }
 }

@@ -27,7 +27,7 @@ public class MibTreeService {
 
         String vendor = VendorResolver.resolve(sysObjectID, sysDescr);
 
-        System.out.println("Vendor: " + vendor);
+        // System.out.println("Vendor: " + vendor);
 
         SnmpRecord[] snmpRecords = snmpMainService.getSnmpWalkValue(ip, community, "1.3.6.1", port, version);
         Map<String, String> oidValues = new java.util.HashMap<>();
@@ -55,7 +55,7 @@ public class MibTreeService {
 
         String vendor = VendorResolver.resolve(sysObjectID, sysDescr);
 
-        System.out.println("Vendor: " + vendor);
+        // System.out.println("Vendor: " + vendor);
 
         SnmpRecord[] snmpRecords = snmpMainService.getSnmpWalkValue(ip, community, "1.3.6.1", port, "3", username,
                 authPass, privPass, authProtocol, privProtocol, securityLevelStr);
